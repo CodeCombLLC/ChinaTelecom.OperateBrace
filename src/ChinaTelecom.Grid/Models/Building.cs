@@ -16,5 +16,7 @@ namespace ChinaTelecom.Grid.Models
         public int Layers { get; set; }
 
         public int Units { get; set; }
+
+        public virtual ICollection<House> Houses { get; set; } = new List<House>();
     }
 }

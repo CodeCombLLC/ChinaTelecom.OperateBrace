@@ -27,8 +27,24 @@ namespace ChinaTelecom.Grid.Models
             {
                 e.HasIndex(x => x.Rule);
             });
-            
 
+            builder.Entity<Building>(e =>
+            {
+                e.HasIndex(x => x.Units);
+                e.HasIndex(x => x.Layers);
+            });
+
+            builder.Entity<House>(e =>
+            {
+                e.HasIndex(x => x.HouseStatus);
+                e.HasIndex(x => x.LastUpdate);
+                e.HasIndex(x => x.ServiceStatus);
+                e.HasIndex(x => x.Layer);
+                e.HasIndex(x => x.Unit);
+                e.HasIndex(x => x.Door);
+                e.HasIndex(x => x.Phone);
+                e.HasIndex(x => x.FullName);
+            });
         }
     }
 }
