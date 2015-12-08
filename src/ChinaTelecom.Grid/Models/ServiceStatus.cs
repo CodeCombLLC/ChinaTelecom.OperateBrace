@@ -13,7 +13,6 @@ namespace ChinaTelecom.Grid.Models
         欠费拆机,
         用户报停,
         用户拆机,
-        用户状态,
         装机未竣工退单,
         违章停机,
         预拆机,
