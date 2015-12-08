@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Data.Entity;
+﻿using Microsoft.Data.Entity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace ChinaTelecom.Grid.Models
@@ -12,6 +8,10 @@ namespace ChinaTelecom.Grid.Models
         public DbSet<Estate> Estates { get; set; }
 
         public DbSet<EstateRule> EstateRules { get; set; }
+
+        public DbSet<Building> Buildings { get; set; }
+
+        public DbSet<House> Houses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

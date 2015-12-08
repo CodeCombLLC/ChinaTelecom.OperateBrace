@@ -27,12 +27,13 @@ namespace ChinaTelecom.Grid
                 .AddDefaultTokenProviders();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public async void Configure(IApplicationBuilder app)
         {
             app.UseIISPlatformHandler();
             app.UseIdentity();
             app.UseAutoAjax();
             app.UseMvcWithDefaultRoute();
+            await SampleData.InitDB(app.ApplicationServices);
         }
 
         public static void Main(string[] args) => WebApplication.Run<Startup>(args);
