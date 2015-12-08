@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ChinaTelecom.Grid.Models
 {
@@ -31,6 +29,7 @@ namespace ChinaTelecom.Grid.Models
 
         public DateTime LastUpdate { get; set; }
 
+        [ForeignKey("Building")]
         public Guid BuildingId { get; set; }
 
         public virtual Building Building { get; set; }

@@ -7,6 +7,9 @@ using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.PlatformAbstractions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Data.Entity;
 using ChinaTelecom.Grid.Models;
 
 namespace ChinaTelecom.Grid
@@ -15,21 +18,26 @@ namespace ChinaTelecom.Grid
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            var env = services.BuildServiceProvider().GetRequiredService<IApplicationEnvironment>();
             services.AddMvc();
             services.AddSmartUser<User, string>();
+            services.AddSmartCookies();
 
             services.AddEntityFramework()
                 .AddSqlite()
-                .AddDbContext<GridContext>();
+                .AddDbContext<GridContext>(x => x.UseSqlite($"Data source={env.ApplicationBasePath}/Database/ctgrid.db"));
 
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<GridContext>()
                 .AddDefaultTokenProviders();
         }
 
-        public async void Configure(IApplicationBuilder app)
+        public async void Configure(IApplicationBuilder app, ILoggerFactory logger)
         {
+            logger.AddConsole(LogLevel.Warning);
+
             app.UseIISPlatformHandler();
+            app.UseStaticFiles();
             app.UseIdentity();
             app.UseAutoAjax();
             app.UseMvcWithDefaultRoute();
