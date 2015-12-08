@@ -13,6 +13,10 @@ namespace ChinaTelecom.Grid.Models
 
         public DbSet<House> Houses { get; set; }
 
+        public DbSet<Record> Records { get; set; }
+
+        public DbSet<Series> Serieses { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -44,6 +48,28 @@ namespace ChinaTelecom.Grid.Models
                 e.HasIndex(x => x.Door);
                 e.HasIndex(x => x.Phone);
                 e.HasIndex(x => x.FullName);
+            });
+
+            builder.Entity<Series>(e =>
+            {
+                e.HasIndex(x => x.Time);
+            });
+
+            builder.Entity<Record>(e =>
+            {
+                e.HasIndex(x => x.Account);
+                //e.HasIndex(x => x.AgentFee);
+                //e.HasIndex(x => x.Arrearage);
+                e.HasIndex(x => x.ContractorName);
+                //e.HasIndex(x => x.ContractorStruct);
+                //e.HasIndex(x => x.CurrentMonthBill);
+                //e.HasIndex(x => x.CustomerName);
+                //e.HasIndex(x => x.ImplementAddress);
+                e.HasIndex(x => x.ImportedTime);
+                //e.HasIndex(x => x.StandardAddress);
+                e.HasIndex(x => x.Status);
+                //e.HasIndex(x => x.Commission);
+                e.HasIndex(x => x.Set);
             });
         }
     }
