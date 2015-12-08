@@ -27,7 +27,15 @@ namespace ChinaTelecom.Grid
                 .AddSqlite()
                 .AddDbContext<GridContext>(x => x.UseSqlite($"Data source={env.ApplicationBasePath}/Database/ctgrid.db"));
 
-            services.AddIdentity<User, IdentityRole>()
+            services.AddIdentity<User, IdentityRole>(x =>
+            {
+                x.Password.RequireDigit = false;
+                x.Password.RequiredLength = 0;
+                x.Password.RequireLowercase = false;
+                x.Password.RequireNonLetterOrDigit = false;
+                x.Password.RequireUppercase = false;
+                x.User.AllowedUserNameCharacters = null;
+            })
                 .AddEntityFrameworkStores<GridContext>()
                 .AddDefaultTokenProviders();
         }
