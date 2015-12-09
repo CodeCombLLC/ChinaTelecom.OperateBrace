@@ -1,32 +1,155 @@
-﻿@{ 
-    ViewBag.Title = "用户明细";
+﻿@model IEnumerable<Record>
+@{
+    ViewBag.Title = "明细列表";
 }
-    <div class="row">
-        <div id="paper-top">
-            <div class="col-sm-3">
-                <h2 class="tittle-content-header">
-                    <i class="icon-folder"></i>
-                    <span>
-                        @ViewBag.Title
-                    </span>
-                </h2>
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="明细管理">明细管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Index" asp-controller="Record" title="明细列表">明细列表</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-9">
+            <div class="nest" id="RecordList">
+                <div class="title-alt">
+                    <h6>
+                        明细列表
+                    </h6>
+                    <div class="titleClose">
+                        <a class="gone" href="#RecordList">
+                            <span class="entypo-cancel"></span>
+                        </a>
+                    </div>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#Footable">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="Footable">
+                    <form class="search-form">
+                        <input type="hidden" value="false" name="raw" />
+                        <select name="ContractorName" class="form-control">
+                            @foreach (string x in ViewBag.ContractorNames)
+                            {
+                                <option value="">客户经理</option>
+			                    <!option @(Context.Request.Query["ContractorName"] == x ? "selected" : "")>@x</!option>
+                            }
+                        </select>
+                        <select name="Status" class="form-control">
+                            <option value="">状态</option>
+                            @foreach (var x in Enum.GetNames(typeof(ServiceStatus)))
+                            {
+			                <!option @(Context.Request.Query["Status"] == x ? "selected" : "")>@x</!option>
+                            }
+                        </select>
+                        <select name="Set" class="form-control">
+                            <option value="">套餐</option>
+                            @foreach (string x in ViewBag.Sets)
+                            {
+			                <!option @(Context.Request.Query["Set"] == x ? "selected" : "")>@x</!option>
+                            }
+                        </select>
+                        <input type="text" placeholder="地址" name="Address" class="form-control" />
+                        <input type="button" class="btn btn-success float-right" value="导出" id="btnExport" />
+                        <input type="submit" class="btn btn-primary float-right" value="检索" id="btnSearch" />
+                        <div class="clear"></div>
+                    </form>
+                    <hr />
+                    <div class="x-scroll">
+                        <table class="table-striped footable-res footable metro-blue footable-loaded tablet breakpoint">
+                            <thead>
+                                <tr>
+                                    <th>接入号</th>
+                                    <th>用户状态</th>
+                                    <th>用户姓名</th>
+                                    <th>四级承包人名称</th>
+                                    <th>四级承包体名称</th>
+                                    <th>当月出账</th>
+                                    <th>代理费</th>
+                                    <th>一次佣金</th>
+                                    <th>欠费</th>
+                                    <th>装机地址</th>
+                                    <th>标准地址</th>
+                                    <th>套餐</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var x in Model)
+                                {
+                                    <tr>
+                                        <td>@x.Account</td>
+                                        <td>@x.Status</td>
+                                        <td>@x.CustomerName</td>
+                                        <td>@x.ContractorName</td>
+                                        <td>@x.ContractorStruct</td>
+                                        <td>@x.CurrentMonthBill</td>
+                                        <td>@x.AgentFee</td>
+                                        <td>@x.Commission</td>
+                                        <td>@x.Arrearage</td>
+                                        <td>@x.ImplementAddress</td>
+                                        <td>@x.StandardAddress</td>
+                                        <td>@x.Set</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @Html.MakePager("footable-page", "active", "pagination pagination-centered")
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="nest" id="ImportXls">
+                <div class="title-alt">
+                    <h6>
+                        导入明细
+                    </h6>
+                    <div class="titleClose">
+                        <a class="gone" href="#ImportXls">
+                            <span class="entypo-cancel"></span>
+                        </a>
+                    </div>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#Footable">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="Footable">
+                    <form asp-action="Import" asp-controller="Record">
+                        <div class="form-group">
+                            <label>上传文件(*.xls, *.xlsx)</label>
+                            <input type="file" name="file">
+                        </div>
+                        <button class="btn btn-info" type="submit">导入</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-    <ul id="breadcrumb">
-        <li>
-            <span class="entypo-home"></span>
-        </li>
-        <li>
-            <i class="fa fa-lg fa-angle-right"></i>
-        </li>
-        <li>
-            <a href="#" title="明细管理">明细管理</a>
-        </li>
-        <li>
-            <i class="fa fa-lg fa-angle-right"></i>
-        </li>
-        <li>
-            <a asp-action="Index" asp-controller="Record" title="明细列表">明细列表</a>
-        </li>
-    </ul>
+</div>

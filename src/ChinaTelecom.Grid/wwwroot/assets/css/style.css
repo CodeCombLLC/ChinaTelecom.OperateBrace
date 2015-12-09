@@ -3046,3 +3046,24 @@ small.pull-right {
     margin: 30px 0 20px!important;
     border-bottom: 0px solid #eee!important;
 }
+
+.x-scroll {
+    overflow-x: auto;
+    white-space: nowrap; 
+    text-overflow: ellipsis;
+}
+
+.search-form input[type="text"], .search-form select {
+    width: 120px;
+    display: inline;
+    float: left;
+    margin-right: 5px;
+}
+
+.float-right{
+    float: right;
+}
+
+.clear {
+    clear:both;
+}
