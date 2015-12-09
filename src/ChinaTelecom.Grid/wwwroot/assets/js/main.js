@@ -311,7 +311,4 @@ head.js("assets/js/gage/raphael.2.1.0.min.js", "assets/js/gage/justgage.js", fun
             donut: true
         });
     };
-
-
-
 });

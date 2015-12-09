@@ -120,9 +120,6 @@
     $(".gone").click(function() {
         var collapse_content_close = $(this).attr('href');
         $(collapse_content_close).hide();
-
-
-
     });
 
 //tooltip
