@@ -88,5 +88,26 @@ namespace ChinaTelecom.Grid.Tests
             // Assert
             Assert.Equal(expected, result);
         }
+
+        [Theory]
+        [InlineData("哈尔滨市道里区工部街18号2单元701室", 2)]
+        [InlineData("哈尔滨市道里区恒祥城2期9栋1单元1001室", 1)]
+        [InlineData("哈尔滨市道里区安心街114号3栋3单元301室", 3)]
+        [InlineData("哈尔滨市香坊区睿城小区A5号楼3单元301室", 3)]
+        [InlineData("哈尔滨市南岗区恒祥家园富华轩1单元20楼B", 1)]
+        [InlineData("哈尔滨市道里区提拉米苏小区C栋3单元603室", 3)]
+        [InlineData("哈尔滨道里区安静二胡同12-1号3单元301室", 3)]
+        [InlineData("哈尔滨市道里区安广街副4号701室", 1)]
+        [InlineData("哈尔滨市道里区安丰街106号401室", 1)]
+        [InlineData("哈尔滨南岗区恒祥家园中华轩2单元16A", 2)]
+        [InlineData("", null)]
+        public void get_unit_tests(string src, int? expected)
+        {
+            // Act
+            var result = AddressAnalyser.GetUnit(src);
+
+            // Assert
+            Assert.Equal(expected, result);
+        }
     }
 }

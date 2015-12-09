@@ -89,5 +89,17 @@ namespace ChinaTelecom.Grid.Lib
                 .Replace("E", "5");
             return Convert.ToInt32(ret);
         }
+
+        public static int? GetUnit(string src)
+        {
+            if (string.IsNullOrEmpty(src))
+                return null;
+            var tmp = src.Split("单元".ToArray());
+            if (tmp.Count() == 1)
+                return 1;
+            var tmp2 = tmp[0];
+            var result = GetNumbers(tmp2);
+            return Convert.ToInt32(result.LastOrDefault() ?? "1");
+        }
     }
 }
