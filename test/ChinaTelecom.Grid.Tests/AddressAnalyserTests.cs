@@ -48,5 +48,43 @@ namespace ChinaTelecom.Grid.Tests
             // Assert 2
             Assert.Equal(expected, concat);
         }
+
+        [Theory]
+        [InlineData("哈尔滨市道里区恒祥城2期9栋1单元1001室", 10)]
+        [InlineData("哈尔滨市道里区安心街114号3栋3单元301室", 3)]
+        [InlineData("哈尔滨市香坊区睿城小区A5号楼3单元301室", 3)]
+        [InlineData("哈尔滨市南岗区恒祥家园富华轩1单元20楼B", 20)]
+        [InlineData("哈尔滨市道里区提拉米苏小区C栋3单元603室", 6)]
+        [InlineData("哈尔滨道里区安静二胡同12-1号3单元301室", 3)]
+        [InlineData("哈尔滨市道里区安丰街106号401室", 4)]
+        [InlineData("", null)]
+        public void get_layer_tests(string src, int? expected)
+        {
+            // Act
+            var result = AddressAnalyser.GetLayer(AddressAnalyser.GetNumbers(src));
+
+            // Assert
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData("哈尔滨市道里区工部街18号2单元701室", 1)]
+        [InlineData("哈尔滨市道里区恒祥城2期9栋1单元1001室", 1)]
+        [InlineData("哈尔滨市道里区安心街114号3栋3单元301室", 1)]
+        [InlineData("哈尔滨市香坊区睿城小区A5号楼3单元301室", 1)]
+        [InlineData("哈尔滨市南岗区恒祥家园富华轩1单元20楼B", 2)]
+        [InlineData("哈尔滨市道里区提拉米苏小区C栋3单元603室", 3)]
+        [InlineData("哈尔滨道里区安静二胡同12-1号3单元301室", 1)]
+        [InlineData("哈尔滨市道里区安广街副4号701室", 1)]
+        [InlineData("哈尔滨市道里区安丰街106号401室", 1)]
+        [InlineData("", null)]
+        public void get_door_tests(string src, int? expected)
+        {
+            // Act
+            var result = AddressAnalyser.GetDoor(AddressAnalyser.GetNumbers(src));
+
+            // Assert
+            Assert.Equal(expected, result);
+        }
     }
 }

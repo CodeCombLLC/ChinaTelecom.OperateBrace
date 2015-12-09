@@ -47,5 +47,42 @@ namespace ChinaTelecom.Grid.Lib
                 ret.Add(tmp);
             return ret;
         }
+
+        public static int? GetLayer(List<string> src)
+        {
+            if (src.Count < 2)
+                return null;
+            var tmp = src.Last();
+            if (tmp.Length == 4)
+                return Convert.ToInt32(tmp.Substring(0, 2));
+            else if (tmp.Length == 3)
+                return Convert.ToInt32(tmp.Substring(0, 1));
+            else if (src[src.Count - 2].Length == 1 || src[src.Count - 2].Length == 2)
+                return Convert.ToInt32(src[src.Count - 2]);
+            else
+                return null;
+        }
+
+        public static int? GetDoor(List<string> src)
+        {
+            if (src.Count < 2)
+                return null;
+            var tmp = src.Last();
+            var ret = "";
+            if (tmp.Length == 4)
+                ret = tmp.Substring(2, 2);
+            else if (tmp.Length == 3)
+                ret = tmp.Substring(2, 1);
+            else if (tmp.Length == 1)
+                ret = tmp;
+            else
+                return null;
+            ret = ret.Replace("A", "1")
+                .Replace("B", "2")
+                .Replace("C", "3")
+                .Replace("D", "4")
+                .Replace("E", "5");
+            return Convert.ToInt32(ret);
+        }
     }
 }
