@@ -29,8 +29,9 @@ namespace ChinaTelecom.Grid.Controllers
                 Title = title
             };
             DB.Estates.Add(estate);
-            foreach(var x in rules.Split('\n'))
-                DB.EstateRules.Add(new EstateRule { Rule = x, EstateId = estate.Id });
+            if (!string.IsNullOrEmpty(rules))
+                foreach (var x in rules.Split('\n'))
+                    DB.EstateRules.Add(new EstateRule { Rule = x, EstateId = estate.Id });
             DB.SaveChanges();
             return Content("ok");
         }

@@ -51,6 +51,8 @@
 <script>
     // Building map
     var map = new BMap.Map("allmap");
+    map.addControl(new BMap.MapTypeControl());
+    map.enableScrollWheelZoom(true);
     map.centerAndZoom(new BMap.Point(126.64251040369817, 45.755371438503985), 12);
     map.addEventListener("rightclick", function (e) {
         var point = { lon: e.point.lng, lat: e.point.lat };
@@ -73,7 +75,15 @@
         if (lock) return;
         lock = true;
         map.clearOverlays();
-        $.getJSON('/grid/getestates', {}, function (data) {
+        var cp = map.getBounds(); //返回map可视区域，以地理坐标表示
+        var sw = cp.getSouthWest(); //返回矩形区域的西南角
+        var ne = cp.getNorthEast(); //返回矩形区域的东北角
+        var left = sw.lng;
+        var right = ne.lng;
+        var top = ne.lat;
+        var bottom = sw.lat;
+
+        $.getJSON('/grid/getestates', { left: left, right: right, top: top, bottom: bottom }, function (data) {
             for(var i = 0; i < data.length; i++)
             {
                 var pt = new BMap.Point(data[i].Lon, data[i].Lat);
