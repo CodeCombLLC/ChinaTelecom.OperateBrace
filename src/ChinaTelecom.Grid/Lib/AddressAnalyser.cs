@@ -56,7 +56,12 @@ namespace ChinaTelecom.Grid.Lib
             if (tmp.Length == 4)
                 return Convert.ToInt32(tmp.Substring(0, 2));
             else if (tmp.Length == 3)
-                return Convert.ToInt32(tmp.Substring(0, 1));
+            {
+                if (tmp[1] == '0')
+                    return Convert.ToInt32(tmp.Substring(0, 1));
+                else
+                    return Convert.ToInt32(tmp.Substring(0, 2));
+            }
             else if (src[src.Count - 2].Length == 1 || src[src.Count - 2].Length == 2)
                 return Convert.ToInt32(src[src.Count - 2]);
             else

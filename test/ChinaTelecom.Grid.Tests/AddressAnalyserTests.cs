@@ -57,6 +57,7 @@ namespace ChinaTelecom.Grid.Tests
         [InlineData("哈尔滨市道里区提拉米苏小区C栋3单元603室", 6)]
         [InlineData("哈尔滨道里区安静二胡同12-1号3单元301室", 3)]
         [InlineData("哈尔滨市道里区安丰街106号401室", 4)]
+        [InlineData("哈尔滨南岗区恒祥家园中华轩2单元16A", 16)]
         [InlineData("", null)]
         public void get_layer_tests(string src, int? expected)
         {
@@ -77,6 +78,7 @@ namespace ChinaTelecom.Grid.Tests
         [InlineData("哈尔滨道里区安静二胡同12-1号3单元301室", 1)]
         [InlineData("哈尔滨市道里区安广街副4号701室", 1)]
         [InlineData("哈尔滨市道里区安丰街106号401室", 1)]
+        [InlineData("哈尔滨南岗区恒祥家园中华轩2单元16A", 1)]
         [InlineData("", null)]
         public void get_door_tests(string src, int? expected)
         {
