@@ -2667,7 +2667,6 @@ b#speed {
     background-size: 50% 50%;
     background-repeat: no-repeat;
     padding: 20px;
-    min-height: 500px;
 }
 .bevel.tlbr {
     background: #f5f5f5;

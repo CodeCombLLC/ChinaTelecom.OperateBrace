@@ -125,3 +125,12 @@
 //tooltip
     $('.tooltitle').tooltip();
  
+    function Resize()
+    {
+        $('.paper-wrap').css('min-height', $(window).height() - 75 + "px");
+    }
+
+    $(document).ready(function () {
+        Resize();
+        $(window).resize(function () { Resize(); });
+    });
