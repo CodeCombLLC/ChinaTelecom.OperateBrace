@@ -142,7 +142,7 @@
                     </div>
                 </div>
                 <div class="body-nest" id="ImportXls">
-                    <form asp-action="Import" asp-controller="Record">
+                    <form asp-action="Import" asp-controller="Record" enctype="multipart/form-data" method="post">
                         <div class="form-group">
                             <label>上传文件(*.xls, *.xlsx)</label>
                             <input type="file" name="file">

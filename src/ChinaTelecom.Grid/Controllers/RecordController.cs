@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Data.OleDb;
 using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Http;
 using Microsoft.Data.Entity;
 using ChinaTelecom.Grid.Models;
 
@@ -34,6 +36,24 @@ namespace ChinaTelecom.Grid.Controllers
             {
                 return XlsView(ret.ToList(), "chinatelecom.xls", "Xls");
             }
+        }
+
+        public IActionResult Import(IFormFile file)
+        {
+            var fname = Guid.NewGuid().ToString().Replace("-", "") + System.IO.Path.GetExtension(file.GetFileName());
+            var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), fname);
+            file.SaveAs(path);
+            string connStr;
+            if (System.IO.Path.GetExtension(path) == ".xls")
+                connStr = "Provider=Microsoft.Jet.OLEDB.4.0;" + "Data Source=" + path + ";" + ";Extended Properties=\"Excel 8.0;HDR=YES;IMEX=1\"";
+            else
+                connStr = "Provider=Microsoft.ACE.OLEDB.12.0;" + "Data Source=" + path + ";" + ";Extended Properties=\"Excel 12.0;HDR=YES;IMEX=1\"";
+            using (var conn = new OleDbConnection(connStr))
+            {
+                conn.Open();
+
+            }
+            return View();
         }
     }
 }
