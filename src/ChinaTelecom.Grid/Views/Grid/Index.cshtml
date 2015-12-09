@@ -1,0 +1,19 @@
+﻿@{ 
+    ViewBag.Title = "查看地图";
+}
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=g6DcirKK7FlGGGoiLwslU9kL"></script>
+<style>
+    #allmap {
+        margin-top: -20px;
+        height: calc(100% - 50px);
+        width: 100%;
+        position: absolute;
+    }
+</style>
+<div id="allmap">
+
+</div>
+<script>
+    var map = new BMap.Map("allmap");
+    map.centerAndZoom(new BMap.Point(126.64251040369817, 45.755371438503985), 12);
+</script>

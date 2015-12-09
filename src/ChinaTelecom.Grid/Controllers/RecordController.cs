@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using System.Data.OleDb;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Authorization;
 using Microsoft.Data.Entity;
 using ChinaTelecom.Grid.Models;
 
 namespace ChinaTelecom.Grid.Controllers
 {
+    [Authorize]
     public class RecordController : BaseController
     {
         public IActionResult Index(string ContractorName, ServiceStatus? Status, string Address, string Set, string Phone, string raw)
