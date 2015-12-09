@@ -70,6 +70,7 @@
                             }
                         </select>
                         <input type="text" placeholder="地址" name="Address" class="form-control" />
+                        <input type="text" placeholder="联系电话" name="Phone" class="form-control" />
                         <input type="button" class="btn btn-success float-right" value="导出" id="btnExport" />
                         <input type="submit" class="btn btn-primary float-right" value="检索" id="btnSearch" />
                         <div class="clear"></div>
@@ -95,6 +96,7 @@
                                     <th>身份证号码</th>
                                     <th>联系电话</th>
                                     <th>是否家庭融合宽带</th>
+                                    <th>更新时间</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -117,6 +119,7 @@
                                         <td>@x.PRCID</td>
                                         <td>@x.Phone</td>
                                         <td>@x.IsFuse</td>
+                                        <td>@x.ImportedTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
                                     </tr>
                                 }
                             </tbody>

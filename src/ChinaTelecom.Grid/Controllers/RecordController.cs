@@ -10,7 +10,7 @@ namespace ChinaTelecom.Grid.Controllers
 {
     public class RecordController : BaseController
     {
-        public IActionResult Index(string ContractorName, ServiceStatus? Status, string Address, string Set, string raw)
+        public IActionResult Index(string ContractorName, ServiceStatus? Status, string Address, string Set, string Phone, string raw)
         {
             IEnumerable<Record> ret = DB.Records.AsNoTracking();
             if (!string.IsNullOrEmpty(ContractorName))
@@ -21,7 +21,8 @@ namespace ChinaTelecom.Grid.Controllers
                 ret = ret.Where(x => x.Set == Set);
             if (!string.IsNullOrEmpty(Address))
                 ret = ret.Where(x => x.ImplementAddress.Contains(Address) || x.StandardAddress.Contains(Address));
-
+            if (!string.IsNullOrEmpty(Phone))
+                ret = ret.Where(x => x.Phone.Contains(Phone));
             if (raw != "true")
             {
                 ViewBag.Statuses = DB.Records.Select(x => x.Status.ToString()).Distinct().ToList();

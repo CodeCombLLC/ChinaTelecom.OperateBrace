@@ -58,18 +58,12 @@ namespace ChinaTelecom.Grid.Models
             builder.Entity<Record>(e =>
             {
                 e.HasIndex(x => x.Account);
-                //e.HasIndex(x => x.AgentFee);
-                //e.HasIndex(x => x.Arrearage);
                 e.HasIndex(x => x.ContractorName);
-                //e.HasIndex(x => x.ContractorStruct);
-                //e.HasIndex(x => x.CurrentMonthBill);
-                //e.HasIndex(x => x.CustomerName);
-                //e.HasIndex(x => x.ImplementAddress);
                 e.HasIndex(x => x.ImportedTime);
-                //e.HasIndex(x => x.StandardAddress);
                 e.HasIndex(x => x.Status);
-                //e.HasIndex(x => x.Commission);
                 e.HasIndex(x => x.Set);
+                e.HasIndex(x => x.IsFuse);
+                e.HasIndex(x => x.Phone);
             });
         }
     }
