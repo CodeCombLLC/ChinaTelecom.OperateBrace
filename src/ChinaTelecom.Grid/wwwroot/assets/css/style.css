@@ -3067,3 +3067,7 @@ small.pull-right {
 .clear {
     clear:both;
 }
+
+textarea {
+    min-height: 120px;
+}

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace ChinaTelecom.Grid.Models
 {
@@ -20,6 +21,10 @@ namespace ChinaTelecom.Grid.Models
         [MaxLength(32)]
         public string Area { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Building> Buildings { get; set; } = new List<Building>();
+
+        [NotMapped]
+        public virtual double UsingRate { get; set; }
     }
 }

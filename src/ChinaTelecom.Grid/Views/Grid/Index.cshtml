@@ -10,10 +10,111 @@
         position: absolute;
     }
 </style>
+<div class="modal fade" id="modalCreateEstate" tabindex="-1" role="dialog" aria-labelledby="modalCreateEstate">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form asp-action="CreateEstate" asp-controller="Grid" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">创建小区</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <tr>
+                            <td>小区名称</td>
+                            <td><input type="text" class="form-control" name="title" /></td>
+                        </tr>
+                        <tr>
+                            <td>经度</td>
+                            <td><input type="text" class="form-control" name="lon" id="txtLon" /></td>
+                        </tr>
+                        <tr>
+                            <td>纬度</td>
+                            <td><input type="text" class="form-control" name="lat" id="txtLat" /></td>
+                        </tr>
+                        <tr>
+                            <td>匹配规则</td>
+                            <td><textarea class="form-control" placeholder="每行一个，例如'XX小区'、'XXX街XXX号'" name="rules"></textarea></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <input type="submit" class="btn btn-primary" value="创建" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div id="allmap">
-
 </div>
 <script>
+    // Building map
     var map = new BMap.Map("allmap");
     map.centerAndZoom(new BMap.Point(126.64251040369817, 45.755371438503985), 12);
+    map.addEventListener("rightclick", function (e) {
+        var point = { lon: e.point.lng, lat: e.point.lat };
+        $('#txtLon').val(point.lon);
+        $('#txtLat').val(point.lat);
+        $('#modalCreateEstate').modal('show');
+    });
+    map.addEventListener("dragend", function () {
+        BuildOverlays();
+    });
+    map.addEventListener("zoomend", function () {
+        BuildOverlays();
+    });
+    var icon = new BMap.Icon("/assets/img/estate.png", new BMap.Size(25, 52));
+    var lock = false;
+
+    // Building overlays
+    function BuildOverlays()
+    {
+        if (lock) return;
+        lock = true;
+        map.clearOverlays();
+        $.getJSON('/grid/getestates', {}, function (data) {
+            for(var i = 0; i < data.length; i++)
+            {
+                var pt = new BMap.Point(data[i].Lon, data[i].Lat);
+                var color = 'green';
+                if (data[i].UsingRate >= 0.5 && data[i].UsingRate < 1)
+                    color = 'yellow';
+                else if (data[i].UsingRate < 0.5)
+                    color = 'red';
+                var circle = new BMap.Circle(pt, 500, { fillColor: color, strokerColor: color, strokerWeight: 0.01, fillOpacity: 0.1, strokeOpacity: 0.01 });
+                var marker = new BMap.Marker(pt, { icon: icon });
+                marker.Id = data[i].Id;
+                marker.Title = data[i].Title;
+                marker.Area = data[i].Area;
+                marker.UsingRate = data[i].UsingRate;
+                marker.circle = circle;
+                marker.addEventListener("click", function (e) {
+                    window.location = '/Estate/Show/' + e.target.Id
+                });
+                marker.addEventListener("dragend", function (e) {
+                    map.removeOverlay(e.target.circle);
+                    $.post('/grid/modifyposition', { lon: e.point.lon, lat: e.point.lat, id: e.target.Id });
+                    var newpos = { lat: e.point.lat, lon: e.point.lng };
+                    var _color = 'green';
+                    if (e.target.UsingRate >= 0.5 && e.target.UsingRate < 1)
+                        _color = 'yellow';
+                    else if (e.target.UsingRate < 0.5)
+                        _color = 'red';
+                    var _circle = new BMap.Circle(new BMap.Point(newpos.lon, newpos.lat), 500, { fillColor: _color, strokerColor: 'red', strokerWeight: 0.01, fillOpacity: 0.1, strokeOpacity: 0.01 });
+                    e.target.circle = _circle;
+                    map.addOverlay(e.target.circle);
+                });
+                map.addOverlay(marker.circle);
+                map.addOverlay(marker);
+            }
+            lock = false;
+        });
+    }
+
+    // On loaded events
+    $(document).ready(function ()
+    {
+        BuildOverlays(); 
+    });
 </script>
