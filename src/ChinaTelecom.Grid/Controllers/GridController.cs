@@ -54,13 +54,17 @@ namespace ChinaTelecom.Grid.Controllers
             {
                 var tmp = DB.Houses
                     .Include(y => y.Building)
-                    .Where(y => y.Building.EstateId == x.Id);
-                var total = tmp.Count();
-                var use = tmp.Where(y => y.ServiceStatus == ServiceStatus.在用).Count();
-                if (total == 0)
+                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信);
+                x.TotalCTUsers = tmp.Count();
+                x.TotalInUsingUsers = tmp.Where(y => y.ServiceStatus == ServiceStatus.在用).Count();
+                x.TotalNonCTUsers = DB.Houses
+                    .Include(y => y.Building)
+                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信)
+                    .Count();
+                if (x.TotalCTUsers == 0)
                     x.UsingRate = 0;
                 else
-                    x.UsingRate = (double)use / (double)total;
+                    x.UsingRate = (double)x.TotalInUsingUsers / (double)x.TotalCTUsers;
             }
             return Json(estates);
         }

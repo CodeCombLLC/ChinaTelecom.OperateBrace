@@ -26,5 +26,14 @@ namespace ChinaTelecom.Grid.Models
 
         [NotMapped]
         public virtual double UsingRate { get; set; }
+
+        [NotMapped]
+        public virtual long TotalCTUsers { get; set; }
+
+        [NotMapped]
+        public virtual long TotalNonCTUsers { get; set; }
+
+        [NotMapped]
+        public virtual long TotalInUsingUsers { get; set; }
     }
 }

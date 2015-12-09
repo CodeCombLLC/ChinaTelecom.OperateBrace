@@ -9,6 +9,21 @@
         width: 100%;
         position: absolute;
     }
+
+    #estate {
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 10px;
+        display: none;
+        z-index: 10;
+        bottom: 60px;
+        right: 15px;
+    }
+    
+    #estate table td {
+        padding: 5px;
+    }
 </style>
 <div class="modal fade" id="modalCreateEstate" tabindex="-1" role="dialog" aria-labelledby="modalCreateEstate">
     <div class="modal-dialog" role="document">
@@ -23,6 +38,10 @@
                         <tr>
                             <td>小区名称</td>
                             <td><input type="text" class="form-control" name="title" /></td>
+                        </tr>
+                        <tr>
+                            <td>所属片区编号</td>
+                            <td><input type="text" class="form-control" name="area" /></td>
                         </tr>
                         <tr>
                             <td>经度</td>
@@ -45,6 +64,30 @@
             </form>
         </div>
     </div>
+</div>
+<div id="estate">
+    <table>
+        <tr>
+            <td class="td-gray">小区名称</td>
+            <td id="estate-name"></td>
+        </tr>
+        <tr>
+            <td class="td-gray">所属片区</td>
+            <td id="estate-area"></td>
+        </tr>
+        <tr>
+            <td class="td-gray">在用率</td>
+            <td id="estate-rate"></td>
+        </tr>
+        <tr>
+            <td class="td-gray">在用 / 总用户数</td>
+            <td id="estate-user"></td>
+        </tr>
+        <tr>
+            <td class="td-gray">非电信用户数</td>
+            <td id="tower-user-non-ct"></td>
+        </tr>
+    </table>
 </div>
 <div id="allmap">
 </div>
@@ -98,6 +141,9 @@
                 marker.Title = data[i].Title;
                 marker.Area = data[i].Area;
                 marker.UsingRate = data[i].UsingRate;
+                marker.TotalCTUsers = data[i].TotalCTUsers;
+                marker.TotalNonCTUsers = data[i].TotalNonCTUsers;
+                marker.TotalInUsingUsers = data[i].TotalInUsingUsers;
                 marker.circle = circle;
                 marker.enableDragging();
                 marker.addEventListener("click", function (e) {
@@ -115,6 +161,17 @@
                     var _circle = new BMap.Circle(new BMap.Point(newpos.lon, newpos.lat), 500, { fillColor: _color, strokerColor: 'red', strokerWeight: 0.01, fillOpacity: 0.1, strokeOpacity: 0.01 });
                     e.target.circle = _circle;
                     map.addOverlay(e.target.circle);
+                });
+                marker.addEventListener("mouseover", function (e) {
+                    $("#estate-name").text(e.target.Title);
+                    $("#estate-area").text(e.target.Area);
+                    $("#estate-rate").text((e.target.UsingRate * 100).toFixed(2) + "%");
+                    $("#estate-user").text(e.target.TotalInUsingUsers + " / " + e.target.TotalCTUsers);
+                    $("#tower-user-non-ct").text(e.target.TotalNonCTUsers);
+                    $("#estate").show();
+                });
+                marker.addEventListener("mouseout", function (e) {
+                    $("#estate").hide();
                 });
                 map.addOverlay(marker.circle);
                 map.addOverlay(marker);
