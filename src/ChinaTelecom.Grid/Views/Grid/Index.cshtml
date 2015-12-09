@@ -11,14 +11,12 @@
     }
 
     #estate {
-        position: absolute;
+        position: fixed;
         background-color: #fff;
         border: 1px solid #ccc;
         padding: 10px;
         display: none;
         z-index: 10;
-        bottom: 60px;
-        right: 15px;
     }
     
     #estate table td {
@@ -163,11 +161,15 @@
                     map.addOverlay(e.target.circle);
                 });
                 marker.addEventListener("mouseover", function (e) {
+                    var x = e.clientX;
+                    var y = e.clientY;
                     $("#estate-name").text(e.target.Title);
                     $("#estate-area").text(e.target.Area);
                     $("#estate-rate").text((e.target.UsingRate * 100).toFixed(2) + "%");
                     $("#estate-user").text(e.target.TotalInUsingUsers + " / " + e.target.TotalCTUsers);
-                    $("#tower-user-non-ct").text(e.target.TotalNonCTUsers);
+                    $("#estate-user-non-ct").text(e.target.TotalNonCTUsers);
+                    $("#estate").css("left", x);
+                    $("#estate").css("top", y);
                     $("#estate").show();
                 });
                 marker.addEventListener("mouseout", function (e) {
