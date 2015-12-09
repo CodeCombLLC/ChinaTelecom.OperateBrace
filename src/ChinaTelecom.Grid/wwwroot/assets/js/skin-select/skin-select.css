@@ -1,4 +1,4 @@
-#skin-select h3, #skin-select h4 {
+﻿#skin-select h3, #skin-select h4 {
 }
 .menu-left-nest {
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0.1);
@@ -158,11 +158,11 @@
     font-size: 9px!important;
 }
 .widget-menu:before {
-    content:"Widget Menu" !important;
+    content:"明细管理" !important;
 }
 .design-kit:before {
-    content:"Design Kit Menu" !important;
+    content:"网格管理" !important;
 }
 .component:before {
-    content:"Component Kit Menu" !important;
+    content:"系统设置" !important;
 }
