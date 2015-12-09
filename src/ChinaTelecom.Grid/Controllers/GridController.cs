@@ -37,7 +37,6 @@ namespace ChinaTelecom.Grid.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult ModifyPosition(Guid id, double lon, double lat)
         {
             var estate = DB.Estates.Where(x => x.Id == id).Single();

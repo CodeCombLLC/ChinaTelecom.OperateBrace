@@ -53,7 +53,7 @@
     var map = new BMap.Map("allmap");
     map.addControl(new BMap.MapTypeControl());
     map.enableScrollWheelZoom(true);
-    map.centerAndZoom(new BMap.Point(126.64251040369817, 45.755371438503985), 12);
+    map.centerAndZoom(new BMap.Point(126.645098, 45.758188), 12);
     map.addEventListener("rightclick", function (e) {
         var point = { lon: e.point.lng, lat: e.point.lat };
         $('#txtLon').val(point.lon);
@@ -99,12 +99,13 @@
                 marker.Area = data[i].Area;
                 marker.UsingRate = data[i].UsingRate;
                 marker.circle = circle;
+                marker.enableDragging();
                 marker.addEventListener("click", function (e) {
                     window.location = '/Estate/Show/' + e.target.Id
                 });
                 marker.addEventListener("dragend", function (e) {
                     map.removeOverlay(e.target.circle);
-                    $.post('/grid/modifyposition', { lon: e.point.lon, lat: e.point.lat, id: e.target.Id });
+                    $.post('/grid/modifyposition', { lon: e.point.lng, lat: e.point.lat, id: e.target.Id });
                     var newpos = { lat: e.point.lat, lon: e.point.lng };
                     var _color = 'green';
                     if (e.target.UsingRate >= 0.5 && e.target.UsingRate < 1)
