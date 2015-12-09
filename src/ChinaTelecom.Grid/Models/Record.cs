@@ -53,6 +53,12 @@ namespace ChinaTelecom.Grid.Models
         [MaxLength(64)]
         public string SalesProduction { get; set; }
 
+        [MaxLength(64)]
+        public string MDS { get; set; }
+
+        [MaxLength(32)]
+        public string Phone { get; set; }
+
         public bool IsFuse { get; set; }
 
         public virtual Series Series { get; set; }
