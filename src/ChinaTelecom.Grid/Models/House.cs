@@ -28,6 +28,9 @@ namespace ChinaTelecom.Grid.Models
         [MaxLength(32)]
         public string Phone { get; set; }
 
+        [MaxLength(64)]
+        public string Account { get; set; }
+
         public DateTime LastUpdate { get; set; }
 
         [ForeignKey("Building")]

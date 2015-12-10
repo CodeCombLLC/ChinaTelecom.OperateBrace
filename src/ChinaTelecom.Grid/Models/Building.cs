@@ -11,6 +11,11 @@ namespace ChinaTelecom.Grid.Models
     {
         public Guid Id { get; set; }
         
+        public string Title { get; set; }
+
+        [MaxLength(64)]
+        public string Account { get; set; }
+
         [MaxLength(32)]
         public string Flag { get; set; }
 

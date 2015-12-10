@@ -132,5 +132,35 @@ namespace ChinaTelecom.Grid.Controllers
             else
                 return PagedView(ret);
         }
+
+        [HttpGet]
+        public IActionResult Show(Guid id)
+        {
+            var ret = DB.Buildings
+                .Include(x => x.Houses)
+                .Where(x => x.EstateId == id)
+                .OrderBy(x => x.Title)
+                .ToList();
+            var accounts = DB.Houses
+                .Select(x => x.Account)
+                .ToList();
+            var rules = DB.EstateRules
+                .Where(x => x.EstateId == id)
+                .Select(x => x.Rule)
+                .ToList();
+            var pendingAddress = new List<Record>();
+            foreach (var x in rules)
+            {
+                pendingAddress.AddRange(DB.Records
+                    .Where(a => !DB.Houses
+                    .Select(b => b.Account)
+                    .Contains(a.Account))
+                    .Where(a => a.ImplementAddress.Contains(x) || a.StandardAddress.Contains(x))
+                    );
+            }
+            pendingAddress = pendingAddress.DistinctBy(x => x.Account).ToList();
+            ViewBag.PendingAddresses = pendingAddress;
+            return View(ret);
+        }
     }
 }

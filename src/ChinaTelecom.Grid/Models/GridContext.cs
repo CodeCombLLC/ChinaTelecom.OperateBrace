@@ -17,8 +17,6 @@ namespace ChinaTelecom.Grid.Models
 
         public DbSet<Series> Serieses { get; set; }
 
-        public DbSet<AddressMap> AddressMaps { get; set; }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -42,6 +40,7 @@ namespace ChinaTelecom.Grid.Models
 
             builder.Entity<House>(e =>
             {
+                e.HasIndex(x => x.Account);
                 e.HasIndex(x => x.HouseStatus);
                 e.HasIndex(x => x.LastUpdate);
                 e.HasIndex(x => x.ServiceStatus);
@@ -60,17 +59,14 @@ namespace ChinaTelecom.Grid.Models
             builder.Entity<Record>(e =>
             {
                 e.HasIndex(x => x.Account);
+                e.HasIndex(x => x.ImplementAddress);
+                e.HasIndex(x => x.StandardAddress);
                 e.HasIndex(x => x.ContractorName);
                 e.HasIndex(x => x.ImportedTime);
                 e.HasIndex(x => x.Status);
                 e.HasIndex(x => x.Set);
                 e.HasIndex(x => x.IsFuse);
                 e.HasIndex(x => x.Phone);
-            });
-
-            builder.Entity<AddressMap>(e =>
-            {
-                e.HasIndex(x => x.Account).IsUnique();
             });
         }
     }
