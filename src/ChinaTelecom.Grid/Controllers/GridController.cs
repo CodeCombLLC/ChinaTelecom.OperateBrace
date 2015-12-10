@@ -6,6 +6,7 @@ using Microsoft.Data.Entity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Authorization;
 using ChinaTelecom.Grid.Models;
+using ChinaTelecom.Grid.ViewModels;
 
 namespace ChinaTelecom.Grid.Controllers
 {
@@ -83,7 +84,7 @@ namespace ChinaTelecom.Grid.Controllers
             }
             var ret = tmp.OrderBy(x => x.Area)
                 .GroupBy(x => x.Area)
-                .Select(x => new
+                .Select(x => new Area
                 {
                     Id = x.Key,
                     Buildings = x.Count(),
@@ -92,8 +93,8 @@ namespace ChinaTelecom.Grid.Controllers
                     NonCTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信).Count())),
                     AddedUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && a.ServiceStatus == ServiceStatus.在用).Count())),
                     LeftUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && a.ServiceStatus != ServiceStatus.在用).Count())),
-                    Lon = x.FirstOrDefault() == null ? "" : x.FirstOrDefault().Lon.ToString(),
-                    Lat = x.FirstOrDefault() == null ? "" : x.FirstOrDefault().Lat.ToString(),
+                    Lon = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lon,
+                    Lat = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lat
                 });
             return PagedView(ret);
         }

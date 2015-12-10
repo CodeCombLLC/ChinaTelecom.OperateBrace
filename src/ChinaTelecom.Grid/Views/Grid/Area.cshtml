@@ -1,4 +1,4 @@
-﻿@model IEnumerable<dynamic>
+﻿@model IEnumerable<Area>
 @{ 
     ViewBag.Title = "片区管理";
 }
@@ -73,8 +73,8 @@
                                         <td>@x.AddedUsers</td>
                                         <td>@x.LeftUsers</td>
                                         <td>
-                                            <a class="btn btn-sm btn-info" asp-action="Building" asp-controller="Grid" asp-route-area="@x.Id">管理</a>
-                                            <a class="btn btn-sm btn-success" asp-action="Index" asp-controller="Grid" asp-route-lon="@x.Lon" asp-route-lat="@x.Lat">地图</a>
+                                            <a asp-action="Building" asp-controller="Grid" asp-route-area="@x.Id">管理</a>
+                                            <a asp-action="Index" asp-controller="Grid" asp-route-lon="@x.Lon" asp-route-lat="@x.Lat">地图</a>
                                         </td>
                                     </tr>
                                 }
