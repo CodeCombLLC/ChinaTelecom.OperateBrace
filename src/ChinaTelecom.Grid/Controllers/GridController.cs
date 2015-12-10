@@ -87,7 +87,7 @@ namespace ChinaTelecom.Grid.Controllers
                 .Select(x => new Area
                 {
                     Id = x.Key,
-                    Buildings = x.Count(),
+                    Count = x.Count(),
                     CTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信).Count())),
                     CTInUsingUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用).Count())),
                     NonCTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信).Count())),
@@ -100,6 +100,12 @@ namespace ChinaTelecom.Grid.Controllers
                 return XlsView(ret.ToList(), "Area.xls", "ExportArea");
             else
                 return PagedView(ret);
+        }
+
+        [HttpGet]
+        public IActionResult Estate(string Area, string Title)
+        {
+            var ret = DB.Estates
         }
     }
 }

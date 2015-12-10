@@ -8,7 +8,7 @@ namespace ChinaTelecom.Grid.ViewModels
     public class Area
     {
         public string Id { get; set; }
-        public int Buildings { get; set; }
+        public int Count { get; set; }
         public int CTUsers { get; set; }
         public int CTInUsingUsers { get; set; }
         public int NonCTUsers { get; set; }
