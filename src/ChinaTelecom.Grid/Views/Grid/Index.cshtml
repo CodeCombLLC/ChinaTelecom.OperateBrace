@@ -37,10 +37,27 @@
                             <td>小区名称</td>
                             <td><input type="text" class="form-control" name="title" /></td>
                         </tr>
-                        <tr>
-                            <td>所属片区编号</td>
-                            <td><input type="text" class="form-control" name="area" /></td>
-                        </tr>
+                        @if (User.IsInRole("系统管理员"))
+                        {
+                            <tr>
+                                <td>所属片区编号</td>
+                                <td><input type="text" class="form-control" name="area" /></td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>所属片区编号</td>
+                                <td>
+                                    <select name="area" class="form-control">
+                                        @foreach(string x in ViewBag.Areas)
+                                        {
+                                            <option>@x</option>
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                        }
                         <tr>
                             <td>经度</td>
                             <td><input type="text" class="form-control" name="lon" id="txtLon" /></td>

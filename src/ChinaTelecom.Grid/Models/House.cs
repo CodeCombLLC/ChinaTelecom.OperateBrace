@@ -40,5 +40,7 @@ namespace ChinaTelecom.Grid.Models
         public int Layer { get; set; }
 
         public int Door { get; set; }
+
+        public bool IsStatusChanged { get; set; }
     }
 }

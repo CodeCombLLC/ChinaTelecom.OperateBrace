@@ -12,8 +12,9 @@ namespace ChinaTelecom.Grid.Controllers
     [Authorize]
     public class GridController : BaseController
     {
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
             return View();
         }
 
@@ -67,6 +68,34 @@ namespace ChinaTelecom.Grid.Controllers
                     x.UsingRate = (double)x.TotalInUsingUsers / (double)x.TotalCTUsers;
             }
             return Json(estates);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Area()
+        {
+            IEnumerable<Estate> tmp = DB.Estates
+                .Include(x => x.Buildings)
+                .ThenInclude(x => x.Houses);
+            if (!User.IsInRole("系统管理员"))
+            {
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                tmp = tmp.Where(x => areas.Contains(x.Area));
+            }
+            var ret = tmp.OrderBy(x => x.Area)
+                .GroupBy(x => x.Area)
+                .Select(x => new
+                {
+                    Id = x.Key,
+                    Buildings = x.Count(),
+                    CTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信).Count())),
+                    CTInUsingUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用).Count())),
+                    NonCTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信).Count())),
+                    AddedUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && a.ServiceStatus == ServiceStatus.在用).Count())),
+                    LeftUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && a.ServiceStatus != ServiceStatus.在用).Count())),
+                    Lon = x.FirstOrDefault() == null ? "" : x.FirstOrDefault().Lon.ToString(),
+                    Lat = x.FirstOrDefault() == null ? "" : x.FirstOrDefault().Lat.ToString(),
+                });
+            return PagedView(ret);
         }
     }
 }
