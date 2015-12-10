@@ -1,0 +1,192 @@
+﻿@model IEnumerable<Building>
+@{
+    ViewBag.Title = "管理小区 - " + ViewBag.EstateTitle;
+}
+<link rel="stylesheet" href="~/assets/js/wizard/css/jquery.steps.css">
+
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    管理小区
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Estate" asp-controller="Grid" title="小区管理">小区管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="@ViewBag.EstateTitle">@ViewBag.EstateTitle</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-6">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        楼宇信息
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#Buildings">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="Buildings">
+                    <div id="wizard-tab">
+                        @foreach (var x in Model)
+                        { 
+                            <h2>@x.Title</h2>
+                            <section>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>楼层 / 门</th>
+                                            @for (var i = 1; i <= x.Doors; i++)
+                                            {
+                                                <th>@i 门</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (var i = x.TopLayers; i >= x.BottomLayers; i--)
+                                        {
+                                            if (i == 0)
+                                            {
+                                                continue;
+                                            }
+                                            <tr>
+                                                <td>
+                                                    @if (i > 0)
+                                                    {
+                                                        <span>@i</span>
+                                                    }
+                                                    else
+                                                    { 
+                                                        <span>B@(-i)</span>
+                                                    }
+                                                </td>
+                                                @for (var j = 1; j <= x.Doors; j++)
+                                                {
+                                                    <td class="dragable" data-layer="@i" data-door="@j">
+                                                        @{ 
+                                                            var house = x.Houses.Where(x => x.)
+                                                        }
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </section>
+                        }
+                        <h2>First Step</h2>
+                        <section>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ut nulla nunc. Maecenas arcu sem, hendrerit a tempor quis, sagittis accumsan tellus. In hac habitasse platea dictumst. Donec a semper dui. Nunc eget quam libero. Nam at felis metus. Nam tellus dolor, tristique ac tempus nec, iaculis quis nisi.</p>
+                        </section>
+
+                        <h2>Second Step</h2>
+                        <section>
+                            <p>Donec mi sapien, hendrerit nec egestas a, rutrum vitae dolor. Nullam venenatis diam ac ligula elementum pellentesque. In lobortis sollicitudin felis non eleifend. Morbi tristique tellus est, sed tempor elit. Morbi varius, nulla quis condimentum dictum, nisi elit condimentum magna, nec venenatis urna quam in nisi. Integer hendrerit sapien a diam adipiscing consectetur. In euismod augue ullamcorper leo dignissim quis elementum arcu porta. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum leo velit, blandit ac tempor nec, ultrices id diam. Donec metus lacus, rhoncus sagittis iaculis nec, malesuada a diam. Donec non pulvinar urna. Aliquam id velit lacus.</p>
+                        </section>
+
+                        <h2>Third Step</h2>
+                        <section>
+                            <p>
+                                Morbi ornare tellus at elit ultrices id dignissim lorem elementum. Sed eget nisl at justo condimentum dapibus. Fusce eros justo, pellentesque non euismod ac, rutrum sed quam. Ut non mi tortor. Vestibulum eleifend varius ullamcorper. Aliquam erat volutpat. Donec diam massa, porta vel dictum sit amet, iaculis ac massa. Sed elementum dui commodo lectus sollicitudin in auctor mauris venenatis.
+                            </p>
+                        </section>
+
+                        <h2>Forth Step</h2>
+                        <section>
+                            <p>Quisque at sem turpis, id sagittis diam. Suspendisse malesuada eros posuere mauris vehicula vulputate. Aliquam sed sem tortor. Quisque sed felis ut mauris feugiat iaculis nec ac lectus. Sed consequat vestibulum purus, imperdiet varius est pellentesque vitae. Suspendisse consequat cursus eros, vitae tempus enim euismod non. Nullam ut commodo tortor.</p>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-6">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        用户明细
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#CustomerDetail">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="CustomerDetail">
+                    <div class="x-scroll">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>更新时间</th>
+                                    <th>接入号</th>
+                                    <th>用户状态</th>
+                                    <th>用户姓名</th>
+                                    <th>四级承包人名称</th>
+                                    <th>四级承包体名称</th>
+                                    <th>当月出账</th>
+                                    <th>中投</th>
+                                    <th>代理费</th>
+                                    <th>一次佣金</th>
+                                    <th>欠费</th>
+                                    <th>装机地址</th>
+                                    <th>标准地址</th>
+                                    <th>套餐</th>
+                                    <th>身份证号码</th>
+                                    <th>联系电话</th>
+                                    <th>是否家庭融合宽带</th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-customer-details"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/assets/js/wizard/build/jquery.steps.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#wizard-tab").steps({
+            headerTag: "h2",
+            bodyTag: "section",
+            transitionEffect: "none",
+            enableFinishButton: false,
+            enablePagination: false,
+            enableAllSteps: true,
+            titleTemplate: "#title#",
+            cssClass: "tabcontrol"
+        });
+    });
+</script>

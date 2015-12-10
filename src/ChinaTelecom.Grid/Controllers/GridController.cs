@@ -210,5 +210,30 @@ namespace ChinaTelecom.Grid.Controllers
             ViewBag.PendingAddresses = pendingAddress;
             return View(ret);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveBuilding(Guid id)
+        {
+            var building = DB.Buildings
+                .Include(x => x.Estate)
+                .Where(x => x.Id == id)
+                .Single();
+            if (!User.IsInRole("系统管理员"))
+            {
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                if (!areas.Contains(building.Estate.Area))
+                {
+                    return Prompt(x =>
+                    {
+                        x.Title = "删除失败";
+                        x.Details = "您无权删除该楼座";
+                    });
+                }
+            }
+            DB.Buildings.Remove(building);
+            DB.SaveChanges();
+            return RedirectToAction("Show", "Grid", new { id = building.EstateId });
+        }
     }
 }

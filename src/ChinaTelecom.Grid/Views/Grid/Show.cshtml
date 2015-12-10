@@ -9,7 +9,7 @@
             <h2 class="tittle-content-header">
                 <i class="icon-folder"></i>
                 <span>
-                    @ViewBag.Title
+                    管理小区
                 </span>
             </h2>
         </div>
@@ -38,7 +38,64 @@
         <a href="#" title="@ViewBag.EstateTitle">@ViewBag.EstateTitle</a>
     </li>
 </ul>
+
 <div class="row">
     <div class="content-wrap">
+        <div class="col-sm-8">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        楼宇列表
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#BuildingList">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="BuildingList">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>楼座</th>
+                                <th>电信总用户数</th>
+                                <th>电信在网用户数</th>
+                                <th>非电信用户数</th>
+                                <th>新增</th>
+                                <th>离网</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var x in Model)
+                            {
+                                <tr>
+                                    <td>@x.Title</td>
+                                    <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信).Count()</td>
+                                    <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用).Count()</td>
+                                    <td>@x.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信 && a.HouseStatus != HouseStatus.未装机).Count()</td>
+                                    <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用 && a.IsStatusChanged).Count()</td>
+                                    <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus != ServiceStatus.在用 && a.IsStatusChanged).Count()</td>
+                                    <td>
+                                        <a asp-action="Building" asp-controller="Grid" asp-route-id="@x.Id">管理</a>
+                                        <a href="javascript:Remove('@x.Id')">删除</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+<form asp-action="RemoveBuilding" asp-controller="Grid" method="post" id="frmRemoveBuilding">
+    <input type="hidden" name="id" id="buildingId" />
+</form>
+<script>
+    function Remove(id)
+    {
+        $('#buildingId').val(id);
+        $('#frmRemoveBuilding').submit();
+    }
+</script>
