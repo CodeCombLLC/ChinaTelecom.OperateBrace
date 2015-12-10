@@ -101,5 +101,38 @@ namespace ChinaTelecom.Grid.Lib
             var result = GetNumbers(tmp2);
             return Convert.ToInt32(result.LastOrDefault() ?? "1");
         }
+
+        public static string GetBuildingNumber(string src)
+        {
+            var splitChar = "";
+            if (src.Contains("号楼"))
+            {
+                splitChar = "号楼";
+            }
+            else if (src.Contains("栋"))
+            {
+                splitChar = "栋";
+            }
+            else if (src.Contains("幢"))
+            {
+                splitChar = "幢";
+            }
+            else if (src.Contains("座"))
+            {
+                splitChar = "座";
+            }
+            if (string.IsNullOrEmpty(splitChar))
+                return null;
+            var tmp = src.Split(splitChar.ToArray());
+            if (tmp.Count() >= 2)
+            {
+                var tmp2 = GetNumbers(tmp[0]);
+                return tmp2.Last();
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

@@ -109,5 +109,27 @@ namespace ChinaTelecom.Grid.Tests
             // Assert
             Assert.Equal(expected, result);
         }
+
+        [Theory]
+        [InlineData("哈尔滨市香坊区睿城小区A5号楼3单元301室", "A5")]
+        [InlineData("哈尔滨市道里区工部街18号2单元701室", null)]
+        [InlineData("哈尔滨市道里区恒祥城2期9栋1单元1001室", "9")]
+        [InlineData("哈尔滨市道里区安心街114号3栋3单元301室", "3")]
+        [InlineData("哈尔滨市南岗区恒祥家园富华轩1单元20楼B", null)]
+        [InlineData("哈尔滨市道里区提拉米苏小区C栋3单元603室", "C")]
+        [InlineData("哈尔滨道里区安静二胡同12-1号3单元301室", null)]
+        [InlineData("哈尔滨市道里区安广街副4号701室", null)]
+        [InlineData("哈尔滨市道里区安丰街106号401室", null)]
+        [InlineData("哈尔滨南岗区恒祥家园中华轩2单元16A", null)]
+        [InlineData("哈尔滨市道里区恒祥凯悦B栋26层2602室", "B")]
+        [InlineData("", null)]
+        public void get_building_number_tests(string src, string expected)
+        {
+            // Act
+            var result = AddressAnalyser.GetBuildingNumber(src);
+
+            // Assert
+            Assert.Equal(expected, result);
+        }
     }
 }
