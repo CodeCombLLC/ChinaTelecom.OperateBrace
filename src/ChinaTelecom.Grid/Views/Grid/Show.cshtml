@@ -54,36 +54,77 @@
                     </div>
                 </div>
                 <div class="body-nest" id="BuildingList">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>楼座</th>
-                                <th>电信总用户数</th>
-                                <th>电信在网用户数</th>
-                                <th>非电信用户数</th>
-                                <th>新增</th>
-                                <th>离网</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(var x in Model)
-                            {
+                    <div class="x-scroll">
+                        <table class="table">
+                            <thead>
                                 <tr>
-                                    <td>@x.Title</td>
-                                    <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信).Count()</td>
-                                    <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用).Count()</td>
-                                    <td>@x.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信 && a.HouseStatus != HouseStatus.未装机).Count()</td>
-                                    <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用 && a.IsStatusChanged).Count()</td>
-                                    <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus != ServiceStatus.在用 && a.IsStatusChanged).Count()</td>
-                                    <td>
-                                        <a asp-action="Building" asp-controller="Grid" asp-route-id="@x.Id">管理</a>
-                                        <a href="javascript:Remove('@x.Id')">删除</a>
-                                    </td>
+                                    <th>楼座</th>
+                                    <th>电信总用户数</th>
+                                    <th>电信在网用户数</th>
+                                    <th>非电信用户数</th>
+                                    <th>新增</th>
+                                    <th>离网</th>
+                                    <th>操作</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var x in Model)
+                                {
+                                    <tr>
+                                        <td>@x.Title</td>
+                                        <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信).Count()</td>
+                                        <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用).Count()</td>
+                                        <td>@x.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信 && a.HouseStatus != HouseStatus.未装机).Count()</td>
+                                        <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用 && a.IsStatusChanged).Count()</td>
+                                        <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus != ServiceStatus.在用 && a.IsStatusChanged).Count()</td>
+                                        <td>
+                                            <a asp-action="Building" asp-controller="Grid" asp-route-id="@x.Id">管理</a>
+                                            <a href="javascript:Remove('@x.Id')">删除</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        添加楼宇
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#AddBuilding">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="AddBuilding">
+                    <form asp-action="CreateBuilding" asp-controller="Grid" asp-route-id="@ViewContext.RouteData.Values["id"]" method="post">
+                        <div class="form-group">
+                            <label>楼宇编号(楼座)</label>
+                            <input type="text" name="title" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>单元数</label>
+                            <input type="text" name="units" class="form-control" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>最高楼层</label>
+                            <input type="text" name="toplayer" class="form-control" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label>最低楼层</label>
+                            <input type="text" name="bottomlayer" class="form-control" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>每层户数</label>
+                            <input type="text" name="doors" class="form-control" value="2">
+                        </div>
+                        <input type="submit" value="创建" class="btn btn-primary" />
+                    </form>
                 </div>
             </div>
         </div>

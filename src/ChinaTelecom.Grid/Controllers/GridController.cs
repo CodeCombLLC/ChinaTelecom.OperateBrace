@@ -235,5 +235,28 @@ namespace ChinaTelecom.Grid.Controllers
             DB.SaveChanges();
             return RedirectToAction("Show", "Grid", new { id = building.EstateId });
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateBuilding(Guid id, Building Model)
+        {
+            var estate = DB.Estates.Where(x => x.Id == id).Single();
+            if (!User.IsInRole("系统管理员"))
+            {
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                if (!areas.Contains(estate.Area))
+                {
+                    return Prompt(x =>
+                    {
+                        x.Title = "创建失败";
+                        x.Details = "您没有该片区的管辖权";
+                    });
+                }
+            }
+            Model.EstateId = id;
+            DB.Buildings.Add(Model);
+            DB.SaveChanges();
+            return RedirectToAction("Show", "Grid", new { id = id });
+        }
     }
 }
