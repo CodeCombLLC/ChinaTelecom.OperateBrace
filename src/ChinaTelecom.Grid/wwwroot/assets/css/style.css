@@ -3077,3 +3077,16 @@ textarea {
     margin-top: 20px;
     margin-bottom: 0px;
 }
+
+.house-item {
+    width: 100%;
+    height: 100%;
+}
+
+.pending-address {
+    border-radius: 5px;
+    padding: 5px;
+    background-color: palevioletred;
+    color: #fff;
+    margin-bottom: 5px;
+}

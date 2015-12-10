@@ -1,9 +1,13 @@
-﻿@model IEnumerable<Building>
+﻿@model Building
 @{
-    ViewBag.Title = "管理小区 - " + ViewBag.EstateTitle;
+    ViewBag.Title = "管理小区 - " + Model.Estate;
 }
 <link rel="stylesheet" href="~/assets/js/wizard/css/jquery.steps.css">
-
+<style>
+    section {
+        overflow-y: auto;
+    }
+</style>
 <div class="row">
     <div id="paper-top">
         <div class="col-sm-3">
@@ -36,16 +40,22 @@
         <i class="fa fa-lg fa-angle-right"></i>
     </li>
     <li>
-        <a href="#" title="@ViewBag.EstateTitle">@ViewBag.EstateTitle</a>
+        <a href="#" title="@Model.Estate.Title">@Model.Estate.Title</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="@Model.Title">@Model.Title</a>
     </li>
 </ul>
 <div class="row">
     <div class="content-wrap">
-        <div class="col-sm-6">
+        <div class="col-sm-8">
             <div class="nest">
                 <div class="title-alt">
                     <h6>
-                        楼宇信息
+                        单元信息
                     </h6>
                     <div class="titleToggle">
                         <a class="nav-toggle-alt" href="#Buildings">
@@ -53,24 +63,24 @@
                         </a>
                     </div>
                 </div>
-                <div class="body-nest" id="Buildings">
+                <div id="Buildings">
                     <div id="wizard-tab">
-                        @foreach (var x in Model)
+                        @for (var x = 1; x <= Model.Units; x++)
                         { 
-                            <h2>@x.Title</h2>
+                            <h2>@x</h2>
                             <section>
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th>楼层 / 门</th>
-                                            @for (var i = 1; i <= x.Doors; i++)
+                                            <th>楼层</th>
+                                            @for (var i = 1; i <= Model.Doors; i++)
                                             {
                                                 <th>@i 门</th>
                                             }
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @for (var i = x.TopLayers; i >= x.BottomLayers; i--)
+                                        @for (var i = Model.TopLayers; i >= Model.BottomLayers; i--)
                                         {
                                             if (i == 0)
                                             {
@@ -80,18 +90,28 @@
                                                 <td>
                                                     @if (i > 0)
                                                     {
-                                                        <span>@i</span>
+                                                        <span>@i 层</span>
                                                     }
                                                     else
                                                     { 
-                                                        <span>B@(-i)</span>
+                                                        <span>B@(-i) 层</span>
                                                     }
                                                 </td>
-                                                @for (var j = 1; j <= x.Doors; j++)
+                                                @for (var j = 1; j <= Model.Doors; j++)
                                                 {
                                                     <td class="dragable" data-layer="@i" data-door="@j">
                                                         @{ 
-                                                            var house = x.Houses.Where(x => x.)
+                                                            var house = Model.Houses.Where(a => a.Unit == x && a.Layer == i && a.Door == j).SingleOrDefault();
+                                                        }
+                                                        @if (house != null)
+                                                        { 
+                                                            <div class="house-item" data-house-id="@house.Id">
+                                                                @if (house.HouseStatus == HouseStatus.中国电信)
+                                                                { 
+                                                                    <img src="~/assets/img/ct.png" />
+                                                                    <span>@house.FullName (@house.Phone)</span>
+                                                                }
+                                                            </div>
                                                         }
                                                     </td>
                                                 }
@@ -101,37 +121,41 @@
                                 </table>
                             </section>
                         }
-                        <h2>First Step</h2>
-                        <section>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ut nulla nunc. Maecenas arcu sem, hendrerit a tempor quis, sagittis accumsan tellus. In hac habitasse platea dictumst. Donec a semper dui. Nunc eget quam libero. Nam at felis metus. Nam tellus dolor, tristique ac tempus nec, iaculis quis nisi.</p>
-                        </section>
-
-                        <h2>Second Step</h2>
-                        <section>
-                            <p>Donec mi sapien, hendrerit nec egestas a, rutrum vitae dolor. Nullam venenatis diam ac ligula elementum pellentesque. In lobortis sollicitudin felis non eleifend. Morbi tristique tellus est, sed tempor elit. Morbi varius, nulla quis condimentum dictum, nisi elit condimentum magna, nec venenatis urna quam in nisi. Integer hendrerit sapien a diam adipiscing consectetur. In euismod augue ullamcorper leo dignissim quis elementum arcu porta. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum leo velit, blandit ac tempor nec, ultrices id diam. Donec metus lacus, rhoncus sagittis iaculis nec, malesuada a diam. Donec non pulvinar urna. Aliquam id velit lacus.</p>
-                        </section>
-
-                        <h2>Third Step</h2>
-                        <section>
-                            <p>
-                                Morbi ornare tellus at elit ultrices id dignissim lorem elementum. Sed eget nisl at justo condimentum dapibus. Fusce eros justo, pellentesque non euismod ac, rutrum sed quam. Ut non mi tortor. Vestibulum eleifend varius ullamcorper. Aliquam erat volutpat. Donec diam massa, porta vel dictum sit amet, iaculis ac massa. Sed elementum dui commodo lectus sollicitudin in auctor mauris venenatis.
-                            </p>
-                        </section>
-
-                        <h2>Forth Step</h2>
-                        <section>
-                            <p>Quisque at sem turpis, id sagittis diam. Suspendisse malesuada eros posuere mauris vehicula vulputate. Aliquam sed sem tortor. Quisque sed felis ut mauris feugiat iaculis nec ac lectus. Sed consequat vestibulum purus, imperdiet varius est pellentesque vitae. Suspendisse consequat cursus eros, vitae tempus enim euismod non. Nullam ut commodo tortor.</p>
-                        </section>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-sm-6"></div>
+        <div class="col-sm-4">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        未匹配用户
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#PendingAddress">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="PendingAddress">
+                    @if (ViewBag.PendingAddresses.Count == 0)
+                    { 
+                        <span>没有找到未匹配的地址信息</span>
+                    }
+                    @foreach (Record x in ViewBag.PendingAddresses)
+                    { 
+                        <div class="pending-address">
+                            @x.ImplementAddress
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="row">
     <div class="content-wrap">
-        <div class="col-sm-6">
+        <div class="col-sm-8">
             <div class="nest">
                 <div class="title-alt">
                     <h6>
