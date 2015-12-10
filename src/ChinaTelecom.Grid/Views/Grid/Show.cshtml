@@ -1,0 +1,44 @@
+﻿@model IEnumerable<Building>
+@{
+    ViewBag.Title = "管理小区 - " + ViewBag.EstateTitle;
+}
+
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Estate" asp-controller="Grid" title="小区管理">小区管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="@ViewBag.EstateTitle">@ViewBag.EstateTitle</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+    </div>
+</div>

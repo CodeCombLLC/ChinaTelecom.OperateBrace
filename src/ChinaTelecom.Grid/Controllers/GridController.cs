@@ -136,6 +136,10 @@ namespace ChinaTelecom.Grid.Controllers
         [HttpGet]
         public IActionResult Show(Guid id)
         {
+            ViewBag.EstateTitle = DB.Estates
+                .Where(x => x.Id == id)
+                .Single()
+                .Title;
             var ret = DB.Buildings
                 .Include(x => x.Houses)
                 .Where(x => x.EstateId == id)
@@ -195,6 +199,7 @@ namespace ChinaTelecom.Grid.Controllers
                                 IsStatusChanged = prev == null ? true : prev.Status == x.Status ? false : true
                             });
                             DB.SaveChanges();
+                            pendingAddress.Remove(x);
                         }
                     }
                 }
