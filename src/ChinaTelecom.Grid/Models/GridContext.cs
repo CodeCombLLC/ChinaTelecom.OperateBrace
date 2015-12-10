@@ -35,7 +35,8 @@ namespace ChinaTelecom.Grid.Models
             builder.Entity<Building>(e =>
             {
                 e.HasIndex(x => x.Units);
-                e.HasIndex(x => x.Layers);
+                e.HasIndex(x => x.TopLayers);
+                e.HasIndex(x => x.BottomLayers);
             });
 
             builder.Entity<House>(e =>

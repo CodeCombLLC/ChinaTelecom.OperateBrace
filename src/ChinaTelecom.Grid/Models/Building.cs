@@ -19,7 +19,11 @@ namespace ChinaTelecom.Grid.Models
         [MaxLength(32)]
         public string Flag { get; set; }
 
-        public int Layers { get; set; }
+        public int TopLayers { get; set; }
+
+        public int BottomLayers { get; set; }
+
+        public int Doors { get; set; }
 
         public int Units { get; set; }
 

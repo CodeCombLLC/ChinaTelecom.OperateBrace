@@ -48,24 +48,46 @@ namespace ChinaTelecom.Grid.Lib
             return ret;
         }
 
+        public static int? GetLayer(string src)
+        {
+            return GetLayer(GetNumbers(FilterBrackets(src)));
+        }
+
         public static int? GetLayer(List<string> src)
         {
             if (src.Count < 2)
                 return null;
             var tmp = src.Last();
+            int? ret = null;
             if (tmp.Length == 4)
                 return Convert.ToInt32(tmp.Substring(0, 2));
             else if (tmp.Length == 3)
             {
                 if (tmp[1] == '0')
-                    return Convert.ToInt32(tmp.Substring(0, 1));
+                    ret = Convert.ToInt32(tmp.Substring(0, 1));
                 else
-                    return Convert.ToInt32(tmp.Substring(0, 2));
+                    ret = Convert.ToInt32(tmp.Substring(0, 2));
             }
             else if (src[src.Count - 2].Length == 1 || src[src.Count - 2].Length == 2)
-                return Convert.ToInt32(src[src.Count - 2]);
+                ret = Convert.ToInt32(src[src.Count - 2]);
             else
+                ret = null;
+            if (ret.HasValue)
+            {
+                if (src.IndexOf("B" + ret) > 0 || src.IndexOf("负" + ret) > 0)
+                    return -ret.Value;
+                else
+                    return ret.Value;
+            }
+            else
+            {
                 return null;
+            }
+        }
+
+        public static int? GetDoor(string src)
+        {
+            return GetDoor(GetNumbers(FilterBrackets(src)));
         }
 
         public static int? GetDoor(List<string> src)
@@ -92,6 +114,7 @@ namespace ChinaTelecom.Grid.Lib
 
         public static int? GetUnit(string src)
         {
+            src = FilterBrackets(src);
             if (string.IsNullOrEmpty(src))
                 return null;
             var tmp = src.Split("单元".ToArray());
@@ -104,6 +127,7 @@ namespace ChinaTelecom.Grid.Lib
 
         public static string GetBuildingNumber(string src)
         {
+            src = FilterBrackets(src);
             var splitChar = "";
             if (src.Contains("号楼"))
             {

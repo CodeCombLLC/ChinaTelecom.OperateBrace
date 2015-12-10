@@ -148,6 +148,8 @@ namespace ChinaTelecom.Grid.Controllers
                 .Where(x => x.EstateId == id)
                 .Select(x => x.Rule)
                 .ToList();
+
+            // 查找没有对应至楼宇中的地址信息
             var pendingAddress = new List<Record>();
             foreach (var x in rules)
             {
@@ -158,7 +160,48 @@ namespace ChinaTelecom.Grid.Controllers
                     .Where(a => a.ImplementAddress.Contains(x) || a.StandardAddress.Contains(x))
                     );
             }
-            pendingAddress = pendingAddress.DistinctBy(x => x.Account).ToList();
+            pendingAddress = pendingAddress.OrderByDescending(x => x.ImportedTime).DistinctBy(x => x.Account).ToList();
+
+            // 尝试根据规则进行对应
+            foreach(var x in pendingAddress)
+            {
+                try
+                {
+                    var building = Lib.AddressAnalyser.GetBuildingNumber(x.ImplementAddress);
+                    var unit = Lib.AddressAnalyser.GetUnit(x.ImplementAddress);
+                    var layer = Lib.AddressAnalyser.GetLayer(x.ImplementAddress);
+                    var door = Lib.AddressAnalyser.GetDoor(x.ImplementAddress);
+                    if (ret.Any(a => a.Title == building))
+                    {
+                        var _building = ret.Where(a => a.Title == building).Single();
+                        if (unit > 0 && unit < _building.Units && layer >= _building.BottomLayers && layer <= _building.TopLayers && door > 0 && door < _building.Doors)
+                        {
+                            var prev = DB.Records
+                                .Where(a => a.Account == x.Account)
+                                .Where(a => a.ImportedTime < x.ImportedTime)
+                                .LastOrDefault();
+                            DB.Houses.Add(new House
+                            {
+                                Account = x.Account,
+                                ServiceStatus = x.Status,
+                                HouseStatus = HouseStatus.中国电信,
+                                Unit = unit.Value,
+                                Layer = layer.Value,
+                                Door = door.Value,
+                                LastUpdate = x.ImportedTime,
+                                Phone = x.Phone,
+                                FullName = x.CustomerName,
+                                BuildingId = _building.Id,
+                                IsStatusChanged = prev == null ? true : prev.Status == x.Status ? false : true
+                            });
+                            DB.SaveChanges();
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
             ViewBag.PendingAddresses = pendingAddress;
             return View(ret);
         }

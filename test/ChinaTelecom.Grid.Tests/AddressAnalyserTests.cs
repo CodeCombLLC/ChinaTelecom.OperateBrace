@@ -58,6 +58,7 @@ namespace ChinaTelecom.Grid.Tests
         [InlineData("哈尔滨道里区安静二胡同12-1号3单元301室", 3)]
         [InlineData("哈尔滨市道里区安丰街106号401室", 4)]
         [InlineData("哈尔滨南岗区恒祥家园中华轩2单元16A", 16)]
+        [InlineData("哈尔滨市道里区经纬十一道街9号3单元负101室（D04）", -1)]
         [InlineData("", null)]
         public void get_layer_tests(string src, int? expected)
         {
