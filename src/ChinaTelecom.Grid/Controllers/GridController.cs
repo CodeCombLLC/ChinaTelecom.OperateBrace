@@ -61,7 +61,15 @@ namespace ChinaTelecom.Grid.Controllers
                 x.TotalInUsingUsers = tmp.Where(y => y.ServiceStatus == ServiceStatus.在用).Count();
                 x.TotalNonCTUsers = DB.Houses
                     .Include(y => y.Building)
-                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信)
+                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.HouseStatus != HouseStatus.未装机)
+                    .Count();
+                x.AddedUsers = DB.Houses
+                    .Include(y => y.Building)
+                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.ServiceStatus == ServiceStatus.在用 && y.IsStatusChanged)
+                    .Count();
+                x.LeftUsers = DB.Houses
+                    .Include(y => y.Building)
+                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.ServiceStatus != ServiceStatus.在用 && y.IsStatusChanged)
                     .Count();
                 if (x.TotalCTUsers == 0)
                     x.UsingRate = 0;
@@ -90,7 +98,7 @@ namespace ChinaTelecom.Grid.Controllers
                     Count = x.Count(),
                     CTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信).Count())),
                     CTInUsingUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用).Count())),
-                    NonCTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信).Count())),
+                    NonCTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信 && a.HouseStatus != HouseStatus.未装机).Count())),
                     AddedUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && a.ServiceStatus == ServiceStatus.在用).Count())),
                     LeftUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && a.ServiceStatus != ServiceStatus.在用).Count())),
                     Lon = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lon,
@@ -103,9 +111,26 @@ namespace ChinaTelecom.Grid.Controllers
         }
 
         [HttpGet]
-        public IActionResult Estate(string Area, string Title)
+        public async Task<IActionResult> Estate(string Area, string Title, bool? raw)
         {
-            var ret = DB.Estates
+            IEnumerable<Estate> ret = DB.Estates
+                .Include(x => x.Buildings)
+                .ThenInclude(x => x.Houses)
+                .Include(x => x.Rules);
+            if (!User.IsInRole("系统管理员"))
+            {
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                ret = ret.Where(x => areas.Contains(x.Area));
+            }
+            if (!string.IsNullOrEmpty(Area))
+                ret = ret.Where(x => x.Area == Area);
+            if (!string.IsNullOrEmpty(Title))
+                ret = ret.Where(x => x.Title.Contains(Title) || Title.Contains(x.Title));
+            ret = ret.OrderBy(x => x.Area);
+            if (raw.HasValue && raw.Value)
+                return XlsView(ret.ToList(), "Estate.xls", "ExportEstate");
+            else
+                return PagedView(ret);
         }
     }
 }

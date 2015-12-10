@@ -1,0 +1,44 @@
+﻿@model IEnumerable<Estate>
+@{ 
+    Layout = null;
+}
+
+<table>
+    <tr>
+        <td>ID</td>
+        <td>片区编号</td>
+        <td>小区名称</td>
+        <td>楼宇数</td>
+        <td>电信总用户数</td>
+        <td>电信在网用户数</td>
+        <td>非电信用户数</td>
+        <td>新增</td>
+        <td>离网</td>
+        <td>经度</td>
+        <td>纬度</td>
+        <td>匹配规则</td>
+    </tr>
+    @foreach (var x in Model)
+    {
+        <tr>
+            <td>@x.Id</td>
+            <td>@x.Area</td>
+            <td>@x.Title</td>
+            <td>@x.Buildings.Count</td>
+            <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信).Count())</td>
+            <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.ServiceStatus == ServiceStatus.在用).Count())</td>
+            <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus != HouseStatus.中国电信 && z.HouseStatus != HouseStatus.未装机 && z.ServiceStatus == ServiceStatus.在用).Count())</td>
+            <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.ServiceStatus == ServiceStatus.在用 && z.IsStatusChanged).Count())</td>
+            <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.ServiceStatus != ServiceStatus.在用 && z.IsStatusChanged).Count())</td>
+            <td>@x.Lon</td>
+            <td>@x.Lat</td>
+            <td>
+                @foreach(var y in x.Rules)
+                {
+                    @y.Rule
+                    <br />
+                }
+            </td>
+        </tr>
+    }
+</table>

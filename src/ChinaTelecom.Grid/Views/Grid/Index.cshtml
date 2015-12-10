@@ -102,6 +102,14 @@
             <td class="td-gray">非电信用户数</td>
             <td id="estate-user-non-ct"></td>
         </tr>
+        <tr>
+            <td class="td-gray">新增</td>
+            <td id="estate-user-add"></td>
+        </tr>
+        <tr>
+            <td class="td-gray">离网</td>
+            <td id="estate-user-left"></td>
+        </tr>
     </table>
 </div>
 <div id="allmap">
@@ -158,10 +166,12 @@
                 marker.TotalCTUsers = data[i].TotalCTUsers;
                 marker.TotalNonCTUsers = data[i].TotalNonCTUsers;
                 marker.TotalInUsingUsers = data[i].TotalInUsingUsers;
+                marker.AddedUsers = data[i].AddedUsers;
+                marker.LeftUsers = data[i].LeftUsers;
                 marker.circle = circle;
                 marker.enableDragging();
                 marker.addEventListener("click", function (e) {
-                    window.location = '/Estate/Show/' + e.target.Id
+                    window.location = '/Grid/Show/' + e.target.Id
                 });
                 marker.addEventListener("dragend", function (e) {
                     map.removeOverlay(e.target.circle);
@@ -184,6 +194,8 @@
                     $("#estate-rate").text((e.target.UsingRate * 100).toFixed(2) + "%");
                     $("#estate-user").text(e.target.TotalInUsingUsers + " / " + e.target.TotalCTUsers);
                     $("#estate-user-non-ct").text(e.target.TotalNonCTUsers);
+                    $("#estate-user-add").text(e.target.AddedUsers);
+                    $("#estate-user-left").text(e.target.LeftUsers);
                     $("#estate").css("left", x);
                     $("#estate").css("top", y);
                     $("#estate").show();

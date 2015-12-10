@@ -1,6 +1,6 @@
-﻿@model IEnumerable<Area>
+﻿@model IEnumerable<Estate>
 @{ 
-    ViewBag.Title = "片区管理";
+    ViewBag.Title = "小区管理";
 }
 
 <div class="row">
@@ -29,7 +29,7 @@
         <i class="fa fa-lg fa-angle-right"></i>
     </li>
     <li>
-        <a asp-action="Area" asp-controller="Grid" title="片区管理">片区管理</a>
+        <a asp-action="Estate" asp-controller="Grid" title="小区管理">小区管理</a>
     </li>
 </ul>
 <div class="row">
@@ -38,21 +38,22 @@
             <div class="nest">
                 <div class="title-alt">
                     <h6>
-                        片区列表
+                        小区列表
                     </h6>
                     <div class="titleToggle">
-                        <a class="nav-toggle-alt" href="#AreaList">
+                        <a class="nav-toggle-alt" href="#EstateList">
                             <span class="entypo-up-open"></span>
                         </a>
                     </div>
                 </div>
-                <div class="body-nest" id="AreaList">
+                <div class="body-nest" id="EstateList">
                     <div class="x-scroll">
                         <table class="table">
                             <thead>
                                 <tr>
                                     <th>片区编号</th>
-                                    <th>小区数</th>
+                                    <th>小区名称</th>
+                                    <th>楼宇数</th>
                                     <th>电信总用户数</th>
                                     <th>电信在网用户数</th>
                                     <th>非电信用户数</th>
@@ -65,15 +66,16 @@
                                 @foreach (var x in Model)
                                 {
                                     <tr>
-                                        <td>@x.Id</td>
-                                        <td>@x.Count</td>
-                                        <td>@x.CTUsers</td>
-                                        <td>@x.CTInUsingUsers</td>
-                                        <td>@x.NonCTUsers</td>
-                                        <td>@x.AddedUsers</td>
-                                        <td>@x.LeftUsers</td>
+                                        <td>@x.Area</td>
+                                        <td>@x.Title</td>
+                                        <td>@x.Buildings.Count</td>
+                                        <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信).Count())</td>
+                                        <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.ServiceStatus == ServiceStatus.在用).Count())</td>
+                                        <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus != HouseStatus.中国电信 && z.HouseStatus != HouseStatus.未装机 && z.ServiceStatus == ServiceStatus.在用).Count())</td>
+                                        <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.ServiceStatus == ServiceStatus.在用 && z.IsStatusChanged).Count())</td>
+                                        <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.ServiceStatus != ServiceStatus.在用 && z.IsStatusChanged).Count())</td>
                                         <td>
-                                            <a asp-action="Estate" asp-controller="Grid" asp-route-area="@x.Id">管理</a>
+                                            <a asp-action="Show" asp-controller="Grid" asp-route-id="@x.Id">管理</a>
                                             <a asp-action="Index" asp-controller="Grid" asp-route-lon="@x.Lon" asp-route-lat="@x.Lat">地图</a>
                                         </td>
                                     </tr>
@@ -89,7 +91,7 @@
             <div class="nest">
                 <div class="title-alt">
                     <h6>
-                        导出片区信息
+                        导出小区信息
                     </h6>
                     <div class="titleToggle">
                         <a class="nav-toggle-alt" href="#ExportXls">

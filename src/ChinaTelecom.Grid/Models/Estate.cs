@@ -24,6 +24,9 @@ namespace ChinaTelecom.Grid.Models
         [JsonIgnore]
         public virtual ICollection<Building> Buildings { get; set; } = new List<Building>();
 
+        [JsonIgnore]
+        public virtual ICollection<EstateRule> Rules { get; set; } = new List<EstateRule>(); 
+
         [NotMapped]
         public virtual double UsingRate { get; set; }
 
@@ -35,5 +38,11 @@ namespace ChinaTelecom.Grid.Models
 
         [NotMapped]
         public virtual long TotalInUsingUsers { get; set; }
+
+        [NotMapped]
+        public virtual long AddedUsers { get; set; }
+
+        [NotMapped] 
+        public virtual long LeftUsers { get; set; }
     }
 }
