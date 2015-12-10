@@ -3071,3 +3071,9 @@ small.pull-right {
 textarea {
     min-height: 120px;
 }
+
+.ct-logo {
+    height: 41px;
+    margin-top: 20px;
+    margin-bottom: 0px;
+}

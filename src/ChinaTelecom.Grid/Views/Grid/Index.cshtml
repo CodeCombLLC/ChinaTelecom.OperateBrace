@@ -111,7 +111,6 @@
     var map = new BMap.Map("allmap");
     map.addControl(new BMap.MapTypeControl());
     map.enableScrollWheelZoom(true);
-    map.centerAndZoom(new BMap.Point(126.645098, 45.758188), 12);
     map.addEventListener("rightclick", function (e) {
         var point = { lon: e.point.lng, lat: e.point.lat };
         $('#txtLon').val(point.lon);
@@ -200,8 +199,17 @@
     }
 
     // On loaded events
-    $(document).ready(function ()
-    {
-        BuildOverlays(); 
+    $(document).ready(function () {
+        setTimeout(function () {
+            @if (Context.Request.Query.ContainsKey("lon"))
+            {
+            @($"map.centerAndZoom(new BMap.Point({Context.Request.Query["lon"]}, {Context.Request.Query["lat"]}), 16);")
+            }
+            else
+            {
+            @("map.centerAndZoom(new BMap.Point(126.645098, 45.758188), 12);")
+            }
+            BuildOverlays();
+        }, 3000);
     });
 </script>
