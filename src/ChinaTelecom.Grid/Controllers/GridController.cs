@@ -72,7 +72,7 @@ namespace ChinaTelecom.Grid.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Area()
+        public async Task<IActionResult> Area(bool? raw)
         {
             IEnumerable<Estate> tmp = DB.Estates
                 .Include(x => x.Buildings)
@@ -96,7 +96,10 @@ namespace ChinaTelecom.Grid.Controllers
                     Lon = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lon,
                     Lat = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lat
                 });
-            return PagedView(ret);
+            if (raw.HasValue && raw.Value)
+                return XlsView(ret.ToList(), "Area.xls", "ExportArea");
+            else
+                return PagedView(ret);
         }
     }
 }
