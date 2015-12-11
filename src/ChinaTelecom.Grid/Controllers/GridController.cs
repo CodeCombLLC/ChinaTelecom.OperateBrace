@@ -333,5 +333,45 @@ namespace ChinaTelecom.Grid.Controllers
             ViewBag.PendingAddresses = pendingAddress;
             return View(ret);
         }
+
+        [HttpPost]
+        public IActionResult Transfer(string Account, Guid? BuildingId, int? Unit, int? Layer, int? Door)
+        {
+            if (Unit == null || Layer == null || Door == null)
+            {
+                var house = DB.Houses.Where(x => x.Account == Account).Single();
+                DB.Houses.Remove(house);
+            }
+            else
+            {
+                var record = DB.Records.Where(x => x.Account == Account).LastOrDefault();
+                var houses = DB.Houses.Where(x => x.Account == Account).SingleOrDefault();
+                if (houses == null)
+                {
+                    DB.Houses.Add(new House
+                    {
+                        Account = Account,
+                        BuildingId = BuildingId.Value,
+                        Door = Door.Value,
+                        Layer = Layer.Value,
+                        Unit = Unit.Value,
+                        FullName = record.CustomerName,
+                        HouseStatus = HouseStatus.中国电信,
+                        IsStatusChanged = true,
+                        Phone = record.Phone,
+                        LastUpdate = DateTime.Now,
+                        ServiceStatus = record.Status
+                    });
+                }
+                else
+                {
+                    houses.Unit = Unit.Value;
+                    houses.Layer = Layer.Value;
+                    houses.Door = Door.Value;
+                }
+            }
+            DB.SaveChanges();
+            return Content("ok");
+        }
     }
 }

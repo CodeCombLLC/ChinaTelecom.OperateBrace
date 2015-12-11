@@ -99,13 +99,13 @@
                                                 </td>
                                                 @for (var j = 1; j <= Model.Doors; j++)
                                                 {
-                                                    <td class="dragable" data-layer="@i" data-door="@j">
+                                                    <td class="dragable" ondrop="drop(event)" ondragover="allowDrop(event)" data-unit="@x" data-layer="@i" data-door="@j">
                                                         @{ 
                                                             var house = Model.Houses.Where(a => a.Unit == x && a.Layer == i && a.Door == j).SingleOrDefault();
                                                         }
                                                         @if (house != null)
                                                         { 
-                                                            <div class="house-item" data-house-id="@house.Id">
+                                                            <div class="house-item" draggable="true" data-account="@house.Account">
                                                                 @if (house.HouseStatus == HouseStatus.中国电信)
                                                                 { 
                                                                     <img src="~/assets/img/ct.png" />
@@ -138,16 +138,15 @@
                     </div>
                 </div>
                 <div class="body-nest" id="PendingAddress">
-                    @if (ViewBag.PendingAddresses.Count == 0)
-                    { 
-                        <span>没有找到未匹配的地址信息</span>
-                    }
-                    @foreach (Record x in ViewBag.PendingAddresses)
-                    { 
-                        <div class="pending-address">
-                            @x.ImplementAddress
-                        </div>
-                    }
+                    <div class="pending-addresses" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        @foreach (Record x in ViewBag.PendingAddresses)
+                        {
+                            <div class="pending-address" draggable="true" ondragstart="drag(event)" data-account="@x.Account">
+                                @x.ImplementAddress
+                            </div>
+                        }
+                    </div>
+                    <span>将未匹配的用户拖拽至楼层以建立关联关系，将楼层中已有用户拖拽至此可解除关联。</span>
                 </div>
             </div>
         </div>
@@ -201,6 +200,7 @@
 </div>
 <script src="~/assets/js/wizard/build/jquery.steps.js"></script>
 <script>
+    var buildingid = '@Model.Id';
     $(document).ready(function () {
         $("#wizard-tab").steps({
             headerTag: "h2",
@@ -213,4 +213,32 @@
             cssClass: "tabcontrol"
         });
     });
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("Text", $(ev.target).attr('data-account'));
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("Text");
+        $(ev.target).appendChild($('[data-account="' + data + '"]'));
+        if ($(ev.target).hasClass('pending-addresses'))
+        {
+            $.post('/Grid/Transfer', { account: data }, function () { });
+        }
+        else
+        {
+            $.post('/Grid/Transfer', {
+                account: data,
+                buildingid: buildingid,
+                unit: $(ev.target).attr('data-unit'),
+                layer: $(ev.target).attr('data-layer'),
+                door: $(ev.target).attr('data-door')
+            }, function () { });
+        }
+    }
 </script>
