@@ -126,27 +126,56 @@
             </div>
         </div>
         <div class="col-sm-4">
-            <div class="nest">
-                <div class="title-alt">
-                    <h6>
-                        未匹配用户
-                    </h6>
-                    <div class="titleToggle">
-                        <a class="nav-toggle-alt" href="#PendingAddress">
-                            <span class="entypo-up-open"></span>
-                        </a>
+            <div class="row">
+                <div class="nest">
+                    <div class="title-alt">
+                        <h6>
+                            未匹配用户
+                        </h6>
+                        <div class="titleToggle">
+                            <a class="nav-toggle-alt" href="#PendingAddress">
+                                <span class="entypo-up-open"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="body-nest" id="PendingAddress">
+                        <div class="pending-addresses" ondrop="drop(event)" ondragover="allowDrop(event)">
+                            @foreach (Record x in ViewBag.PendingAddresses)
+                            {
+                                <div class="pending-address" draggable="true" ondragstart="drag(event)" data-account="@x.Account">
+                                    @x.ImplementAddress
+                                </div>
+                            }
+                        </div>
+                        <span>将未匹配的用户拖拽至楼层以建立关联关系，将楼层中已有用户拖拽至此可解除关联。</span>
                     </div>
                 </div>
-                <div class="body-nest" id="PendingAddress">
-                    <div class="pending-addresses" ondrop="drop(event)" ondragover="allowDrop(event)">
-                        @foreach (Record x in ViewBag.PendingAddresses)
-                        {
-                            <div class="pending-address" draggable="true" ondragstart="drag(event)" data-account="@x.Account">
-                                @x.ImplementAddress
-                            </div>
-                        }
+            </div>
+            <div class="row">
+                <div class="nest">
+                    <div class="title-alt">
+                        <h6>
+                            添加其他运营商用户
+                        </h6>
+                        <div class="titleToggle">
+                            <a class="nav-toggle-alt" href="#OtherProvider">
+                                <span class="entypo-up-open"></span>
+                            </a>
+                        </div>
                     </div>
-                    <span>将未匹配的用户拖拽至楼层以建立关联关系，将楼层中已有用户拖拽至此可解除关联。</span>
+                    <div class="body-nest" id="OtherProvider">
+                        <form asp-controller="Grid" asp-action="CreateHouse" asp-route-buildingid="@Model.Id">
+                            <div class="form-group">
+                                <label>单元</label>
+                                <select name="unit" class="form-control">
+                                    @for(var i = 1; i <= Model.Units; i++)
+                                    {
+                                        <option>@i</option>
+                                    }
+                                </select>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
