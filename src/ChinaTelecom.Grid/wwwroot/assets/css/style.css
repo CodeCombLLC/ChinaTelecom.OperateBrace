@@ -3100,4 +3100,5 @@ textarea {
     padding: 10px;
     background-color: rgb(255,244,221);
     border-radius: 5px;
+    min-height: 100px;
 }
