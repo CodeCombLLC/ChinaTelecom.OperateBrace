@@ -200,6 +200,8 @@ namespace ChinaTelecom.Grid.Controllers
                         }
                         catch (Exception ex)
                         {
+                            series.FailedCount++;
+                            DB.SaveChanges();
                             logger.LogWarning(ex.ToString());
                         }
                     }
