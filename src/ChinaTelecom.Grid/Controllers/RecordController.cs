@@ -6,7 +6,6 @@ using System.Data.OleDb;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Authorization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Data.Entity;
 using ChinaTelecom.Grid.Models;
 
@@ -61,9 +60,9 @@ namespace ChinaTelecom.Grid.Controllers
             file.SaveAs(path);
             string connStr;
             if (System.IO.Path.GetExtension(path) == ".xls")
-                connStr = "Provider=Microsoft.Jet.OLEDB.4.0;" + "Data Source=" + path + ";" + ";Extended Properties=\"Excel 8.0;HDR=YES;IMEX=1\"";
+                connStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + path + ";Extended Properties=\"Excel 8.0;HDR=YES;IMEX=1\"";
             else
-                connStr = "Provider=Microsoft.ACE.OLEDB.12.0;" + "Data Source=" + path + ";" + ";Extended Properties=\"Excel 12.0;HDR=YES;IMEX=1\"";
+                connStr = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + path + ";Extended Properties=\"Excel 12.0;HDR=YES;IMEX=1\"";
             Task.Factory.StartNew(()=> 
             {
                 using (var conn = new OleDbConnection(connStr))
