@@ -15,7 +15,7 @@ namespace ChinaTelecom.Grid.Controllers
     [Authorize]
     public class RecordController : BaseController
     {
-        public IActionResult Index(string ContractorName, ServiceStatus? Status, string Address, string Set, string Phone, string raw)
+        public IActionResult Index(string ContractorName, ServiceStatus? Status, string Address, string Set, string Phone, string raw, Guid? SeriesId)
         {
             IEnumerable<Record> ret = DB.Records.AsNoTracking();
             if (!string.IsNullOrEmpty(ContractorName))
@@ -28,6 +28,8 @@ namespace ChinaTelecom.Grid.Controllers
                 ret = ret.Where(x => x.ImplementAddress.Contains(Address) || x.StandardAddress.Contains(Address));
             if (!string.IsNullOrEmpty(Phone))
                 ret = ret.Where(x => x.Phone.Contains(Phone));
+            if (SeriesId.HasValue)
+                ret = ret.Where(x => x.SeriesId == SeriesId.Value);
             if (raw != "true")
             {
                 ViewBag.Statuses = DB.Records.Select(x => x.Status.ToString()).Distinct().ToList();
@@ -41,6 +43,9 @@ namespace ChinaTelecom.Grid.Controllers
             }
         }
 
+        [AnyRoles("系统管理员, 网格主管")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Import(IFormFile file, [FromServices] ILogger logger)
         {
             // 创建明细系列
@@ -92,6 +97,7 @@ namespace ChinaTelecom.Grid.Controllers
                                 SeriesId = series.Id
                             };
                             DB.Records.Add(record);
+                            series.ImportedCount++;
                             DB.SaveChanges();
                             var house = DB.Houses
                                 .Include(x => x.Building)
@@ -208,6 +214,26 @@ namespace ChinaTelecom.Grid.Controllers
                 }
                 return RedirectToAction("Index", "Record");
             }
+        }
+
+        public IActionResult Series()
+        {
+            var ret = DB.Serieses
+                .OrderByDescending(x => x.Time);
+            return PagedView(ret);
+        }
+
+        [AnyRoles("系统管理员, 网格主管")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveSeries(Guid id)
+        {
+            var series = DB.Serieses
+                .Where(x => x.Id == id)
+                .Single();
+            DB.Serieses.Remove(series);
+            DB.SaveChanges();
+            return RedirectToAction("Series", "Record");
         }
     }
 }

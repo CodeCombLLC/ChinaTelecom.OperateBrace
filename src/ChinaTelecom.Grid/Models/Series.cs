@@ -18,6 +18,8 @@ namespace ChinaTelecom.Grid.Models
 
         public ulong FailedCount { get; set; }
 
+        public ulong ImportedCount { get; set; }
+
         public DateTime Time { get; set; }
 
         public virtual ICollection<Record> Records { get; set; } = new List<Record>();

@@ -48,6 +48,7 @@
                 <div class="body-nest" id="RecordList">
                     <form class="search-form">
                         <input type="hidden" value="false" name="raw" />
+                        <input type="hidden" value="@Context.Request.Query["SeriesId"]" name="SeriesId" />
                         <select name="ContractorName" class="form-control">
                             <option value="">客户经理</option>
                             @foreach (string x in ViewBag.ContractorNames)
@@ -142,13 +143,20 @@
                     </div>
                 </div>
                 <div class="body-nest" id="ImportXls">
-                    <form asp-action="Import" asp-controller="Record" enctype="multipart/form-data" method="post">
-                        <div class="form-group">
-                            <label>上传文件(*.xls, *.xlsx)</label>
-                            <input type="file" name="file">
-                        </div>
-                        <button class="btn btn-info" type="submit">导入</button>
-                    </form>
+                    @if (User.AnyRoles("系统管理员, 网格主管"))
+                    {
+                        <form asp-action="Import" asp-controller="Record" enctype="multipart/form-data" method="post">
+                            <div class="form-group">
+                                <label>上传文件(*.xls, *.xlsx)</label>
+                                <input type="file" name="file">
+                            </div>
+                            <button class="btn btn-info" type="submit">导入</button>
+                        </form>
+                    }
+                    else
+                    { 
+                        <span>您的帐号没有导入明细的权限！</span>
+                    }
                 </div>
             </div>
         </div>
