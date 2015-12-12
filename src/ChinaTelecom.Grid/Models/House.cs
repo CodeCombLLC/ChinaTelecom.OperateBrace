@@ -20,7 +20,7 @@ namespace ChinaTelecom.Grid.Models
 
         public HouseStatus HouseStatus { get; set; }
 
-        public ServiceStatus? ServiceStatus { get; set; }
+        public ServiceStatus ServiceStatus { get; set; }
 
         [MaxLength(32)]
         public string FullName { get; set; }
