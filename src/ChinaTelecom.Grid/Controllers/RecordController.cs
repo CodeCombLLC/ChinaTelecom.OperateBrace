@@ -53,9 +53,73 @@ namespace ChinaTelecom.Grid.Controllers
             using (var conn = new OleDbConnection(connStr))
             {
                 conn.Open();
+                var cmd = new OleDbCommand("select * from [Sheet1$]", conn);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var record = new Record
+                        {
+                            Account = reader["接入号"].ToString(),
+                            Status = (ServiceStatus)Enum.Parse(typeof(ServiceStatus), reader["用户状态"].ToString()),
+                            CustomerName = reader["用户姓名"].ToString(),
+                            ContractorName = reader["四级承包人名称"].ToString(),
+                            ContractorStruct = reader["四级承包体名称"].ToString(),
+                            CurrentMonthBill = Convert.ToDouble(reader["当月出帐"].ToString()),
+                            MDS = reader["中投"].ToString(),
+                            AgentFee = Convert.ToDouble(reader["代理费"].ToString()),
+                            Commission = Convert.ToDouble(reader["一次佣金"].ToString()),
+                            Arrearage = Convert.ToDouble(reader["欠费"].ToString()),
+                            ImplementAddress = reader["装机地址"].ToString(),
+                            StandardAddress = reader["标准地址"].ToString(),
+                            Set = reader["套餐"].ToString(),
+                            PRCID = reader["身份证号码"].ToString(),
+                            SalesProduction = reader["融合促销包"].ToString(),
+                            Phone = reader["联系电话"].ToString(),
+                            IsFuse = reader["是否家庭融合宽带"].ToString() == "是"
+                        };
+                        DB.Records.Add(record);
+                        var house = DB.Houses
+                            .Include(x => x.Building)
+                            .ThenInclude(x => x.Estate)
+                            .ThenInclude(x => x.Rules)
+                            .Where(x => x.Account == record.Account)
+                            .SingleOrDefault();
+                        if (house != null)
+                        {
+                            // 检查地址变更
+                            var rules = house.Building.Estate.Rules
+                                .Select(x => x.Rule)
+                                .ToList();
+                            var flag = false;
+                            foreach(var x in rules)
+                            {
+                                if (record.ImplementAddress.Contains(x) || record.StandardAddress.Contains(x))
+                                {
+                                    flag = true;
+                                    break;
+                                }
+                            }
 
+                            // 如果地址变更则更新地址信息
+                            if (!flag)
+                            {
+                                var estate = DB.EstateRules
+                                    .Include(x => x.Estate)
+                                    .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
+                                    .Select(x => x.Estate)
+                                    .FirstOrDefault();
+                                if (estate != null)
+                                {
+
+                                }
+                            }
+                        }
+                        DB.SaveChanges();
+                    }
+                }
+                return View();
             }
-            return View();
         }
     }
 }
