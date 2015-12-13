@@ -530,5 +530,24 @@ namespace ChinaTelecom.Grid.Controllers
             }
             return Content("ok");
         }
+
+        [HttpGet]
+        public IActionResult Statistics()
+        {
+            ViewBag.Areas = DB.Estates
+                .OrderBy(x => x.Area)
+                .Select(x => x.Area)
+                .Distinct()
+                .ToList();
+            ViewBag.Contractors = DB.Records
+                .Select(x => x.ContractorName)
+                .Distinct()
+                .ToList();
+            ViewBag.Sets = DB.Records
+                .Select(x => x.Set)
+                .Distinct()
+                .ToList();
+            return View();
+        }
     }
 }
