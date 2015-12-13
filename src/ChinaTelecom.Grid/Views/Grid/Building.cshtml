@@ -105,13 +105,32 @@
                                                         }
                                                         @if (house != null)
                                                         {
+                                                            @if (house.HouseStatus == HouseStatus.中国电信)
+                                                            {
                                                             <div ondragstart="drag(event)" class="house-item" draggable="true" data-account="@house.Account">
-                                                                @if (house.HouseStatus == HouseStatus.中国电信)
-                                                                {
-                                                                    <img src="~/assets/img/ct.png" draggable="false" />
+                                                                
+                                                                    <img class="icon-provider" src="~/assets/img/ct.png" draggable="false" />
                                                                     <span>@house.FullName (@house.Phone)</span>
-                                                                }
                                                             </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div ondragstart="drag(event)" class="house-item" draggable="true" data-id="@house.Id">
+                                                                    @if (house.HouseStatus == HouseStatus.中国移动)
+                                                                    {
+                                                                        <img class="icon-provider" src="~/assets/img/cm.png" draggable="false" />
+                                                                    }
+                                                                    else if (house.HouseStatus == HouseStatus.中国联通)
+                                                                    {
+                                                                        <img class="icon-provider" src="~/assets/img/cm.png" draggable="false" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img src="~/assets/img/unknown.png" draggable="false" />
+                                                                    }
+                                                                    <span>@house.FullName (@house.Phone)</span>
+                                                                </div>
+                                                            }
                                                         }
                                                     </td>
                                                     }
