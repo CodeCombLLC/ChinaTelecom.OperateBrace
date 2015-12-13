@@ -107,26 +107,25 @@
                                                         {
                                                             @if (house.HouseStatus == HouseStatus.中国电信)
                                                             {
-                                                            <div ondragstart="drag(event)" class="house-item" draggable="true" data-account="@house.Account">
-                                                                
-                                                                    <img class="icon-provider @(house.ServiceStatus == ServiceStatus.在用 ? "status-using" : "")" src="~/assets/img/ct.png" draggable="false" />
+                                                            <div ondragstart="drag(event)" class="house-item @(house.ServiceStatus == ServiceStatus.在用 ? "status-using" : "")" draggable="true" data-account="@house.Account">
+                                                                    <img class="icon-provider" src="~/assets/img/ct.png" draggable="false" />
                                                                     <span>@house.FullName (@house.Phone)</span>
                                                             </div>
                                                             }
                                                             else
                                                             {
-                                                                <div ondragstart="drag(event)" class="house-item non-ct-user" draggable="true" data-id="@house.Id" data-full-name="@house.FullName" data-phone="@house.Phone" data-provider="@house.HouseStatus">
+                                                                <div ondragstart="drag(event)" class="house-item non-ct-user status-unknown" draggable="true" data-id="@house.Id" data-full-name="@house.FullName" data-phone="@house.Phone" data-provider="@house.HouseStatus">
                                                                     @if (house.HouseStatus == HouseStatus.中国移动)
                                                                     {
-                                                                        <img class="icon-provider status-unknown" src="~/assets/img/cm.png" draggable="false" />
+                                                                        <img class="icon-provider" src="~/assets/img/cm.png" draggable="false" />
                                                                     }
                                                                     else if (house.HouseStatus == HouseStatus.中国联通)
                                                                     {
-                                                                        <img class="icon-provider status-unknown" src="~/assets/img/cu.png" draggable="false" />
+                                                                        <img class="icon-provider" src="~/assets/img/cu.png" draggable="false" />
                                                                     }
                                                                     else
                                                                     {
-                                                                        <img class="icon-provider status-unknown" src="~/assets/img/unknown.png" draggable="false" />
+                                                                        <img class="icon-provider" src="~/assets/img/unknown.png" draggable="false" />
                                                                     }
                                                                     <span>@house.FullName (@house.Phone)</span>
                                                                 </div>
@@ -207,7 +206,7 @@
                     <div class="pending-addresses" ondrop="drop(event)" ondragover="allowDrop(event)">
                         @foreach (Record x in ViewBag.PendingAddresses)
                         {
-                            <div class="pending-address" draggable="true" ondragstart="drag(event)" data-account="@x.Account">
+                            <div class="pending-address @(x.Status == ServiceStatus.在用 ? "status-using" : "")" draggable="true" ondragstart="drag(event)" data-account="@x.Account">
                                 @x.ImplementAddress
                             </div>
                         }
