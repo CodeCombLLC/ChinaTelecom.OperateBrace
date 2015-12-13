@@ -299,15 +299,16 @@
     }
 
     function drop(ev) {
-        ev.preventDefault();
-        $(ev.target).append($(item));
-        console.log(item);
         if ($(ev.target).hasClass('pending-addresses')) {
             console.log('解除楼层对应');
+            ev.preventDefault();
+            $(ev.target).append($(item));
             $.post('/Grid/Transfer', { account: $(item).attr('data-account') }, function () { });
         }
-        else {
+        else if ($(ev.target).hasClass('dragable')) {
             console.log('添加楼层对应');
+            ev.preventDefault();
+            $(ev.target).append($(item));
             $.post('/Grid/Transfer', {
                 buildingid: buildingid,
                 account: $(item).attr('data-account'),
