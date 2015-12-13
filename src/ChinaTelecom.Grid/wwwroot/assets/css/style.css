@@ -3123,3 +3123,7 @@ textarea {
 .status-unknown {
     background: #b455b6;
 }
+
+.house-item a, .pending-address a {
+    color: #fff;
+}
