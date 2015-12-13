@@ -109,7 +109,7 @@
                                                             {
                                                             <div ondragstart="drag(event)" class="house-item" draggable="true" data-account="@house.Account">
                                                                 
-                                                                    <img class="icon-provider" src="~/assets/img/ct.png" draggable="false" />
+                                                                    <img class="icon-provider @(house.ServiceStatus == ServiceStatus.在用 ? "status-using" : "")" src="~/assets/img/ct.png" draggable="false" />
                                                                     <span>@house.FullName (@house.Phone)</span>
                                                             </div>
                                                             }
@@ -118,15 +118,15 @@
                                                                 <div ondragstart="drag(event)" class="house-item non-ct-user" draggable="true" data-id="@house.Id" data-full-name="@house.FullName" data-phone="@house.Phone" data-provider="@house.HouseStatus">
                                                                     @if (house.HouseStatus == HouseStatus.中国移动)
                                                                     {
-                                                                        <img class="icon-provider" src="~/assets/img/cm.png" draggable="false" />
+                                                                        <img class="icon-provider status-unknown" src="~/assets/img/cm.png" draggable="false" />
                                                                     }
                                                                     else if (house.HouseStatus == HouseStatus.中国联通)
                                                                     {
-                                                                        <img class="icon-provider" src="~/assets/img/cu.png" draggable="false" />
+                                                                        <img class="icon-provider status-unknown" src="~/assets/img/cu.png" draggable="false" />
                                                                     }
                                                                     else
                                                                     {
-                                                                        <img class="icon-provider" src="~/assets/img/unknown.png" draggable="false" />
+                                                                        <img class="icon-provider status-unknown" src="~/assets/img/unknown.png" draggable="false" />
                                                                     }
                                                                     <span>@house.FullName (@house.Phone)</span>
                                                                 </div>

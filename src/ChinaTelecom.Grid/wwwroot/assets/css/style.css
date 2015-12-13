@@ -3115,3 +3115,11 @@ textarea {
     height: 30px;
     width: 30px;
 }
+
+.status-using {
+    background: #159818;
+}
+
+.status-unknown {
+    background: #b455b6;
+}
