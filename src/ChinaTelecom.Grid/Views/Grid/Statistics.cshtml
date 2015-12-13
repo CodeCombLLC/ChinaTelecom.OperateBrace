@@ -49,68 +49,72 @@
                     </div>
                 </div>
                 <div class="body-nest" id="GenerateStatistics">
-                    <div class="form-group">
-                        <label><input type="checkbox" id="allAreas" /> 片区选择</label>
-                        @for (var i = 0; i < Areas.Count; i++)
-                        {
-                            if (i % 12 == 0)
+                    <form asp-action="GenerateStatistics" asp-controller="Grid" method="get">
+                        <div class="form-group">
+                            <label><input type="checkbox" id="allAreas" /> 片区选择</label>
+                            @for (var i = 0; i < Areas.Count; i++)
                             {
-                                @(new HtmlString("<div class=\"row\">"))
+                                if (i % 12 == 0)
+                                {
+                                    @(new HtmlString("<div class=\"row\">"))
+                                }
+                                <div class="col-sm-1">
+                                    <label>
+                                        <input class="chk-area" type="checkbox" value="@Areas[i]" name="Area" />
+                                        @Areas[i]
+                                    </label>
+                                </div>
+                                if (i % 12 == 11)
+                                {
+                                    @(new HtmlString("</div>"))
+                                }
                             }
-                            <div class="col-sm-1">
-                                <label>
-                                    <input class="chk-area" type="checkbox" value="@Areas[i]" name="Area" />
-                                    @Areas[i]
-                                </label>
-                            </div>
-                            if (i % 12 == 11)
+                        </div>
+                        <hr />
+                        <div class="form-group">
+                            <label><input type="checkbox" id="allContractors" /> 客户经理选择</label>
+                            @for (var i = 0; i < Contractors.Count; i++)
                             {
-                                @(new HtmlString("</div>"))
+                                if (i % 6 == 0)
+                                {
+                                    @(new HtmlString("<div class=\"row\">"))
+                                }
+                                <div class="col-sm-2">
+                                    <label>
+                                        <input class="chk-contractor" type="checkbox" value="@Contractors[i]" name="Contractor" />
+                                        @Contractors[i]
+                                    </label>
+                                </div>
+                                if (i % 6 == 5)
+                                {
+                                    @(new HtmlString("</div>"))
+                                }
                             }
-                        }
-                    </div>
-                    <hr />
-                    <div class="form-group">
-                        <label><input type="checkbox" id="allContractors" /> 客户经理选择</label>
-                        @for (var i = 0; i < Contractors.Count; i++)
-                        {
-                            if (i % 6 == 0)
+                        </div>
+                        <hr />
+                        <div class="form-group">
+                            <label><input type="checkbox" id="allSets" /> 套餐选择</label>
+                            @for (var i = 0; i < Sets.Count; i++)
                             {
-                                @(new HtmlString("<div class=\"row\">"))
+                                if (i % 2 == 0)
+                                {
+                                    @(new HtmlString("<div class=\"row\">"))
+                                }
+                                <div class="col-sm-6">
+                                    <label>
+                                        <input class="chk-set" type="checkbox" value="@Sets[i]" name="Set" />
+                                        @Sets[i]
+                                    </label>
+                                </div>
+                                if (i % 2 == 1)
+                                {
+                                    @(new HtmlString("</div>"))
+                                }
                             }
-                            <div class="col-sm-2">
-                                <label>
-                                    <input class="chk-contractor" type="checkbox" value="@Contractors[i]" name="Contractor" />
-                                    @Contractors[i]
-                                </label>
-                            </div>
-                            if (i % 6 == 5)
-                            {
-                                @(new HtmlString("</div>"))
-                            }
-                        }
-                    </div>
-                    <hr />
-                    <div class="form-group">
-                        <label><input type="checkbox" id="allSets" /> 套餐选择</label>
-                        @for (var i = 0; i < Sets.Count; i++)
-                        {
-                            if (i % 2 == 0)
-                            {
-                                @(new HtmlString("<div class=\"row\">"))
-                            }
-                            <div class="col-sm-6">
-                                <label>
-                                    <input class="chk-set" type="checkbox" value="@Sets[i]" name="Set" />
-                                    @Sets[i]
-                                </label>
-                            </div>
-                            if (i % 2 == 1)
-                            {
-                                @(new HtmlString("</div>"))
-                            }
-                        }
-                    </div>
+                        </div>
+                        <hr />
+                        <input type="submit" class="btn btn-primary" value="生成报表" />
+                    </form>
                 </div>
             </div>
         </div>
