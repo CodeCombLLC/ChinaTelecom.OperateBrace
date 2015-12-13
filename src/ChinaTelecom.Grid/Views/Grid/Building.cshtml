@@ -105,10 +105,10 @@
                                                         }
                                                         @if (house != null)
                                                         {
-                                                            <div class="house-item" draggable="true" data-account="@house.Account">
+                                                            <div ondragstart="drag(event)" class="house-item" draggable="true" data-account="@house.Account">
                                                                 @if (house.HouseStatus == HouseStatus.中国电信)
                                                                 {
-                                                                    <img src="~/assets/img/ct.png" />
+                                                                    <img src="~/assets/img/ct.png" draggable="false" />
                                                                     <span>@house.FullName (@house.Phone)</span>
                                                                 }
                                                             </div>
@@ -272,6 +272,7 @@
 <script src="~/assets/js/wizard/build/jquery.steps.js"></script>
 <script>
     var buildingid = '@Model.Id';
+    var item;
     $(document).ready(function () {
         DisplayFields();
 
@@ -292,20 +293,24 @@
     }
 
     function drag(ev) {
-        ev.dataTransfer.setData("Text", $(ev.target).attr('data-account'));
+        console.log(ev);
+        console.log(ev.target);
+        item = ev.target;
     }
 
     function drop(ev) {
         ev.preventDefault();
-        var data = ev.dataTransfer.getData("Text");
-        $(ev.target).appendChild($('[data-account="' + data + '"]'));
+        $(ev.target).append($(item));
+        console.log(item);
         if ($(ev.target).hasClass('pending-addresses')) {
-            $.post('/Grid/Transfer', { account: data }, function () { });
+            console.log('解除楼层对应');
+            $.post('/Grid/Transfer', { account: $(item).attr('data-account') }, function () { });
         }
         else {
+            console.log('添加楼层对应');
             $.post('/Grid/Transfer', {
-                account: data,
                 buildingid: buildingid,
+                account: $(item).attr('data-account'),
                 unit: $(ev.target).attr('data-unit'),
                 layer: $(ev.target).attr('data-layer'),
                 door: $(ev.target).attr('data-door')
