@@ -3125,5 +3125,14 @@ textarea {
 }
 
 .house-item a, .pending-address a {
-    color: #fff;
+    color: #fff!important;
+    text-decoration: none;
+}
+
+#chartUserStatus, #chartAreaStatistics {
+    height: 280px;
+}
+
+#chartSetStatistics, #chartContractorStatistics {
+    height: 380px;
 }

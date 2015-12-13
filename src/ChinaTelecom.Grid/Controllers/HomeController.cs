@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Authorization;
+using Microsoft.Data.Entity;
+using ChinaTelecom.Grid.ViewModels;
 
 namespace ChinaTelecom.Grid.Controllers
 {
@@ -12,6 +14,47 @@ namespace ChinaTelecom.Grid.Controllers
     {
         public IActionResult Index()
         {
+            ViewBag.UserStatistics = Lib.Counting.Count(DB.Records, DB.Houses);
+            ViewBag.SetStatistics = DB.Records
+                .OrderByDescending(x => x.ImportedTime)
+                .DistinctBy(x => x.Account)
+                .GroupBy(x => x.Set)
+                .Select(x => new BarChartItem
+                {
+                    Key = x.Key,
+                    Count = x.Count()
+                })
+                .ToList();
+
+            var area = DB.Estates
+                .DistinctBy(x => x.Area)
+                .Select(x => x.Area).ToList();
+            var areaStatistics = new List<BarChartItem>();
+            foreach(var x in area)
+            {
+                areaStatistics.Add(new BarChartItem
+                {
+                    Key = x,
+                    Count = DB.Houses
+                        .Include(a => a.Building)
+                        .ThenInclude(a => a.Estate)
+                        .Where(a => a.Building.Estate.Area == x && a.HouseStatus == Models.HouseStatus.中国电信 && a.ServiceStatus == Models.ServiceStatus.在用)
+                        .Count()
+                });
+            }
+            ViewBag.AreaStatistics = areaStatistics;
+
+            ViewBag.ContractorStatistics = DB.Records
+                .Where(x => x.Status == Models.ServiceStatus.在用)
+                .OrderByDescending(x => x.ImportedTime)
+                .DistinctBy(x => x.Account)
+                .GroupBy(x => x.ContractorName)
+                .Select(x => new BarChartItem
+                {
+                    Key = x.Key,
+                    Count = x.Count()
+                })
+                .ToList();
             return View();
         }
     }

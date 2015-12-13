@@ -109,7 +109,7 @@
                                                             {
                                                             <div ondragstart="drag(event)" class="house-item @(house.ServiceStatus == ServiceStatus.在用 ? "status-using" : "")" draggable="true" data-account="@house.Account">
                                                                 <img class="icon-provider" src="~/assets/img/ct.png" draggable="false" />
-                                                                <a asp-action="Index" asp-controller="Record" asp-route-account="@house.Account">@house.FullName (@house.Phone)</a>
+                                                                <a draggable="false" asp-action="Index" asp-controller="Record" asp-route-account="@house.Account" target="_blank">@house.FullName (@house.Phone)</a>
                                                             </div>
                                                             }
                                                             else
@@ -165,7 +165,7 @@
                         {
                             <div class="pending-address @(x.Status == ServiceStatus.在用 ? "status-using" : "")" draggable="true" ondragstart="drag(event)" data-account="@x.Account">
                                 <img class="icon-provider" src="~/assets/img/ct.png" draggable="false" />
-                                <a asp-action="Index" asp-controller="Record" asp-route-account="@x.account">@x.ImplementAddress</a>
+                                <a asp-action="Index" asp-controller="Record" asp-route-account="@x.Account">@x.ImplementAddress</a>
                             </div>
                         }
                     </div>
