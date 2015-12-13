@@ -30,6 +30,24 @@
     <li>
         <a asp-action="Index" asp-controller="Record" title="明细列表">明细列表</a>
     </li>
+    @if (Context.Request.Query.ContainsKey("SeriesId"))
+    {
+        <li>
+            <i class="fa fa-lg fa-angle-right"></i>
+        </li>
+        <li>
+            <a asp-action="Index" asp-controller="Record" asp-route-seriesid="@Context.Request.Query["SeriesId"]" title="导入记录">导入记录</a>
+        </li>
+    }
+    @if (Context.Request.Query.ContainsKey("Account"))
+    {
+        <li>
+            <i class="fa fa-lg fa-angle-right"></i>
+        </li>
+        <li>
+            <a asp-action="Index" asp-controller="Record" asp-route-seriesid="@Context.Request.Query["Account"]" title="@Context.Request.Query["Account"]">@Context.Request.Query["Account"]</a>
+        </li>
+    }
 </ul>
 <div class="row">
     <div class="content-wrap">
@@ -49,6 +67,7 @@
                     <form class="search-form">
                         <input type="hidden" value="false" name="raw" />
                         <input type="hidden" value="@Context.Request.Query["SeriesId"]" name="SeriesId" />
+                        <input type="hidden" value="@Context.Request.Query["Account"]" name="Account" />
                         <select name="ContractorName" class="form-control">
                             <option value="">客户经理</option>
                             @foreach (string x in ViewBag.ContractorNames)

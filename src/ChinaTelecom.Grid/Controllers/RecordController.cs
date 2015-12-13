@@ -18,7 +18,7 @@ namespace ChinaTelecom.Grid.Controllers
         [FromServices]
         public IServiceProvider services { get; set; }
 
-        public IActionResult Index(string ContractorName, ServiceStatus? Status, string Address, string Set, string Phone, string raw, Guid? SeriesId)
+        public IActionResult Index(string ContractorName, ServiceStatus? Status, string Address, string Account, string Set, string Phone, string raw, Guid? SeriesId)
         {
             IEnumerable<Record> ret = DB.Records.AsNoTracking();
             if (!string.IsNullOrEmpty(ContractorName))
@@ -31,13 +31,25 @@ namespace ChinaTelecom.Grid.Controllers
                 ret = ret.Where(x => x.ImplementAddress.Contains(Address) || x.StandardAddress.Contains(Address));
             if (!string.IsNullOrEmpty(Phone))
                 ret = ret.Where(x => x.Phone.Contains(Phone));
+            if (!string.IsNullOrEmpty(Account))
+                ret = ret.Where(x => x.Account == Account);
             if (SeriesId.HasValue)
                 ret = ret.Where(x => x.SeriesId == SeriesId.Value);
+            ret = ret.OrderByDescending(x => x.ImportedTime);
             if (raw != "true")
             {
-                ViewBag.Statuses = DB.Records.Select(x => x.Status.ToString()).Distinct().ToList();
-                ViewBag.ContractorNames = DB.Records.Select(x => x.ContractorName).Distinct().ToList();
-                ViewBag.Sets = DB.Records.Select(x => x.Set).Distinct().ToList();
+                ViewBag.Statuses = DB.Records
+                    .Select(x => x.Status.ToString())
+                    .Distinct()
+                    .ToList();
+                ViewBag.ContractorNames = DB.Records
+                    .Select(x => x.ContractorName)
+                    .Distinct()
+                    .ToList();
+                ViewBag.Sets = DB.Records
+                    .Select(x => x.Set)
+                    .Distinct()
+                    .ToList();
                 return PagedView(ret);
             }
             else
