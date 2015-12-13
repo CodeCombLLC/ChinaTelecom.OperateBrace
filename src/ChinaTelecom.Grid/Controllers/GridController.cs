@@ -259,6 +259,11 @@ namespace ChinaTelecom.Grid.Controllers
                                 .Where(a => a.Account == x.Account)
                                 .Where(a => a.ImportedTime < x.ImportedTime)
                                 .LastOrDefault();
+
+                            // 如果已经存在用户信息则不能创建关联
+                            if (DB.Houses.Where(a => a.BuildingId == _building.Id && a.Unit == unit.Value && a.Layer == layer.Value && a.Door == door.Value).Count() > 0)
+                                continue;
+
                             DB.Houses.Add(new House
                             {
                                 Account = x.Account,
@@ -316,6 +321,9 @@ namespace ChinaTelecom.Grid.Controllers
                     .Include(x => x.Estate)
                     .Where(x => x.Id == BuildingId.Value)
                     .Single();
+
+                if (DB.Houses.Where(x => x.BuildingId == building.Id && x.Unit == Unit.Value && x.Layer == Layer.Value && x.Door == Door.Value).Count() > 0)
+                    return Content("failed");
 
                 if (!User.IsInRole("系统管理员"))
                 {
@@ -427,6 +435,100 @@ namespace ChinaTelecom.Grid.Controllers
             }
             DB.SaveChanges();
             return Redirect(Referer);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Move(Guid id, Guid? BuildingId, int? Unit, int? Layer, int? Door, string FullName, string Phone, HouseStatus? Provider)
+        {
+            var house = DB.Houses
+                .Include(x => x.Building)
+                .Where(x => x.Id == id)
+                .SingleOrDefault();
+            if (house == null)
+            {
+                var building = DB.Buildings
+                    .Include(x => x.Estate)
+                    .Where(x => x.Id == BuildingId.Value)
+                    .Single();
+                if (!User.IsInRole("系统管理员"))
+                {
+                    var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                    if (!areas.Contains(building.Estate.Area))
+                    {
+                        return Prompt(x =>
+                        {
+                            x.Title = "操作失败";
+                            x.Details = "您没有权限向该楼座添加用户！";
+                        });
+                    }
+                }
+            }
+            else
+            {
+                var building = house.Building;
+
+                if (!User.IsInRole("系统管理员"))
+                {
+                    var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                    if (!areas.Contains(building.Estate.Area))
+                    {
+                        return Prompt(x =>
+                        {
+                            x.Title = "操作失败";
+                            x.Details = "您没有权限向该楼座添加用户！";
+                        });
+                    }
+                }
+            }
+
+            if (Unit == null || Layer == null || Door == null || BuildingId == null)
+            {
+                if (house != null)
+                {
+                    DB.Houses.Remove(house);
+                    DB.SaveChanges();
+                }
+            }
+            else
+            {
+                if (house == null)
+                {
+                    house = new House
+                    {
+                        Id = id,
+                        ServiceStatus = ServiceStatus.未知,
+                        HouseStatus = Provider.Value,
+                        LastUpdate = DateTime.Now,
+                        IsStatusChanged = true,
+                        BuildingId = BuildingId.Value,
+                        Phone = Phone,
+                        FullName = FullName,
+                        Door = Door.Value,
+                        Layer = Layer.Value,
+                        Unit = Unit.Value,
+                        Account = null
+                    };
+                    DB.Houses.Add(house);
+                    DB.SaveChanges();
+                }
+                else
+                {
+                    if (DB.Houses.Where(x => x.BuildingId == BuildingId.Value && x.Unit == Unit.Value && x.Layer == Layer.Value && x.Door == Door.Value).Count() > 0)
+                        return Content("failed");
+                    house.ServiceStatus = ServiceStatus.未知;
+                    house.HouseStatus = Provider.Value;
+                    house.LastUpdate = DateTime.Now;
+                    house.IsStatusChanged = true;
+                    house.BuildingId = BuildingId.Value;
+                    house.Phone = Phone;
+                    house.FullName = FullName;
+                    house.Door = Door.Value;
+                    house.Layer = Layer.Value;
+                    house.Unit = Unit.Value;
+                    DB.SaveChanges();
+                }
+            }
+            return Content("ok");
         }
     }
 }

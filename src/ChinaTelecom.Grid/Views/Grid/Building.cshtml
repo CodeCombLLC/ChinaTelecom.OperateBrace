@@ -115,18 +115,18 @@
                                                             }
                                                             else
                                                             {
-                                                                <div ondragstart="drag(event)" class="house-item" draggable="true" data-id="@house.Id">
+                                                                <div ondragstart="drag(event)" class="house-item non-ct-user" draggable="true" data-id="@house.Id" data-full-name="@house.FullName" data-phone="@house.Phone" data-provider="@house.HouseStatus">
                                                                     @if (house.HouseStatus == HouseStatus.中国移动)
                                                                     {
                                                                         <img class="icon-provider" src="~/assets/img/cm.png" draggable="false" />
                                                                     }
                                                                     else if (house.HouseStatus == HouseStatus.中国联通)
                                                                     {
-                                                                        <img class="icon-provider" src="~/assets/img/cm.png" draggable="false" />
+                                                                        <img class="icon-provider" src="~/assets/img/cu.png" draggable="false" />
                                                                     }
                                                                     else
                                                                     {
-                                                                        <img src="~/assets/img/unknown.png" draggable="false" />
+                                                                        <img class="icon-provider" src="~/assets/img/unknown.png" draggable="false" />
                                                                     }
                                                                     <span>@house.FullName (@house.Phone)</span>
                                                                 </div>
@@ -320,19 +320,41 @@
             console.log('解除楼层对应');
             ev.preventDefault();
             $(ev.target).append($(item));
-            $.post('/Grid/Transfer', { account: $(item).attr('data-account') }, function () { });
+            if ($(item).hasClass('non-ct-user'))
+                $.post('/Grid/Move', {
+                    id: $(item).attr('data-id'),
+                    phone: $(item).attr('data-phone'),
+                    fullname: $(item).attr('data-full-name'),
+                    provider: $(item).attr('data-provider')
+                }, function () { });
+            else
+                $.post('/Grid/Transfer', {
+                    account: $(item).attr('data-account')
+                }, function () { });
         }
         else if ($(ev.target).hasClass('dragable')) {
             console.log('添加楼层对应');
             ev.preventDefault();
             $(ev.target).append($(item));
-            $.post('/Grid/Transfer', {
-                buildingid: buildingid,
-                account: $(item).attr('data-account'),
-                unit: $(ev.target).attr('data-unit'),
-                layer: $(ev.target).attr('data-layer'),
-                door: $(ev.target).attr('data-door')
-            }, function () { });
+            if ($(item).hasClass('non-ct-user'))
+                $.post('/Grid/Move', {
+                    id: $(item).attr('data-id'),
+                    buildingid: buildingid,
+                    unit: $(ev.target).attr('data-unit'),
+                    layer: $(ev.target).attr('data-layer'),
+                    door: $(ev.target).attr('data-door'),
+                    phone: $(item).attr('data-phone'),
+                    fullname: $(item).attr('data-full-name'),
+                    provider: $(item).attr('data-provider')
+                }, function () { });
+            else
+                $.post('/Grid/Transfer', {
+                    buildingid: buildingid,
+                    account: $(item).attr('data-account'),
+                    unit: $(ev.target).attr('data-unit'),
+                    layer: $(ev.target).attr('data-layer'),
+                    door: $(ev.target).attr('data-door')
+                }, function () { });
         }
     }
 

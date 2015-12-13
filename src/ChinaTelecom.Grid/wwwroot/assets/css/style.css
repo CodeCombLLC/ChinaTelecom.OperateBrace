@@ -3085,6 +3085,7 @@ textarea {
     background-color: indianred;
     border-radius: 5px;
     margin: 5px;
+    color: #fff;
 }
 
 .pending-address {
