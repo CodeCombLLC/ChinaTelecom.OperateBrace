@@ -94,7 +94,7 @@ namespace ChinaTelecom.Grid.Controllers
                                             ImplementAddress = reader["装机地址"].ToString(),
                                             StandardAddress = reader["标准地址"].ToString(),
                                             Set = reader["套餐"].ToString(),
-                                            PRCID = reader["身份证号码"].ToString(),
+                                            PRCID = (Convert.ToInt64(reader["身份证号码"])).ToString(),
                                             SalesProduction = reader["融合促销包"].ToString(),
                                             Phone = reader["联系电话"].ToString(),
                                             IsFuse = reader["是否家庭融合宽带"].ToString() == "是",
