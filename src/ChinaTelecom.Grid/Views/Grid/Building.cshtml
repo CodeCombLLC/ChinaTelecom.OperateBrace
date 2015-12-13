@@ -143,49 +143,6 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="nest">
-                <div class="title-alt">
-                    <h6>
-                        用户明细
-                    </h6>
-                    <div class="titleToggle">
-                        <a class="nav-toggle-alt" href="#CustomerDetail">
-                            <span class="entypo-up-open"></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="body-nest" id="CustomerDetail">
-                    <div class="x-scroll">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>更新时间</th>
-                                    <th>接入号</th>
-                                    <th>用户状态</th>
-                                    <th>用户姓名</th>
-                                    <th>四级承包人名称</th>
-                                    <th>四级承包体名称</th>
-                                    <th>当月出账</th>
-                                    <th>中投</th>
-                                    <th>代理费</th>
-                                    <th>一次佣金</th>
-                                    <th>欠费</th>
-                                    <th>装机地址</th>
-                                    <th>标准地址</th>
-                                    <th>套餐</th>
-                                    <th>身份证号码</th>
-                                    <th>联系电话</th>
-                                    <th>是否家庭融合宽带</th>
-                                </tr>
-                            </thead>
-                            <tbody id="list-customer-details"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 </div>
 <div class="col-sm-4">
@@ -207,6 +164,7 @@
                         @foreach (Record x in ViewBag.PendingAddresses)
                         {
                             <div class="pending-address @(x.Status == ServiceStatus.在用 ? "status-using" : "")" draggable="true" ondragstart="drag(event)" data-account="@x.Account">
+                                <img class="icon-provider" src="~/assets/img/ct.png" draggable="false" />
                                 @x.ImplementAddress
                             </div>
                         }
