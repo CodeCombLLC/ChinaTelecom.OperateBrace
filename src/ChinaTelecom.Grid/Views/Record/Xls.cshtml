@@ -25,7 +25,20 @@
     {
         <tr>
             <td>@x.Account</td>
-            <td>@x.Status</td>
+            <td>
+                @if (x.Status == ServiceStatus.单向欠停)
+                {
+                    @("欠停(单向)")
+                }
+                else if (x.Status == ServiceStatus.双向欠停)
+                {
+                    @("欠停(双向)")
+                }
+                else
+                { 
+                    @x.Status
+                }
+            </td>
             <td>@x.CustomerName</td>
             <td>@x.ContractorName</td>
             <td>@x.ContractorStruct</td>

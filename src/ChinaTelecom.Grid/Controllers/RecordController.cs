@@ -140,7 +140,12 @@ namespace ChinaTelecom.Grid.Controllers
 
                                         try
                                         {
-                                            record.Status = (ServiceStatus)Enum.Parse(typeof(ServiceStatus), reader["用户状态"].ToString());
+                                            if (reader["用户状态"].ToString() == "欠停(双向)")
+                                                record.Status = ServiceStatus.双向欠停;
+                                            else if (reader["用户状态"].ToString() == "欠停(单向)")
+                                                record.Status = ServiceStatus.单向欠停;
+                                            else
+                                                record.Status = (ServiceStatus)Enum.Parse(typeof(ServiceStatus), reader["用户状态"].ToString());
                                         }
                                         catch
                                         {
