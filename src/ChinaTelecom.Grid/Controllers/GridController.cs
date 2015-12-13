@@ -417,7 +417,7 @@ namespace ChinaTelecom.Grid.Controllers
                     Unit = unit,
                     Layer = layer,
                     Door = door,
-                    HouseStatus = HouseStatus.中国电信,
+                    HouseStatus = provider,
                     LastUpdate = DateTime.Now,
                     IsStatusChanged = true,
                     Phone = phone,
