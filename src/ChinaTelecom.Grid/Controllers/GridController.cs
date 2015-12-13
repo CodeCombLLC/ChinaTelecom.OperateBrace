@@ -143,8 +143,23 @@ namespace ChinaTelecom.Grid.Controllers
             var ret = DB.Buildings
                 .Include(x => x.Houses)
                 .Where(x => x.EstateId == id)
-                .OrderBy(x => x.Title)
                 .ToList();
+            ret.Sort((a, b) =>
+            {
+                try
+                {
+                    if (Convert.ToInt32(a.Title) < Convert.ToInt32(b.Title))
+                        return -1;
+                    else if (Convert.ToInt32(a.Title) == Convert.ToInt32(b.Title))
+                        return 0;
+                    else
+                        return 1;
+                }
+                catch
+                {
+                    return string.Compare(a.Title, b.Title);
+                }
+            });
             return View(ret);
         }
 
