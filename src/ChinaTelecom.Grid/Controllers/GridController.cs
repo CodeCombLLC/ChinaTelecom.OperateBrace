@@ -362,7 +362,7 @@ namespace ChinaTelecom.Grid.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateHouse(Guid id, int unit, int layer, int door, string account, HouseStatus provider, string fullname, string phone, [FromServices] string Referer)
+        public async Task<IActionResult> CreateHouse(Guid id, int unit, int layer, int door, string account, HouseStatus provider, string fullname, string phone, [FromHeader] string Referer)
         {
             var building = DB.Buildings
                     .Include(x => x.Estate)
