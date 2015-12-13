@@ -549,5 +549,62 @@ namespace ChinaTelecom.Grid.Controllers
                 .ToList();
             return View();
         }
+
+        public IActionResult GenerateStatistics(string[] Area, string[] Set, string[] Contractor)
+        {
+            var houses = DB.Houses
+                .Include(x => x.Building)
+                .ThenInclude(x => x.Estate)
+                .ToList()
+                .Where(x => Area.Contains(x.Building.Estate.Area))
+                .ToList();
+
+            var tmp = houses.Select(x => x.Account).ToList();
+            var records = DB.Records
+                .Where(x => Set.Contains(x.Set) && Contractor.Contains(x.ContractorName) && tmp.Contains(x.Account))
+                .ToList();
+
+            ViewBag.UserStatistics = Lib.Counting.Count(records, houses);
+            ViewBag.SetStatistics = records
+                .OrderByDescending(x => x.ImportedTime)
+                .DistinctBy(x => x.Account)
+                .GroupBy(x => x.Set)
+                .Select(x => new BarChartItem
+                {
+                    Key = x.Key,
+                    Count = x.Count()
+                })
+                .ToList();
+
+            var area = DB.Estates
+                .Where(x => Area.Contains(x.Area))
+                .DistinctBy(x => x.Area)
+                .Select(x => x.Area).ToList();
+            var areaStatistics = new List<BarChartItem>();
+            foreach (var x in area)
+            {
+                areaStatistics.Add(new BarChartItem
+                {
+                    Key = x,
+                    Count = houses
+                        .Where(a => a.Building.Estate.Area == x && a.HouseStatus == Models.HouseStatus.中国电信 && a.ServiceStatus == Models.ServiceStatus.在用)
+                        .Count()
+                });
+            }
+            ViewBag.AreaStatistics = areaStatistics;
+
+            ViewBag.ContractorStatistics = records
+                .Where(x => x.Status == Models.ServiceStatus.在用)
+                .OrderByDescending(x => x.ImportedTime)
+                .DistinctBy(x => x.Account)
+                .GroupBy(x => x.ContractorName)
+                .Select(x => new BarChartItem
+                {
+                    Key = x.Key,
+                    Count = x.Count()
+                })
+                .ToList();
+            return View();
+        }
     }
 }
