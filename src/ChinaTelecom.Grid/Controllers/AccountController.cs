@@ -15,9 +15,14 @@ namespace ChinaTelecom.Grid.Controllers
     {
         [HttpGet]
         [AnyRoles("系统管理员")]
-        public IActionResult Index()
+        public IActionResult Index(string name, string username)
         {
-            return PagedView(UserManager.Users);
+            var ret = UserManager.Users;
+            if (!string.IsNullOrEmpty(name))
+                ret = ret.Where(x => x.FullName.Contains(name) || name.Contains(x.FullName));
+            if (!string.IsNullOrEmpty(username))
+                ret = ret.Where(x => x.UserName.Contains(username) || username.Contains(x.UserName));
+            return PagedView(ret);
         }
 
         [HttpPost]
