@@ -3173,3 +3173,8 @@ form .row {
 .profile-name {
     text-align: center;
 }
+
+.logo-outer {
+    margin:0;
+    padding:0;
+}

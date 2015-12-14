@@ -219,7 +219,7 @@
             }
             else
             {
-            @("map.centerAndZoom(new BMap.Point(126.645098, 45.758188), 12);")
+            @($"map.centerAndZoom(new BMap.Point({Config["Settings:DefaultLon"]}, {Config["Settings:DefaultLat"]}), {Config["Settings:DefaultZoom"]});")
             }
             BuildOverlays();
         }, 3000);

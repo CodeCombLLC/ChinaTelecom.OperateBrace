@@ -22,6 +22,7 @@ namespace ChinaTelecom.Grid
             services.AddMvc();
             services.AddSmartUser<User, string>();
             services.AddSmartCookies();
+            services.AddConfiguration();
 
             services.AddEntityFramework()
                 .AddSqlite()
