@@ -3159,5 +3159,17 @@ textarea {
 }
 
 form .row {
-    height: 40px;
+    min-height: 40px;
+}
+
+.avatar {
+    border-radius: 15px;
+    width: 100%;
+    margin: 0 auto;
+    max-width: 150px;
+    display: block;
+}
+
+.profile-name {
+    text-align: center;
 }

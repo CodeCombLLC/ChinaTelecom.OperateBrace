@@ -63,7 +63,16 @@
                                 {
                                     <tr>
                                         <td>@x.Time.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                                        <td>@x.Status</td>
+                                        <td>
+                                            @if (x.Status == SeriesStatus.导入中)
+                                            { 
+                                                <span class="badge badge-warning">@x.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-success">@x.Status</span>
+                                            }
+                                        </td>
                                         <td>@x.ImportedCount</td>
                                         <td>@x.FailedCount</td>
                                         <td>

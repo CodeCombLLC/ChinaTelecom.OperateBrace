@@ -171,24 +171,13 @@
                         </a>
                         <ul style="margin-top:14px;" role="menu" class="dropdown-setting dropdown-menu">
                             <li>
-                                <a href="#">
-                                    <span class="entypo-user"></span>&nbsp;&nbsp;My Profile
+                                <a asp-action="Profile" asp-controller="Account" asp-route-id="@User.Current.Id">
+                                    <span class="entypo-user"></span>&nbsp;&nbsp;我的资料
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
-                                    <span class="entypo-vcard"></span>&nbsp;&nbsp;Account Setting
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <span class="entypo-lifebuoy"></span>&nbsp;&nbsp;Help
-                                </a>
-                            </li>
-                            <li class="divider"></li>
-                            <li>
-                                <a href="http://themeforest.net/item/apricot-navigation-admin-dashboard-template/7664475?WT.ac=category_item&amp;WT.z_author=themesmile">
-                                    <span class="entypo-basket"></span>&nbsp;&nbsp; Purchase
+                                <a asp-action="Setting" asp-controller="Account">
+                                    <span class="entypo-vcard"></span>&nbsp;&nbsp;账号设定
                                 </a>
                             </li>
                         </ul>
