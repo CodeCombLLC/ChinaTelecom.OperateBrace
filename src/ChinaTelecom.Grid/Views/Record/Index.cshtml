@@ -74,37 +74,76 @@
                     </div>
                 </div>
                 <div class="body-nest" id="RecordList">
-                    <form class="search-form small-fields">
+                    <form>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <select name="ContractorName" class="form-control">
+                                    <option value="">承包人</option>
+                                    @foreach (string x in ViewBag.ContractorNames)
+                                    {
+			                            <!option @(Context.Request.Query["ContractorName"] == x ? "selected" : "")>@x</!option>               
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <select name="StaffName" class="form-control">
+                                    <option value="">包服人</option>
+                                    @foreach (string x in ViewBag.Staff)
+                                    {
+			                            <!option @(Context.Request.Query["StaffName"] == x ? "selected" : "")>@x</!option>                }
+                                </select>
+
+                            </div>
+                            <div class="col-sm-3">
+                                <select name="Status" class="form-control">
+                                    <option value="">状态</option>
+                                    @foreach (var x in Enum.GetNames(typeof(ServiceStatus)))
+                                    {
+			                            <!option @(Context.Request.Query["Status"] == x ? "selected" : "")>@x</!option>                
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <select name="Set" class="form-control">
+                                    <option value="">套餐</option>
+                                    @foreach (string x in ViewBag.Sets)
+                                    {
+			                            <!option @(Context.Request.Query["Set"] == x ? "selected" : "")>@x</!option>               }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input id="beginTime" type="text" placeholder="时间(从)" name="BeginTime" class="form-control" value="@Context.Request.Query["BeginTime"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <input id="endTime" type="text" placeholder="时间(到)" name="EndTime" class="form-control" value="@Context.Request.Query["EndTime"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" placeholder="用户姓名" name="Name" class="form-control" value="@Context.Request.Query["Name"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" placeholder="联系电话" name="Phone" class="form-control" value="@Context.Request.Query["Phone"]" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input type="text" placeholder="地址" name="Address" class="form-control" value="@Context.Request.Query["Address"]" />
+                            </div>
+                            <div class="col-sm-3">
+
+                            </div>
+                            <div class="col-sm-3">
+
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="button" class="btn btn-success float-right" value="导出" id="btnExport" />
+                                <input type="submit" class="btn btn-primary float-right" value="检索" id="btnSearch" />
+                            </div>
+                        </div>
                         <input type="hidden" value="false" name="raw" />
                         <input type="hidden" value="@Context.Request.Query["SeriesId"]" name="SeriesId" />
                         <input type="hidden" value="@Context.Request.Query["Account"]" name="Account" />
-                        <select name="ContractorName" class="form-control">
-                            <option value="">客户经理</option>
-                            @foreach (string x in ViewBag.ContractorNames)
-                            {
-			                    <!option @(Context.Request.Query["ContractorName"] == x ? "selected" : "")>@x</!option>
-                            }
-                        </select>
-                        <select name="Status" class="form-control">
-                            <option value="">状态</option>
-                            @foreach (var x in Enum.GetNames(typeof(ServiceStatus)))
-                            {
-			                <!option @(Context.Request.Query["Status"] == x ? "selected" : "")>@x</!option>
-                            }
-                        </select>
-                        <select name="Set" class="form-control">
-                            <option value="">套餐</option>
-                            @foreach (string x in ViewBag.Sets)
-                            {
-			                <!option @(Context.Request.Query["Set"] == x ? "selected" : "")>@x</!option>
-                            }
-                        </select>
-                        <input type="text" placeholder="地址" name="Address" class="form-control" />
-                        <input type="text" placeholder="联系电话" name="Phone" class="form-control" />
-                        <input id="beginTime" type="text" placeholder="时间(从)" name="BeginTime" class="form-control" />
-                        <input id="endTime" type="text" placeholder="时间(到)" name="EndTime" class="form-control" />
-                        <input type="button" class="btn btn-success float-right" value="导出" id="btnExport" />
-                        <input type="submit" class="btn btn-primary float-right" value="检索" id="btnSearch" />
                         <div class="clear"></div>
                     </form>
                     <hr />
@@ -139,7 +178,7 @@
                                         <td>@x.Account</td>
                                         <td>
                                             @if (x.Status == ServiceStatus.在用)
-                                            { 
+                                            {
                                                 <span class="badge badge-success">@x.Status</span>
                                             }
                                             else if (x.Status == ServiceStatus.未知)
@@ -200,7 +239,7 @@
                         </form>
                     }
                     else
-                    { 
+                    {
                         <span>您的帐号没有导入明细的权限！</span>
                     }
                 </div>

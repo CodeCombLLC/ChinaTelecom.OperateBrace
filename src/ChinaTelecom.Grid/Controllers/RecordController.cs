@@ -18,17 +18,21 @@ namespace ChinaTelecom.Grid.Controllers
         [FromServices]
         public IServiceProvider services { get; set; }
 
-        public IActionResult Index(string ContractorName, ServiceStatus? Status, string Address, string Account, string Set, string Phone, string raw, Guid? SeriesId, DateTime? BeginTime, DateTime? EndTime)
+        public IActionResult Index(string ContractorName, string StaffName, ServiceStatus? Status, string Name, string Address, string Account, string Set, string Phone, string raw, Guid? SeriesId, DateTime? BeginTime, DateTime? EndTime)
         {
             IEnumerable<Record> ret = DB.Records.AsNoTracking();
             if (!string.IsNullOrEmpty(ContractorName))
                 ret = ret.Where(x => x.ContractorName == ContractorName);
+            if (!string.IsNullOrEmpty(StaffName))
+                ret = ret.Where(x => x.ServiceStaff == StaffName);
             if (Status.HasValue)
                 ret = ret.Where(x => x.Status == Status);
             if (!string.IsNullOrEmpty(Set))
                 ret = ret.Where(x => x.Set == Set);
             if (!string.IsNullOrEmpty(Address))
                 ret = ret.Where(x => x.ImplementAddress.Contains(Address) || x.StandardAddress.Contains(Address));
+            if (!string.IsNullOrEmpty(Name))
+                ret = ret.Where(x => x.CustomerName == Name);
             if (!string.IsNullOrEmpty(Phone))
                 ret = ret.Where(x => x.Phone.Contains(Phone));
             if (!string.IsNullOrEmpty(Account))
@@ -55,6 +59,10 @@ namespace ChinaTelecom.Grid.Controllers
                     .ToList();
                 ViewBag.Sets = DB.Records
                     .Select(x => x.Set)
+                    .Distinct()
+                    .ToList();
+                ViewBag.Staff = DB.Records
+                    .Select(x => x.ServiceStaff)
                     .Distinct()
                     .ToList();
                 return PagedView(ret);
