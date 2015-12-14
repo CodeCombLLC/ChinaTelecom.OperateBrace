@@ -24,6 +24,9 @@ namespace ChinaTelecom.Grid.Models
         [MaxLength(32)]
         public string ContractorName { get; set; }
 
+        [MaxLength(32)]
+        public string ServiceStaff { get; set; }
+
         [MaxLength(128)]
         public string ContractorStruct { get; set; }
 

@@ -3133,6 +3133,10 @@ textarea {
     height: 280px;
 }
 
-#chartSetStatistics, #chartContractorStatistics {
+#chartContractorStatistics {
     height: 380px;
+}
+
+#chartSetStatistics {
+    height: 520px;
 }

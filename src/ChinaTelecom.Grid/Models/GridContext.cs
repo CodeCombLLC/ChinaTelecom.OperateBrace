@@ -63,6 +63,7 @@ namespace ChinaTelecom.Grid.Models
                 e.HasIndex(x => x.ImplementAddress);
                 e.HasIndex(x => x.StandardAddress);
                 e.HasIndex(x => x.ContractorName);
+                e.HasIndex(x => x.ServiceStaff);
                 e.HasIndex(x => x.ImportedTime);
                 e.HasIndex(x => x.Status);
                 e.HasIndex(x => x.Set);

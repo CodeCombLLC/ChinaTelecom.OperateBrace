@@ -102,6 +102,7 @@ namespace ChinaTelecom.Grid.Controllers
                                         CustomerName = reader["用户姓名"].ToString(),
                                         ContractorName = reader["四级承包人名称"].ToString(),
                                         ContractorStruct = reader["四级承包体名称"].ToString(),
+                                        ServiceStaff = reader["包服人"].ToString(),
                                         MDS = reader["中投"].ToString(),
                                         ImplementAddress = reader["装机地址"].ToString(),
                                         StandardAddress = reader["标准地址"].ToString(),
