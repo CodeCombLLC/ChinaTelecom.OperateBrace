@@ -3141,6 +3141,11 @@ textarea {
     height: 520px;
 }
 
+.badge {
+    font-family: 'Microsoft YaHei UI', 'Microsoft YaHei';
+    font-weight: lighter;
+}
+
 .badge-success {
     background-color: #159818!important;
 }
