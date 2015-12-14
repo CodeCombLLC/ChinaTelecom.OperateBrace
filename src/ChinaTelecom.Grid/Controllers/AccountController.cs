@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Authorization;
+using ChinaTelecom.Grid.Models;
 using ChinaTelecom.Grid.ViewModels;
 
 namespace ChinaTelecom.Grid.Controllers
@@ -12,6 +13,41 @@ namespace ChinaTelecom.Grid.Controllers
     [Authorize]
     public class AccountController : BaseController
     {
+        [HttpGet]
+        [AnyRoles("系统管理员")]
+        public IActionResult Index()
+        {
+            return PagedView(UserManager.Users);
+        }
+
+        [HttpPost]
+        [AnyRoles("系统管理员")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Remove(string id)
+        {
+            await UserManager.DeleteAsync(await UserManager.FindByIdAsync(id));
+            return Prompt(x =>
+            {
+                x.Title = "删除成功";
+                x.Details = "该用户已成功删除！";
+            });
+        }
+
+        [HttpPost]
+        [AnyRoles("系统管理员")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(string name, string pwd, string role, string fullname, string area)
+        {
+            var user = new User { UserName = name, FullName = fullname };
+            await UserManager.CreateAsync(user, pwd);
+            await UserManager.AddToRoleAsync(user, role);
+            foreach(var x in area.TrimEnd(' ').TrimEnd(',').Split(','))
+            {
+                await UserManager.AddClaimAsync(user, new System.Security.Claims.Claim("管辖片区", x));
+            }
+            return RedirectToAction("Index", "Account");
+        }
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Login()
