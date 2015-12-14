@@ -76,7 +76,9 @@ namespace ChinaTelecom.Grid.Controllers
             ViewBag.UserStatistics = statistics;
             ViewBag.SetStatistics = DB.Records
                     .Where(x => x.ContractorName == user.FullName || x.ServiceStaff == user.FullName && x.Status == Models.ServiceStatus.在用)
-                    .GroupBy(x => x.Set)
+                    .Select(x => x.Set)
+                    .ToList()
+                    .GroupBy(x => x)
                     .Select(x => new BarChartItem
                     {
                         Key = x.Key,
