@@ -2,6 +2,16 @@
 @{
     ViewBag.Title = "明细列表";
 }
+<link rel="stylesheet" href="~/assets/js/timepicker/bootstrap-timepicker.css">
+<link rel="stylesheet" href="~/assets/js/datepicker/datepicker.css">
+<link rel="stylesheet" href="~/assets/js/datepicker/clockface.css">
+<link rel="stylesheet" href="~/assets/js/datepicker/bootstrap-datetimepicker.css">
+<script type="text/javascript" src="~/assets/js/timepicker/bootstrap-timepicker.js"></script>
+<script type="text/javascript" src="~/assets/js/datepicker/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="~/assets/js/datepicker/clockface.js"></script>
+<script type="text/javascript" src="~/assets/js/datepicker/bootstrap-datetimepicker.js"></script>
+
+
 <div class="row">
     <div id="paper-top">
         <div class="col-sm-3">
@@ -64,7 +74,7 @@
                     </div>
                 </div>
                 <div class="body-nest" id="RecordList">
-                    <form class="search-form">
+                    <form class="search-form small-fields">
                         <input type="hidden" value="false" name="raw" />
                         <input type="hidden" value="@Context.Request.Query["SeriesId"]" name="SeriesId" />
                         <input type="hidden" value="@Context.Request.Query["Account"]" name="Account" />
@@ -91,6 +101,8 @@
                         </select>
                         <input type="text" placeholder="地址" name="Address" class="form-control" />
                         <input type="text" placeholder="联系电话" name="Phone" class="form-control" />
+                        <input id="beginTime" type="text" placeholder="时间(从)" name="BeginTime" class="form-control" />
+                        <input id="endTime" type="text" placeholder="时间(到)" name="EndTime" class="form-control" />
                         <input type="button" class="btn btn-success float-right" value="导出" id="btnExport" />
                         <input type="submit" class="btn btn-primary float-right" value="检索" id="btnSearch" />
                         <div class="clear"></div>
@@ -196,3 +208,7 @@
         </div>
     </div>
 </div>
+<script>
+    $('#beginTime').datepicker()
+    $('#endTime').datepicker()
+</script>

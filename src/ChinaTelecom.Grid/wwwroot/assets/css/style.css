@@ -3157,3 +3157,7 @@ textarea {
 .badge-warning {
     background-color: #f89406!important;
 }
+
+.small-fields input[type="text"], .small-fields select {
+    width: 90px!important;
+}
