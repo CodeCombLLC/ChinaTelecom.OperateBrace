@@ -3140,3 +3140,15 @@ textarea {
 #chartSetStatistics {
     height: 520px;
 }
+
+.badge-success {
+    background-color: #159818!important;
+}
+
+.badge-error {
+    background-color: #e11d21!important;
+}
+
+.badge-warning {
+    background-color: #f89406!important;
+}
