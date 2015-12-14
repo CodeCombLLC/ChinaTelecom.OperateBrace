@@ -17,6 +17,12 @@
         <script src="~/assets/js/html5.js"></script>
         <![endif]-->
     <link rel="shortcut icon" href="~/assets/ico/minus.png">
+    <style>
+        @if (Cookies.ContainsKey("styles"))
+        {
+            @(new HtmlString("body {" + Cookies["styles"] + "}"))
+        }
+    </style>
 </head>
 <body>
     <!-- Preloader -->

@@ -57,5 +57,11 @@ namespace ChinaTelecom.Grid.Controllers
                 .ToList();
             return View();
         }
+
+        public IActionResult Skin(string style)
+        {
+            Cookies["styles"] = style;
+            return Content("ok");
+        }
     }
 }
