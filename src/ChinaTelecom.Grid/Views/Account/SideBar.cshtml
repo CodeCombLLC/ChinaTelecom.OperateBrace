@@ -1,0 +1,40 @@
+﻿@model User
+<div class="col-sm-3">
+    <div class="nest">
+        <div class="title-alt">
+            <h6>
+                个人资料
+            </h6>
+            <div class="titleToggle">
+                <a class="nav-toggle-alt" href="#Avatar">
+                    <span class="entypo-up-open"></span>
+                </a>
+            </div>
+        </div>
+        <div class="body-nest" id="Avatar">
+            <p class="profile-name">@((await User.Manager.GetRolesAsync(Model)).First())</p>
+            @if (Model.Avatar == null || Model.Avatar.Length == 0)
+            {
+                <img class="avatar" src="~/assets/img/non-avatar.png" />
+            }
+            else
+            {
+                <img class="avatar" src="@Url.Action("Avatar", "Account", new { id = Model.Id })" />
+            }
+            <p class="profile-name">@Model.FullName</p>
+            @if (User.IsInRole("系统管理员") || User.Current.Id == Model.Id)
+            {
+                <p class="profile-name">
+                    @if (User.IsInRole("系统管理员"))
+                    {
+                        <a asp-controller="Account" asp-action="Modify" asp-route-id="@Model.Id" class="btn btn-info">编辑用户</a>
+                    }
+                    @if (User.Current.Id == Model.Id)
+                    {
+                        <a asp-controller="Account" asp-action="Setting" class="btn btn-success"> 修改资料</a>
+                    }
+                </p>
+            }
+        </div>
+    </div>
+</div>

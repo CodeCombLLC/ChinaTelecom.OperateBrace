@@ -167,7 +167,14 @@
                 <ul style="margin-right:0;" class="nav navbar-nav navbar-right">
                     <li>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <img alt="" class="admin-pic img-circle" src="~/assets/img/non-avatar.png">@User.Current.UserName <b class="caret"></b>
+                            @if (User.Current.Avatar == null || User.Current.Avatar.Length == 0)
+                            {
+                                <img alt="" class="admin-pic img-circle" src="~/assets/img/non-avatar.png">@User.Current.UserName <b class="caret"></b>
+                            }
+                            else
+                            {
+                                <img alt="" class="admin-pic img-circle" src="@Url.Action("Avatar", "Account", new { id = User.Current.Id })">@User.Current.UserName <b class="caret"></b>
+                            }
                         </a>
                         <ul style="margin-top:14px;" role="menu" class="dropdown-setting dropdown-menu">
                             <li>
@@ -305,23 +312,26 @@
                         </li>
                     </ul>
 
-                    <ul id="menu-showhide" class="topnav menu-left-nest">
-                        <li>
-                            <a href="#" style="border-left:0px solid!important;" class="title-menu-left">
+                    @if (User.IsInRole("系统管理员"))
+                    {
+                        <ul id="menu-showhide" class="topnav menu-left-nest">
+                            <li>
+                                <a href="#" style="border-left:0px solid!important;" class="title-menu-left">
 
-                                <span class="component"></span>
-                                <i data-toggle="tooltip" class="entypo-cog pull-right config-wrap"></i>
+                                    <span class="component"></span>
+                                    <i data-toggle="tooltip" class="entypo-cog pull-right config-wrap"></i>
 
-                            </a>
-                        </li>
+                                </a>
+                            </li>
 
-                        <li>
-                            <a class="tooltip-tip ajax-load" href="map.html" title="用户管理">
-                                <i class="icon-user"></i>
-                                <span>用户管理</span>
-                            </a>
-                        </li>
-                    </ul>
+                            <li>
+                                <a class="tooltip-tip ajax-load" href="map.html" title="用户管理">
+                                    <i class="icon-user"></i>
+                                    <span>用户管理</span>
+                                </a>
+                            </li>
+                        </ul>
+                    }
                 </div>
             </div>
         </div>

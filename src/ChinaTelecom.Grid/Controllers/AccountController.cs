@@ -81,5 +81,20 @@ namespace ChinaTelecom.Grid.Controllers
                     .ToList();
             return View(user);
         }
+
+        [HttpGet]
+        [AnyRoles("系统管理员")]
+        public async Task<IActionResult> Modify(string id)
+        {
+            var user = await UserManager.FindByIdAsync(id);
+            var claims = (await UserManager.GetClaimsAsync(user)).Select(x => x.Value);
+            var areastr = "";
+            foreach(var x in claims)
+            {
+                areastr += x + ", ";
+            }
+            ViewBag.Area = areastr.TrimEnd(' ').TrimEnd(',');
+            return View(user);
+        }
     }
 }
