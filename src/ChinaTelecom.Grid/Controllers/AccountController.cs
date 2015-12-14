@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Authorization;
 using ChinaTelecom.Grid.ViewModels;
 
 namespace ChinaTelecom.Grid.Controllers
 {
+    [Authorize]
     public class AccountController : BaseController
     {
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string username, string password, bool remember, [FromHeader] string Referer)
         {
@@ -103,6 +107,7 @@ namespace ChinaTelecom.Grid.Controllers
         public async Task<IActionResult> Modify(string id, string FullName, string NewPwd, string Area, string Role)
         {
             var user = await UserManager.FindByIdAsync(id);
+            user.FullName = FullName;
             var claims = (await UserManager.GetClaimsAsync(user)).Select(x => x.Value);
             foreach (var x in claims)
                 await UserManager.RemoveClaimAsync(user, new System.Security.Claims.Claim("管辖片区", x));
@@ -116,7 +121,48 @@ namespace ChinaTelecom.Grid.Controllers
             var role = await UserManager.GetRolesAsync(user);
             await UserManager.RemoveFromRoleAsync(user, role.First());
             await UserManager.AddToRoleAsync(user, Role);
+            DB.SaveChanges();
             return RedirectToAction("Profile", "Account", new { id = id });
+        }
+
+        [HttpGet]
+        public IActionResult Setting()
+        {
+            return View(User.Current);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Setting(string oldpwd, string newpwd, string confirmpwd, IFormFile file)
+        {
+            var user = await UserManager.FindByIdAsync(User.Current.Id);
+            if (confirmpwd != newpwd)
+                return Prompt(x =>
+                {
+                    x.Title = "操作失败";
+                    x.Details = "两次密码输入不一致，请返回重试！";
+                });
+            if (file != null)
+                user.Avatar = await file.ReadAllBytesAsync();
+            if (!string.IsNullOrEmpty(oldpwd) && await UserManager.CheckPasswordAsync(user, oldpwd))
+                await UserManager.ChangePasswordAsync(user, oldpwd, newpwd);
+            DB.SaveChanges();
+            return RedirectToAction("Profile", "Account", new { id = User.Current.Id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Avatar(string id)
+        {
+            var user = await UserManager.FindByIdAsync(User.Current.Id);
+            return File(user.Avatar, "image/x-png");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await SignInManager.SignOutAsync();
+            return RedirectToAction("Login", "Account");
         }
     }
 }
