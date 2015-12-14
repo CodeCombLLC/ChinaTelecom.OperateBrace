@@ -345,7 +345,7 @@ namespace ChinaTelecom.Grid.Controllers
                     return Prompt(x =>
                     {
                         x.Title = "操作失败";
-                        x.Details = "您没有权限向该楼座添加用户！";
+                        x.Details = "您没有权限执行该操作！";
                     });
 
                 if (houses == null)
@@ -413,7 +413,7 @@ namespace ChinaTelecom.Grid.Controllers
                     return Prompt(x =>
                     {
                         x.Title = "操作失败";
-                        x.Details = "您没有权限向该楼座添加用户！";
+                        x.Details = "您没有权限执行该操作！";
                     });
 
                 DB.Houses.Add(new House
