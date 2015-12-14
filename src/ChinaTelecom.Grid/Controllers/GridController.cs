@@ -79,6 +79,28 @@ namespace ChinaTelecom.Grid.Controllers
             return Json(estates);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveEstate(Guid id)
+        {
+            var estate = DB.Estates
+                .Where(x => x.Id == id)
+                .Single();
+            if (!User.IsInRole("系统管理员"))
+            {
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                if (!areas.Contains(estate.Area))
+                    return Prompt(x =>
+                    {
+                        x.Title = "删除失败";
+                        x.Details = "您无权删除该小区";
+                    });
+            }
+            DB.Estates.Remove(estate);
+            DB.SaveChanges();
+            return RedirectToAction("Estate", "Grid");
+        }
+
         [HttpGet]
         public async Task<IActionResult> Area(bool? raw)
         {

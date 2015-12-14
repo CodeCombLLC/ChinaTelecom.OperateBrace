@@ -77,6 +77,7 @@
                                         <td>
                                             <a asp-action="Show" asp-controller="Grid" asp-route-id="@x.Id">管理</a>
                                             <a asp-action="Index" asp-controller="Grid" asp-route-lon="@x.Lon" asp-route-lat="@x.Lat">地图</a>
+                                            <a href="javascript:Remove('@x.Id')">删除</a>
                                         </td>
                                     </tr>
                                 }
@@ -106,3 +107,13 @@
         </div>
     </div>
 </div>
+<form asp-action="RemoveEstate" asp-controller="Account" id="frmRemoveEstate" method="post">
+    <input type="hidden" name="id" id="estateId" />
+</form>
+<script>
+    function Remove(id)
+    {
+        $('#estateId').val(id);
+        $('#frmRemoveEstate').submit();
+    }
+</script>
