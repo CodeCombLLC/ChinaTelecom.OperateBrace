@@ -96,5 +96,27 @@ namespace ChinaTelecom.Grid.Controllers
             ViewBag.Area = areastr.TrimEnd(' ').TrimEnd(',');
             return View(user);
         }
+
+        [HttpPost]
+        [AnyRoles("系统管理员")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Modify(string id, string FullName, string NewPwd, string Area, string Role)
+        {
+            var user = await UserManager.FindByIdAsync(id);
+            var claims = (await UserManager.GetClaimsAsync(user)).Select(x => x.Value);
+            foreach (var x in claims)
+                await UserManager.RemoveClaimAsync(user, new System.Security.Claims.Claim("管辖片区", x));
+            foreach (var x in Area.TrimEnd(' ').TrimEnd(',').Split(','))
+                await UserManager.AddClaimAsync(user, new System.Security.Claims.Claim("管辖片区", x));
+            if (!string.IsNullOrEmpty(NewPwd))
+            {
+                var token = await UserManager.GeneratePasswordResetTokenAsync(user);
+                await UserManager.ResetPasswordAsync(user, token, NewPwd);
+            }
+            var role = await UserManager.GetRolesAsync(user);
+            await UserManager.RemoveFromRoleAsync(user, role.First());
+            await UserManager.AddToRoleAsync(user, Role);
+            return RedirectToAction("Profile", "Account", new { id = id });
+        }
     }
 }
