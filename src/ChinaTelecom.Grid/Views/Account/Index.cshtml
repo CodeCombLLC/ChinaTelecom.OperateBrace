@@ -41,6 +41,37 @@
                     </div>
                 </div>
                 <div class="body-nest" id="UserList">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>用户名</th>
+                                <th>姓名</th>
+                                <th>角色</th>
+                                <th>片区</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model)
+                            {
+                                <tr>
+                                    <td><a asp-action="Profile" asp-controller="Account" asp-route-id="@x.Id">@x.UserName</a></td>
+                                    <td>@x.FullName</td>
+                                    <td>@((await User.Manager.GetRolesAsync(x)).First())</td>
+                                    <td>
+                                        @foreach(var y in await User.Manager.GetClaimsAsync(x))
+                                        {
+                                            <span>@y.Value</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-action="Modify" asp-controller="Account" asp-route-id="@x.Id">编辑</a>
+                                        <a href="javascript:Remove('@x.Id')">删除</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -60,11 +91,11 @@
                     <form asp-action="Create" asp-controller="Account" method="post">
                         <div class="form-group">
                             <label>用户名</label>
-                            <input name="name" type="text" class="form-control" placeholder="不修改请留空" />
+                            <input name="name" type="text" class="form-control" placeholder="作为登录时的用户名" />
                         </div>
                         <div class="form-group">
                             <label>密码</label>
-                            <input name="pwd" type="password" class="form-control" placeholder="不修改请留空" />
+                            <input name="pwd" type="password" class="form-control" placeholder="登录时输入的密码" />
                         </div>
                         <div class="form-group">
                             <label>姓名</label>
