@@ -105,6 +105,7 @@
                                     <th>用户姓名</th>
                                     <th>四级承包人名称</th>
                                     <th>四级承包体名称</th>
+                                    <th>包服人</th>
                                     <th>当月出账</th>
                                     <th>中投</th>
                                     <th>代理费</th>
@@ -124,10 +125,24 @@
                                 {
                                     <tr>
                                         <td>@x.Account</td>
-                                        <td>@x.Status</td>
+                                        <td>
+                                            @if (x.Status == ServiceStatus.在用)
+                                            { 
+                                                <span class="badge success">@x.Status</span>
+                                            }
+                                            else if (x.Status == ServiceStatus.未知)
+                                            {
+                                                <span class="badge info">@x.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge warning">@x.Status</span>
+                                            }
+                                        </td>
                                         <td>@x.CustomerName</td>
                                         <td>@x.ContractorName</td>
                                         <td>@x.ContractorStruct</td>
+                                        <td>@x.ServiceStaff</td>
                                         <td>@x.CurrentMonthBill</td>
                                         <td>@x.MDS</td>
                                         <td>@x.AgentFee</td>

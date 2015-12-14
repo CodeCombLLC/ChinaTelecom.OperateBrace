@@ -340,6 +340,14 @@ namespace ChinaTelecom.Grid.Controllers
 
                 var record = DB.Records.Where(x => x.Account == Account).LastOrDefault();
                 var houses = DB.Houses.Where(x => x.Account == Account).SingleOrDefault();
+
+                if (record != null && !User.IsInRole("系统管理员") && record.ServiceStaff != User.Current.FullName && record.ContractorName != User.Current.FullName)
+                    return Prompt(x =>
+                    {
+                        x.Title = "操作失败";
+                        x.Details = "您没有权限向该楼座添加用户！";
+                    });
+
                 if (houses == null)
                 {
                     DB.Houses.Add(new House
@@ -399,6 +407,13 @@ namespace ChinaTelecom.Grid.Controllers
                         x.Title = "操作失败";
                         x.Details = "没有找到该接入号对应的用户！";
                         x.StatusCode = 404;
+                    });
+
+                if (!User.IsInRole("系统管理员") && record.ServiceStaff != User.Current.FullName && record.ContractorName != User.Current.FullName)
+                    return Prompt(x =>
+                    {
+                        x.Title = "操作失败";
+                        x.Details = "您没有权限向该楼座添加用户！";
                     });
 
                 DB.Houses.Add(new House
