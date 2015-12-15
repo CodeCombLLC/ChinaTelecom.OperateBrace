@@ -35,7 +35,7 @@ namespace ChinaTelecom.Grid.Controllers
                 foreach (var x in rules.Split('\n'))
                     DB.EstateRules.Add(new EstateRule { Rule = x, EstateId = estate.Id });
             DB.SaveChanges();
-            return Content("ok");
+            return RedirectToAction("Index", "Grid", new { lon = estate.Lon, lat = estate.Lat });
         }
 
         [HttpPost]
