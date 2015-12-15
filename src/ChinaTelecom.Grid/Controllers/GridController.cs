@@ -256,6 +256,7 @@ namespace ChinaTelecom.Grid.Controllers
             foreach (var x in rules)
             {
                 pendingAddress.AddRange(DB.Records
+                    .AsNoTracking()
                     .Where(a => !DB.Houses
                     .Select(b => b.Account)
                     .Contains(a.Account))
@@ -264,8 +265,9 @@ namespace ChinaTelecom.Grid.Controllers
             pendingAddress = pendingAddress.OrderByDescending(x => x.ImportedTime).DistinctBy(x => x.Account).ToList();
 
             // 尝试根据规则进行对应
-            foreach (var x in pendingAddress)
+            for (var i = 0; i < pendingAddress.Count; i++)
             {
+                var x = pendingAddress[i];
                 try
                 {
                     var building = Lib.AddressAnalyser.GetBuildingNumber(x.ImplementAddress);
@@ -309,19 +311,6 @@ namespace ChinaTelecom.Grid.Controllers
                 {
                 }
             }
-
-            // 重新查找未匹配的地址
-            pendingAddress = new List<Record>();
-            foreach (var x in rules)
-            {
-                pendingAddress.AddRange(DB.Records
-                    .Where(a => !DB.Houses
-                    .Select(b => b.Account)
-                    .Contains(a.Account))
-                    .Where(a => a.ImplementAddress.Contains(x) || a.StandardAddress.Contains(x)));
-            }
-            pendingAddress = pendingAddress.OrderByDescending(x => x.ImportedTime).DistinctBy(x => x.Account).ToList();
-
             ViewBag.PendingAddresses = pendingAddress;
             return View(ret);
         }
