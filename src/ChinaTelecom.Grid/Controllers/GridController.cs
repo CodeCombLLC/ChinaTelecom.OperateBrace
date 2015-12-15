@@ -32,8 +32,9 @@ namespace ChinaTelecom.Grid.Controllers
             };
             DB.Estates.Add(estate);
             if (!string.IsNullOrEmpty(rules))
-                foreach (var x in rules.Split('\n'))
-                    DB.EstateRules.Add(new EstateRule { Rule = x, EstateId = estate.Id });
+                foreach (var x in rules.Split(','))
+                    if (!string.IsNullOrEmpty(x))
+                        DB.EstateRules.Add(new EstateRule { Rule = x, EstateId = estate.Id });
             DB.SaveChanges();
             return RedirectToAction("Index", "Grid", new { lon = estate.Lon, lat = estate.Lat });
         }
@@ -258,7 +259,8 @@ namespace ChinaTelecom.Grid.Controllers
                     .Where(a => !DB.Houses
                     .Select(b => b.Account)
                     .Contains(a.Account))
-                    .Where(a => a.ImplementAddress.Contains(x) || a.StandardAddress.Contains(x)));
+                    .Where(a => a.ImplementAddress.Contains(x) || a.StandardAddress.Contains(x))
+                    .ToList());
             }
             pendingAddress = pendingAddress.OrderByDescending(x => x.ImportedTime).DistinctBy(x => x.Account).ToList();
 

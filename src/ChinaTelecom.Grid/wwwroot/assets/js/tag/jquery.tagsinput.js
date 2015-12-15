@@ -177,7 +177,7 @@
 	$.fn.tagsInput = function(options) { 
     var settings = jQuery.extend({
       interactive:true,
-      defaultText:'添加片区',
+      defaultText:'添加...',
       minChars:0,
       width:'300px',
       height:'100px',

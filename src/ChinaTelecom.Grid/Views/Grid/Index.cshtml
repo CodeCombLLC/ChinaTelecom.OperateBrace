@@ -1,6 +1,8 @@
 ﻿@{ 
     ViewBag.Title = "查看地图";
 }
+<link rel="stylesheet" type="text/css" href="~/assets/js/tag/jquery.tagsinput.css">
+<script type="text/javascript" src="~/assets/js/tag/jquery.tagsinput.js"></script>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=g6DcirKK7FlGGGoiLwslU9kL"></script>
 <style>
     #allmap {
@@ -68,7 +70,11 @@
                         </tr>
                         <tr>
                             <td>匹配规则</td>
-                            <td><textarea class="form-control" placeholder="每行一个，例如'XX小区'、'XXX街XXX号'" name="rules"></textarea></td>
+                            <td>
+                                <input type="text" class="form-control" id="tagsRule" />
+                                <span>填写匹配规则，与明细中的地址对应，应为"XXX小区"、"XXX街XXX号"</span>
+                                <input type="hidden" id="hidRules" name="rules" />
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -223,5 +229,19 @@
             }
             BuildOverlays();
         }, 3000);
+    });
+
+    function RebuildHidRules() {
+        var tmp = $('#tagsRule_tagsinput').find('.tag span');
+        var str = "";
+        for (var i = 0; i < tmp.length; i++) {
+            str += $(tmp[i]).text().trim() + ",";
+        }
+        $('#hidRules').val(str);
+    }
+    $('#tagsRule').tagsInput({
+        width: 'auto', onChange: function (elem, elem_tags) {
+            RebuildHidRules();
+        }
     });
 </script>
