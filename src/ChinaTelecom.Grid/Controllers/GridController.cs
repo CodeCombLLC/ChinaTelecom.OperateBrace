@@ -34,7 +34,7 @@ namespace ChinaTelecom.Grid.Controllers
             if (!string.IsNullOrEmpty(rules))
                 foreach (var x in rules.Split(','))
                     if (!string.IsNullOrEmpty(x))
-                        DB.EstateRules.Add(new EstateRule { Rule = x, EstateId = estate.Id });
+                        DB.EstateRules.Add(new EstateRule { Rule = x.Trim(), EstateId = estate.Id });
             DB.SaveChanges();
             return RedirectToAction("Index", "Grid", new { lon = estate.Lon, lat = estate.Lat });
         }
