@@ -259,8 +259,7 @@ namespace ChinaTelecom.Grid.Controllers
                     .Where(a => !DB.Houses
                     .Select(b => b.Account)
                     .Contains(a.Account))
-                    .Where(a => a.ImplementAddress.Contains(x) || a.StandardAddress.Contains(x))
-                    .ToList());
+                    .Where(a => a.ImplementAddress.Contains(x) || a.StandardAddress.Contains(x)));
             }
             pendingAddress = pendingAddress.OrderByDescending(x => x.ImportedTime).DistinctBy(x => x.Account).ToList();
 
@@ -310,6 +309,19 @@ namespace ChinaTelecom.Grid.Controllers
                 {
                 }
             }
+
+            // 重新查找未匹配的地址
+            pendingAddress = new List<Record>();
+            foreach (var x in rules)
+            {
+                pendingAddress.AddRange(DB.Records
+                    .Where(a => !DB.Houses
+                    .Select(b => b.Account)
+                    .Contains(a.Account))
+                    .Where(a => a.ImplementAddress.Contains(x) || a.StandardAddress.Contains(x)));
+            }
+            pendingAddress = pendingAddress.OrderByDescending(x => x.ImportedTime).DistinctBy(x => x.Account).ToList();
+
             ViewBag.PendingAddresses = pendingAddress;
             return View(ret);
         }
@@ -713,6 +725,42 @@ namespace ChinaTelecom.Grid.Controllers
                     });
             DB.SaveChanges();
             return RedirectToAction("Estate", "Grid");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditBuilding(Guid id, string title, int units, int toplayers, int bottomlayers, int doors, [FromHeader] string Referer)
+        {
+            var building = DB.Buildings
+                .Include(x => x.Estate)
+                .Include(x => x.Houses)
+                .Where(x => x.Id == id)
+                .Single();
+            if (!User.IsInRole("系统管理员"))
+            {
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                if (!areas.Contains(building.Estate.Area))
+                {
+                    return Prompt(x =>
+                    {
+                        x.Title = "删除失败";
+                        x.Details = "您无权删除该楼座";
+                    });
+                }
+            }
+            building.Title = title;
+            building.Units = units;
+            building.TopLayers = toplayers;
+            building.BottomLayers = bottomlayers;
+            building.Doors = doors;
+            DB.SaveChanges();
+            var missed = building.Houses
+                .Where(x => x.Unit > units || x.Layer < bottomlayers || x.Layer > toplayers || x.Door > doors)
+                .ToList();
+            foreach (var x in missed)
+                DB.Houses.Remove(x);
+            DB.SaveChanges();
+            return Redirect(Referer);
         }
     }
 }

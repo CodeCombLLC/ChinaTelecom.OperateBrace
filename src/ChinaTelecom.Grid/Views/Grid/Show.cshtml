@@ -2,6 +2,45 @@
 @{
     ViewBag.Title = "管理小区 - " + ViewBag.EstateTitle;
 }
+<div class="modal fade" id="modelEditBuilding" tabindex="-1" role="dialog" aria-labelledby="modelEditBuilding">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form asp-action="EditBuilding" asp-controller="Grid" method="post">
+                <input type="hidden" name="id" id="editBuildingId" />
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">修改楼宇信息</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>楼座</label>
+                        <input type="text" class="form-control" id="buildingTitle" name="title" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>单元数</label>
+                        <input type="text" class="form-control" id="buildingUnits" name="units" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>最高楼层</label>
+                        <input type="text" class="form-control" id="buildingTopLayers" name="toplayers" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>最低楼层</label>
+                        <input type="text" class="form-control" id="buildingBottomLayers" name="bottomlayers" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>每层户数</label>
+                        <input type="text" class="form-control" id="buildingDoors" name="doors" value="" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <input type="submit" class="btn btn-primary" value="修改" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <div class="row">
     <div id="paper-top">
@@ -73,19 +112,20 @@
                             <tbody>
                                 @foreach (var x in Model)
                                 {
-                                    <tr>
-                                        <td>@x.Title</td>
+                                    <tr data-id="@x.Id">
+                                        <td class="building-title">@x.Title</td>
                                         <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信).Count()</td>
                                         <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用).Count()</td>
                                         <td>@x.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信 && a.HouseStatus != HouseStatus.未装机).Count()</td>
                                         <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用 && a.IsStatusChanged).Count()</td>
                                         <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus != ServiceStatus.在用 && a.IsStatusChanged).Count()</td>
-                                        <td>@x.Units</td>
-                                        <td>@x.TopLayers</td>
-                                        <td>@x.BottomLayers</td>
-                                        <td>@x.Doors</td>
+                                        <td class="building-units">@x.Units</td>
+                                        <td class="building-top-layers">@x.TopLayers</td>
+                                        <td class="building-bottom-layers">@x.BottomLayers</td>
+                                        <td class="building-doors">@x.Doors</td>
                                         <td>
                                             <a asp-action="Building" asp-controller="Grid" asp-route-id="@x.Id">管理</a>
+                                            <a href="javascript: Modify('@x.Id')">修改</a>
                                             <a href="javascript:Remove('@x.Id')">删除</a>
                                         </td>
                                     </tr>
@@ -145,5 +185,16 @@
     {
         $('#buildingId').val(id);
         $('#frmRemoveBuilding').submit();
+    }
+
+    function Modify(id)
+    {
+        $('#editBuildingId').val(id);
+        $('#buildingTitle').val($('tr[data-id="' + id + '"]').find('.building-title').text());
+        $('#buildingUnits').val($('tr[data-id="' + id + '"]').find('.building-units').text());
+        $('#buildingTopLayers').val($('tr[data-id="' + id + '"]').find('.building-top-layers').text());
+        $('#buildingBottomLayers').val($('tr[data-id="' + id + '"]').find('.building-bottom-layers').text());
+        $('#buildingDoors').val($('tr[data-id="' + id + '"]').find('.building-doors').text());
+        $('#modelEditBuilding').modal('show');
     }
 </script>
