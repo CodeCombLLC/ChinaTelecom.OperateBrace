@@ -580,6 +580,10 @@ namespace ChinaTelecom.Grid.Controllers
                 .Select(x => x.ContractorName)
                 .Distinct()
                 .ToList();
+            ViewBag.Staff = DB.Records
+                .Select(x => x.ServiceStaff)
+                .Distinct()
+                .ToList();
             ViewBag.Sets = DB.Records
                 .Select(x => x.Set)
                 .Distinct()
@@ -598,7 +602,9 @@ namespace ChinaTelecom.Grid.Controllers
 
             var tmp = houses.Select(x => x.Account).ToList();
             var records = DB.Records
-                .Where(x => Set.Contains(x.Set) && Contractor.Contains(x.ContractorName) && tmp.Contains(x.Account))
+                .Where(x => Set.Contains(x.Set) 
+                    && (Contractor.Contains(x.ContractorName) || Contractor.Contains(x.ServiceStaff))
+                    && tmp.Contains(x.Account))
                 .ToList();
 
             ViewBag.UserStatistics = Lib.Counting.Count(records, houses);

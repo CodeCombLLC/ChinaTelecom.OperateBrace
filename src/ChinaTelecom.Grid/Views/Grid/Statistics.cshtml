@@ -3,6 +3,7 @@
     List<string> Areas = ViewBag.Areas;
     List<string> Contractors = ViewBag.Contractors;
     List<string> Sets = ViewBag.Sets;
+    List<string> Staff = ViewBag.Staff;
 }
 
 <div class="row">
@@ -93,6 +94,28 @@
                         </div>
                         <hr />
                         <div class="form-group">
+                            <label><input type="checkbox" id="allStaff" /> 包服人选择</label>
+                            @for (var i = 0; i < Staff.Count; i++)
+                            {
+                                if (i % 6 == 0)
+                                {
+                                    @(new HtmlString("<div class=\"row\">"))
+                                }
+                                <div class="col-sm-2">
+                                    <label>
+                                        <input class="chk-staff" type="checkbox" value="@Staff[i]" name="Contractor" />
+                                        @Staff[i]
+                                    </label>
+                                </div>
+                                if (i % 6 == 5)
+                                {
+                                    @(new HtmlString("</div>"))
+                                }
+                            }
+                        </div>
+
+                        <hr />
+                        <div class="form-group">
                             <label><input type="checkbox" id="allSets" /> 套餐选择</label>
                             @for (var i = 0; i < Sets.Count; i++)
                             {
@@ -132,6 +155,12 @@
             $('.chk-contractor').prop("checked", true);
         else
             $('.chk-contractor').prop("checked", false);
+    });
+    $('#allStaff').change(function () {
+        if ($(this).is(':checked'))
+            $('.chk-staff').prop("checked", true);
+        else
+            $('.chk-staff').prop("checked", false);
     });
     $('#allSets').change(function () {
         if ($(this).is(':checked'))
