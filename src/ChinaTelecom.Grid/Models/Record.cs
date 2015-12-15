@@ -13,7 +13,7 @@ namespace ChinaTelecom.Grid.Models
 
         public DateTime ImportedTime { get; set; }
 
-        [MaxLength(64)]
+        [MaxLength(32)]
         public string Account { get; set; }
 
         public ServiceStatus Status { get; set; }
@@ -27,7 +27,7 @@ namespace ChinaTelecom.Grid.Models
         [MaxLength(32)]
         public string ServiceStaff { get; set; }
 
-        [MaxLength(128)]
+        [MaxLength(32)]
         public string ContractorStruct { get; set; }
 
         public double CurrentMonthBill { get; set; }
@@ -56,7 +56,7 @@ namespace ChinaTelecom.Grid.Models
         [MaxLength(64)]
         public string SalesProduction { get; set; }
 
-        [MaxLength(64)]
+        [MaxLength(32)]
         public string MDS { get; set; }
 
         [MaxLength(32)]

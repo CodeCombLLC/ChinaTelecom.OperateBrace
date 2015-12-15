@@ -148,7 +148,7 @@ namespace ChinaTelecom.Grid.Controllers
             if (!string.IsNullOrEmpty(Area))
                 ret = ret.Where(x => x.Area == Area);
             if (!string.IsNullOrEmpty(Title))
-                ret = ret.Where(x => x.Title.Contains(Title) || Title.Contains(x.Title));
+                ret = ret.Where(x => x.Title.Contains(Title));
             ret = ret.OrderBy(x => x.Area);
             if (raw.HasValue && raw.Value)
                 return XlsView(ret.ToList(), "Estate.xls", "ExportEstate");

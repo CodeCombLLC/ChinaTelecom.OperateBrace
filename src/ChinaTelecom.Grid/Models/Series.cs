@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ChinaTelecom.Grid.Models
 {
@@ -14,11 +15,23 @@ namespace ChinaTelecom.Grid.Models
     {
         public Guid Id { get; set; }
 
-        public SeriesStatus Status { get; set; }
+        [NotMapped]
+        public SeriesStatus Status
+        {
+            get
+            {
+                if (FailedCount + ImportedCount >= TotalCount)
+                    return SeriesStatus.导入完成;
+                else
+                    return SeriesStatus.导入中;
+            }
+        }
 
-        public ulong FailedCount { get; set; }
+        public long FailedCount { get; set; }
 
-        public ulong ImportedCount { get; set; }
+        public long TotalCount { get; set; }
+
+        public long ImportedCount { get; set; }
 
         public DateTime Time { get; set; }
 

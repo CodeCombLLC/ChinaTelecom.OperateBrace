@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Data;
 using System.Data.OleDb;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Http;
@@ -100,18 +101,31 @@ namespace ChinaTelecom.Grid.Controllers
                 {
                     DB = serviceScope.ServiceProvider.GetService<GridContext>();
                     series = DB.Serieses.Where(x => x.Id == series.Id).Single();
-
                     using (var conn = new OleDbConnection(connStr))
                     {
                         conn.Open();
-                        var cmd = new OleDbCommand("select * from [Sheet1$]", conn);
-                        using (var reader = cmd.ExecuteReader())
+                        var schemaTable = conn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, new object[] { null, null, null, "TABLE" });
+                        var rows = schemaTable.Rows;
+                        foreach (DataRow r in rows)
                         {
-                            while (reader.Read())
+                            if (r["TABLE_NAME"].ToString() == "_xlnm#_FilterDatabase")
+                                continue;
+                            using (var adapter = new OleDbDataAdapter($"select * from [{r["TABLE_NAME"].ToString()}]", conn))
+                            using (var dt = new DataTable())
                             {
-                                using (var innerServiceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                                adapter.Fill(dt);
+                                lock (this)
                                 {
-                                    using (var db = serviceScope.ServiceProvider.GetService<GridContext>())
+                                    series = DB.Serieses.Where(x => x.Id == series.Id).Single();
+                                    series.TotalCount = series.TotalCount + dt.Rows.Count;
+                                    DB.SaveChanges();
+                                }
+
+                                for (var i = 0; i < dt.Rows.Count; i++)
+                                {
+                                    var reader = dt.Rows[i];
+                                    using (var innerServiceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+                                    using (var db = innerServiceScope.ServiceProvider.GetService<GridContext>())
                                     {
                                         try
                                         {
@@ -193,39 +207,77 @@ namespace ChinaTelecom.Grid.Controllers
                                             }
                                             #endregion
                                             db.Records.Add(record);
-                                            series.ImportedCount++;
                                             db.SaveChanges();
-                                            var house = db.Houses
+                                            lock (this)
+                                            {
+                                                series = db.Serieses.Where(x => x.Id == series.Id).Single();
+                                                series.ImportedCount++;
+                                                db.SaveChanges();
+                                            }
+                                            try
+                                            {
+                                                var house = db.Houses
                                                 .Include(x => x.Building)
                                                 .ThenInclude(x => x.Estate)
                                                 .ThenInclude(x => x.Rules)
                                                 .Where(x => x.Account == record.Account)
                                                 .SingleOrDefault();
-                                            if (house != null)
-                                            {
-                                                // 检查地址变更
-                                                var rules = house.Building.Estate.Rules
-                                                    .Select(x => x.Rule)
-                                                    .ToList();
-                                                var flag = false;
-                                                foreach (var x in rules)
+                                                if (house != null)
                                                 {
-                                                    if (record.ImplementAddress.Contains(x) || record.StandardAddress.Contains(x))
+                                                    // 检查地址变更
+                                                    var rules = house.Building.Estate.Rules
+                                                        .Select(x => x.Rule)
+                                                        .ToList();
+                                                    var flag = false;
+                                                    foreach (var x in rules)
                                                     {
-                                                        flag = true;
-                                                        break;
+                                                        if (record.ImplementAddress.Contains(x) || record.StandardAddress.Contains(x))
+                                                        {
+                                                            flag = true;
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    // 如果地址变更则更新地址信息
+                                                    if (!flag)
+                                                    {
+                                                        var estate = db.EstateRules
+                                                            .Include(x => x.Estate)
+                                                            .ThenInclude(x => x.Buildings)
+                                                            .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
+                                                            .Select(x => x.Estate)
+                                                            .FirstOrDefault();
+                                                        if (estate != null)
+                                                        {
+                                                            var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
+                                                            var _building = estate.Buildings.Where(a => a.Title == building).SingleOrDefault();
+                                                            var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
+                                                            var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
+                                                            var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
+                                                            if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue && _building != null)
+                                                            {
+                                                                house.BuildingId = _building.Id;
+                                                                house.Unit = unit.Value;
+                                                                house.Layer = layer.Value;
+                                                                house.Door = door.Value;
+                                                                house.Phone = record.Phone;
+                                                                house.FullName = record.CustomerName;
+                                                                house.IsStatusChanged = record.Status == house.ServiceStatus;
+                                                                house.ServiceStatus = record.Status;
+                                                                house.LastUpdate = DateTime.Now;
+                                                                house.HouseStatus = HouseStatus.中国电信;
+                                                            }
+                                                        }
                                                     }
                                                 }
-
-                                                // 如果地址变更则更新地址信息
-                                                if (!flag)
+                                                else
                                                 {
                                                     var estate = db.EstateRules
-                                                        .Include(x => x.Estate)
-                                                        .ThenInclude(x => x.Buildings)
-                                                        .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
-                                                        .Select(x => x.Estate)
-                                                        .FirstOrDefault();
+                                                             .Include(x => x.Estate)
+                                                             .ThenInclude(x => x.Buildings)
+                                                             .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
+                                                             .Select(x => x.Estate)
+                                                             .FirstOrDefault();
                                                     if (estate != null)
                                                     {
                                                         var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
@@ -235,57 +287,31 @@ namespace ChinaTelecom.Grid.Controllers
                                                         var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
                                                         if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue && _building != null)
                                                         {
+                                                            house = new House();
+                                                            house.Account = record.Account;
                                                             house.BuildingId = _building.Id;
                                                             house.Unit = unit.Value;
                                                             house.Layer = layer.Value;
                                                             house.Door = door.Value;
                                                             house.Phone = record.Phone;
                                                             house.FullName = record.CustomerName;
-                                                            house.IsStatusChanged = record.Status == house.ServiceStatus;
+                                                            house.IsStatusChanged = true;
                                                             house.ServiceStatus = record.Status;
                                                             house.LastUpdate = DateTime.Now;
                                                             house.HouseStatus = HouseStatus.中国电信;
                                                         }
                                                     }
                                                 }
+                                                db.SaveChanges();
                                             }
-                                            else
+                                            catch
                                             {
-                                                var estate = db.EstateRules
-                                                         .Include(x => x.Estate)
-                                                         .ThenInclude(x => x.Buildings)
-                                                         .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
-                                                         .Select(x => x.Estate)
-                                                         .FirstOrDefault();
-                                                if (estate != null)
-                                                {
-                                                    var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
-                                                    var _building = estate.Buildings.Where(a => a.Title == building).SingleOrDefault();
-                                                    var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
-                                                    var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
-                                                    var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
-                                                    if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue && _building != null)
-                                                    {
-                                                        house = new House();
-                                                        house.Account = record.Account;
-                                                        house.BuildingId = _building.Id;
-                                                        house.Unit = unit.Value;
-                                                        house.Layer = layer.Value;
-                                                        house.Door = door.Value;
-                                                        house.Phone = record.Phone;
-                                                        house.FullName = record.CustomerName;
-                                                        house.IsStatusChanged = true;
-                                                        house.ServiceStatus = record.Status;
-                                                        house.LastUpdate = DateTime.Now;
-                                                        house.HouseStatus = HouseStatus.中国电信;
-                                                    }
-                                                }
                                             }
-                                            db.SaveChanges();
                                             GC.Collect();
                                         }
                                         catch (Exception ex)
                                         {
+                                            series = db.Serieses.Where(x => x.Id == series.Id).Single();
                                             series.FailedCount++;
                                             db.SaveChanges();
                                             Console.WriteLine(ex.ToString());
@@ -293,9 +319,6 @@ namespace ChinaTelecom.Grid.Controllers
                                     }
                                 }
                             }
-                            series = DB.Serieses.Where(x => x.Id == series.Id).Single();
-                            series.Status = SeriesStatus.导入完成;
-                            DB.SaveChanges();
                         }
                     }
                 }

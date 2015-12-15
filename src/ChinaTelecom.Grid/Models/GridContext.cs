@@ -67,7 +67,6 @@ namespace ChinaTelecom.Grid.Models
                 e.HasIndex(x => x.ImportedTime);
                 e.HasIndex(x => x.Status);
                 e.HasIndex(x => x.Set);
-                e.HasIndex(x => x.IsFuse);
                 e.HasIndex(x => x.Phone);
             });
         }

@@ -38,7 +38,7 @@ namespace ChinaTelecom.Grid
                     .AddDbContext<GridContext>(x => x.UseSqlServer(Config["Data:DefaultConnection:ConnectionString"]))
                     .AddSqlServer();
             }
-            else if (Config["Data:DefaultConnection:Type"] == "PostgreSQL")
+            else if (Config["Data:DefaultConnection:Mode"] == "PostgreSQL")
             {
                 services.AddEntityFramework()
                     .AddNpgsql()
@@ -50,10 +50,6 @@ namespace ChinaTelecom.Grid
                     .AddDbContext<GridContext>(x => x.UseInMemoryDatabase())
                     .AddInMemoryDatabase();
             }
-
-            services.AddEntityFramework()
-                .AddSqlite()
-                .AddDbContext<GridContext>(x => x.UseSqlite($"Data source={env.ApplicationBasePath}/Database/ctgrid.db"));
 
             services.AddIdentity<User, IdentityRole>(x =>
             {
