@@ -246,7 +246,7 @@ namespace ChinaTelecom.Grid.Controllers
                 .Select(x => x.Account)
                 .ToList();
             var rules = DB.EstateRules
-                .Where(x => x.EstateId == id)
+                .Where(x => x.EstateId == ret.EstateId)
                 .Select(x => x.Rule)
                 .ToList();
 
@@ -258,8 +258,7 @@ namespace ChinaTelecom.Grid.Controllers
                     .Where(a => !DB.Houses
                     .Select(b => b.Account)
                     .Contains(a.Account))
-                    .Where(a => a.ImplementAddress.Contains(x) || a.StandardAddress.Contains(x))
-                    );
+                    .Where(a => a.ImplementAddress.Contains(x) || a.StandardAddress.Contains(x)));
             }
             pendingAddress = pendingAddress.OrderByDescending(x => x.ImportedTime).DistinctBy(x => x.Account).ToList();
 
