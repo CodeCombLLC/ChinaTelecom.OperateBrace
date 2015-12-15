@@ -61,15 +61,15 @@
                     <form asp-action="Setting" asp-controller="Account" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
                         <div class="form-group">
                             <label>旧密码</label>
-                            <input name="oldpwd" type="password" placeholder="不修改密码请留空" class="form-control" />
+                            <input name="oldpwd" autocomplete="off" type="password" placeholder="不修改密码请留空" class="form-control" />
                         </div>
                         <div class="form-group">
                             <label>新密码</label>
-                            <input name="newpwd" type="password" placeholder="不修改密码请留空" class="form-control" />
+                            <input name="newpwd" autocomplete="off" type="password" placeholder="不修改密码请留空" class="form-control" />
                         </div>
                         <div class="form-group">
                             <label>密码重复</label>
-                            <input name="confirmpwd" type="password" placeholder="不修改密码请留空" class="form-control" />
+                            <input name="confirmpwd" autocomplete="off" type="password" placeholder="不修改密码请留空" class="form-control" />
                         </div>
                         <div class="form-group">
                             <label>修改头像</label>

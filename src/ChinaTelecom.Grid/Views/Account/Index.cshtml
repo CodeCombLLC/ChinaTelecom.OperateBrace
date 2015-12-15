@@ -109,15 +109,15 @@
                     <form asp-action="Create" asp-controller="Account" method="post">
                         <div class="form-group">
                             <label>用户名</label>
-                            <input name="name" type="text" class="form-control" placeholder="作为登录时的用户名" />
+                            <input name="name" type="text" autocomplete="off" class="form-control" placeholder="作为登录时的用户名" />
                         </div>
                         <div class="form-group">
                             <label>密码</label>
-                            <input name="pwd" type="password" class="form-control" placeholder="登录时输入的密码" />
+                            <input name="pwd" type="password" autocomplete="off" class="form-control" placeholder="登录时输入的密码" />
                         </div>
                         <div class="form-group">
                             <label>姓名</label>
-                            <input name="fullname" type="text" placeholder="需与明细匹配" class="form-control" />
+                            <input name="fullname" autocomplete="off" type="text" placeholder="需与明细匹配" class="form-control" />
                         </div>
                         <div class="form-group">
                             <label>角色</label>
