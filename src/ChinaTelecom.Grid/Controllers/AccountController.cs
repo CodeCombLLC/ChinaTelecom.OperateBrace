@@ -154,8 +154,9 @@ namespace ChinaTelecom.Grid.Controllers
             var claims = (await UserManager.GetClaimsAsync(user)).Select(x => x.Value);
             foreach (var x in claims)
                 await UserManager.RemoveClaimAsync(user, new System.Security.Claims.Claim("管辖片区", x));
-            foreach (var x in Area.TrimEnd(' ').TrimEnd(',').Split(','))
-                await UserManager.AddClaimAsync(user, new System.Security.Claims.Claim("管辖片区", x));
+            if (!string.IsNullOrEmpty(Area))
+                foreach (var x in Area.TrimEnd(' ').TrimEnd(',').Split(','))
+                    await UserManager.AddClaimAsync(user, new System.Security.Claims.Claim("管辖片区", x));
             if (!string.IsNullOrEmpty(NewPwd))
             {
                 var token = await UserManager.GeneratePasswordResetTokenAsync(user);
