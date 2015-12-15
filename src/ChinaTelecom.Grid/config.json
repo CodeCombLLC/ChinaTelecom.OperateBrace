@@ -3,6 +3,12 @@
     "DefaultLon": 126.645098,
     "DefaultLat": 45.758188,
     "DefaultZoom": 12,
-    "Authorization": "道里"
+    "Authorization": "道里",
+    "Data": {
+      "DefaultConnection": {
+        "Mode": "SQLite",
+        "ConnectionString": "Data source={appRoot}/Database/ctgrid.db"
+      }
+    }
   }
 }

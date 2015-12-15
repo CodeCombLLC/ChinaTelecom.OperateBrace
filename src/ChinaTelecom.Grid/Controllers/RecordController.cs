@@ -109,186 +109,193 @@ namespace ChinaTelecom.Grid.Controllers
                         {
                             while (reader.Read())
                             {
-                                try
+                                using (var innerServiceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
                                 {
-                                    var record = new Record
+                                    using (var db = serviceScope.ServiceProvider.GetService<GridContext>())
                                     {
-                                        Account = reader["接入号"].ToString(),
-                                        CustomerName = reader["用户姓名"].ToString(),
-                                        ContractorName = reader["四级承包人名称"].ToString(),
-                                        ContractorStruct = reader["四级承包体名称"].ToString(),
-                                        ServiceStaff = reader["包服人"].ToString(),
-                                        MDS = reader["中投"].ToString(),
-                                        ImplementAddress = reader["装机地址"].ToString(),
-                                        StandardAddress = reader["标准地址"].ToString(),
-                                        Set = reader["套餐"].ToString(),
-                                        SalesProduction = reader["融合促销包"].ToString(),
-                                        Phone = reader["联系电话"].ToString(),
-                                        IsFuse = reader["是否家庭融合宽带"].ToString() == "是",
-                                        ImportedTime = series.Time,
-                                        SeriesId = series.Id
-                                    };
-                                    #region Try parse
-                                    try
-                                    {
-                                        record.CurrentMonthBill = Convert.ToDouble(reader["当月出帐"].ToString());
-                                    }
-                                    catch
-                                    {
-                                        record.CurrentMonthBill = 0;
-                                    }
-
-                                    try
-                                    {
-                                        record.AgentFee = Convert.ToDouble(reader["代理费"].ToString());
-                                    }
-                                    catch
-                                    {
-                                        record.AgentFee = 0;
-                                    }
-
-                                    try
-                                    {
-                                        record.Commission = Convert.ToDouble(reader["一次佣金"].ToString());
-                                    }
-                                    catch
-                                    {
-                                        record.Commission = 0;
-                                    }
-
-                                    try
-                                    {
-                                        record.Arrearage = Convert.ToDouble(reader["欠费"].ToString());
-                                    }
-                                    catch
-                                    {
-                                        record.Arrearage = 0;
-                                    }
-
-                                    try
-                                    {
-                                        if (reader["用户状态"].ToString() == "欠停(双向)")
-                                            record.Status = ServiceStatus.双向欠停;
-                                        else if (reader["用户状态"].ToString() == "欠停(单向)")
-                                            record.Status = ServiceStatus.单向欠停;
-                                        else
-                                            record.Status = (ServiceStatus)Enum.Parse(typeof(ServiceStatus), reader["用户状态"].ToString());
-                                    }
-                                    catch
-                                    {
-                                        record.Status = ServiceStatus.未知;
-                                    }
-
-                                    try
-                                    {
-                                        record.PRCID = (Convert.ToInt64(reader["身份证号码"])).ToString();
-                                    }
-                                    catch
-                                    {
-                                        record.PRCID = null;
-                                    }
-                                    #endregion
-                                    DB.Records.Add(record);
-                                    series.ImportedCount++;
-                                    DB.SaveChanges();
-                                    var house = DB.Houses
-                                        .Include(x => x.Building)
-                                        .ThenInclude(x => x.Estate)
-                                        .ThenInclude(x => x.Rules)
-                                        .Where(x => x.Account == record.Account)
-                                        .SingleOrDefault();
-                                    if (house != null)
-                                    {
-                                        // 检查地址变更
-                                        var rules = house.Building.Estate.Rules
-                                            .Select(x => x.Rule)
-                                            .ToList();
-                                        var flag = false;
-                                        foreach (var x in rules)
+                                        try
                                         {
-                                            if (record.ImplementAddress.Contains(x) || record.StandardAddress.Contains(x))
+                                            var record = new Record
                                             {
-                                                flag = true;
-                                                break;
+                                                Account = reader["接入号"].ToString(),
+                                                CustomerName = reader["用户姓名"].ToString(),
+                                                ContractorName = reader["四级承包人名称"].ToString(),
+                                                ContractorStruct = reader["四级承包体名称"].ToString(),
+                                                ServiceStaff = reader["包服人"].ToString(),
+                                                MDS = reader["中投"].ToString(),
+                                                ImplementAddress = reader["装机地址"].ToString(),
+                                                StandardAddress = reader["标准地址"].ToString(),
+                                                Set = reader["套餐"].ToString(),
+                                                SalesProduction = reader["融合促销包"].ToString(),
+                                                Phone = reader["联系电话"].ToString(),
+                                                IsFuse = reader["是否家庭融合宽带"].ToString() == "是",
+                                                ImportedTime = series.Time,
+                                                SeriesId = series.Id
+                                            };
+                                            #region Try parse
+                                            try
+                                            {
+                                                record.CurrentMonthBill = Convert.ToDouble(reader["当月出帐"].ToString());
                                             }
-                                        }
-
-                                        // 如果地址变更则更新地址信息
-                                        if (!flag)
-                                        {
-                                            var estate = DB.EstateRules
-                                                .Include(x => x.Estate)
-                                                .ThenInclude(x => x.Buildings)
-                                                .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
-                                                .Select(x => x.Estate)
-                                                .FirstOrDefault();
-                                            if (estate != null)
+                                            catch
                                             {
-                                                var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
-                                                var _building = estate.Buildings.Where(a => a.Title == building).SingleOrDefault();
-                                                var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
-                                                var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
-                                                var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
-                                                if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue && _building != null)
+                                                record.CurrentMonthBill = 0;
+                                            }
+
+                                            try
+                                            {
+                                                record.AgentFee = Convert.ToDouble(reader["代理费"].ToString());
+                                            }
+                                            catch
+                                            {
+                                                record.AgentFee = 0;
+                                            }
+
+                                            try
+                                            {
+                                                record.Commission = Convert.ToDouble(reader["一次佣金"].ToString());
+                                            }
+                                            catch
+                                            {
+                                                record.Commission = 0;
+                                            }
+
+                                            try
+                                            {
+                                                record.Arrearage = Convert.ToDouble(reader["欠费"].ToString());
+                                            }
+                                            catch
+                                            {
+                                                record.Arrearage = 0;
+                                            }
+
+                                            try
+                                            {
+                                                if (reader["用户状态"].ToString() == "欠停(双向)")
+                                                    record.Status = ServiceStatus.双向欠停;
+                                                else if (reader["用户状态"].ToString() == "欠停(单向)")
+                                                    record.Status = ServiceStatus.单向欠停;
+                                                else
+                                                    record.Status = (ServiceStatus)Enum.Parse(typeof(ServiceStatus), reader["用户状态"].ToString());
+                                            }
+                                            catch
+                                            {
+                                                record.Status = ServiceStatus.未知;
+                                            }
+
+                                            try
+                                            {
+                                                record.PRCID = (Convert.ToInt64(reader["身份证号码"])).ToString();
+                                            }
+                                            catch
+                                            {
+                                                record.PRCID = null;
+                                            }
+                                            #endregion
+                                            db.Records.Add(record);
+                                            series.ImportedCount++;
+                                            db.SaveChanges();
+                                            var house = db.Houses
+                                                .Include(x => x.Building)
+                                                .ThenInclude(x => x.Estate)
+                                                .ThenInclude(x => x.Rules)
+                                                .Where(x => x.Account == record.Account)
+                                                .SingleOrDefault();
+                                            if (house != null)
+                                            {
+                                                // 检查地址变更
+                                                var rules = house.Building.Estate.Rules
+                                                    .Select(x => x.Rule)
+                                                    .ToList();
+                                                var flag = false;
+                                                foreach (var x in rules)
                                                 {
-                                                    house.BuildingId = _building.Id;
-                                                    house.Unit = unit.Value;
-                                                    house.Layer = layer.Value;
-                                                    house.Door = door.Value;
-                                                    house.Phone = record.Phone;
-                                                    house.FullName = record.CustomerName;
-                                                    house.IsStatusChanged = record.Status == house.ServiceStatus;
-                                                    house.ServiceStatus = record.Status;
-                                                    house.LastUpdate = DateTime.Now;
-                                                    house.HouseStatus = HouseStatus.中国电信;
+                                                    if (record.ImplementAddress.Contains(x) || record.StandardAddress.Contains(x))
+                                                    {
+                                                        flag = true;
+                                                        break;
+                                                    }
+                                                }
+
+                                                // 如果地址变更则更新地址信息
+                                                if (!flag)
+                                                {
+                                                    var estate = db.EstateRules
+                                                        .Include(x => x.Estate)
+                                                        .ThenInclude(x => x.Buildings)
+                                                        .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
+                                                        .Select(x => x.Estate)
+                                                        .FirstOrDefault();
+                                                    if (estate != null)
+                                                    {
+                                                        var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
+                                                        var _building = estate.Buildings.Where(a => a.Title == building).SingleOrDefault();
+                                                        var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
+                                                        var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
+                                                        var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
+                                                        if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue && _building != null)
+                                                        {
+                                                            house.BuildingId = _building.Id;
+                                                            house.Unit = unit.Value;
+                                                            house.Layer = layer.Value;
+                                                            house.Door = door.Value;
+                                                            house.Phone = record.Phone;
+                                                            house.FullName = record.CustomerName;
+                                                            house.IsStatusChanged = record.Status == house.ServiceStatus;
+                                                            house.ServiceStatus = record.Status;
+                                                            house.LastUpdate = DateTime.Now;
+                                                            house.HouseStatus = HouseStatus.中国电信;
+                                                        }
+                                                    }
                                                 }
                                             }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        var estate = DB.EstateRules
-                                                 .Include(x => x.Estate)
-                                                 .ThenInclude(x => x.Buildings)
-                                                 .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
-                                                 .Select(x => x.Estate)
-                                                 .FirstOrDefault();
-                                        if (estate != null)
-                                        {
-                                            var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
-                                            var _building = estate.Buildings.Where(a => a.Title == building).SingleOrDefault();
-                                            var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
-                                            var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
-                                            var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
-                                            if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue && _building != null)
+                                            else
                                             {
-                                                house = new House();
-                                                house.Account = record.Account;
-                                                house.BuildingId = _building.Id;
-                                                house.Unit = unit.Value;
-                                                house.Layer = layer.Value;
-                                                house.Door = door.Value;
-                                                house.Phone = record.Phone;
-                                                house.FullName = record.CustomerName;
-                                                house.IsStatusChanged = true;
-                                                house.ServiceStatus = record.Status;
-                                                house.LastUpdate = DateTime.Now;
-                                                house.HouseStatus = HouseStatus.中国电信;
+                                                var estate = db.EstateRules
+                                                         .Include(x => x.Estate)
+                                                         .ThenInclude(x => x.Buildings)
+                                                         .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
+                                                         .Select(x => x.Estate)
+                                                         .FirstOrDefault();
+                                                if (estate != null)
+                                                {
+                                                    var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
+                                                    var _building = estate.Buildings.Where(a => a.Title == building).SingleOrDefault();
+                                                    var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
+                                                    var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
+                                                    var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
+                                                    if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue && _building != null)
+                                                    {
+                                                        house = new House();
+                                                        house.Account = record.Account;
+                                                        house.BuildingId = _building.Id;
+                                                        house.Unit = unit.Value;
+                                                        house.Layer = layer.Value;
+                                                        house.Door = door.Value;
+                                                        house.Phone = record.Phone;
+                                                        house.FullName = record.CustomerName;
+                                                        house.IsStatusChanged = true;
+                                                        house.ServiceStatus = record.Status;
+                                                        house.LastUpdate = DateTime.Now;
+                                                        house.HouseStatus = HouseStatus.中国电信;
+                                                    }
+                                                }
                                             }
+                                            db.SaveChanges();
+                                            GC.Collect();
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            series.FailedCount++;
+                                            db.SaveChanges();
+                                            Console.WriteLine(ex.ToString());
                                         }
                                     }
-                                    DB.SaveChanges();
-                                }
-                                catch (Exception ex)
-                                {
-                                    series.FailedCount++;
-                                    DB.SaveChanges();
-                                    Console.WriteLine(ex.ToString());
                                 }
                             }
+                            series = DB.Serieses.Where(x => x.Id == series.Id).Single();
                             series.Status = SeriesStatus.导入完成;
                             DB.SaveChanges();
-                            GC.Collect();
                         }
                     }
                 }

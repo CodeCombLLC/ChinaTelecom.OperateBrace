@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Data.Entity;
 using ChinaTelecom.Grid.Models;
 
@@ -18,11 +19,37 @@ namespace ChinaTelecom.Grid
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            IConfiguration Config;
             var env = services.BuildServiceProvider().GetRequiredService<IApplicationEnvironment>();
             services.AddMvc();
             services.AddSmartUser<User, string>();
             services.AddSmartCookies();
-            services.AddConfiguration();
+            services.AddConfiguration(out Config);
+
+            if (Config["Data:DefaultConnection:Mode"] == "SQLite")
+            {
+                services.AddEntityFramework()
+                    .AddDbContext<GridContext>(x => x.UseSqlite(Config["Data:DefaultConnection:ConnectionString"].Replace("{appRoot}", env.ApplicationBasePath)))
+                    .AddSqlite();
+            }
+            else if (Config["Data:DefaultConnection:Mode"] == "SqlServer")
+            {
+                services.AddEntityFramework()
+                    .AddDbContext<GridContext>(x => x.UseSqlServer(Config["Data:DefaultConnection:ConnectionString"]))
+                    .AddSqlServer();
+            }
+            else if (Config["Data:DefaultConnection:Type"] == "PostgreSQL")
+            {
+                services.AddEntityFramework()
+                    .AddNpgsql()
+                    .AddDbContext<GridContext>(x => x.UseNpgsql(Config["Data:DefaultConnection:ConnectionString"]));
+            }
+            else
+            {
+                services.AddEntityFramework()
+                    .AddDbContext<GridContext>(x => x.UseInMemoryDatabase())
+                    .AddInMemoryDatabase();
+            }
 
             services.AddEntityFramework()
                 .AddSqlite()
