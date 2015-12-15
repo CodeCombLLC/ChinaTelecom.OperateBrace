@@ -650,5 +650,69 @@ namespace ChinaTelecom.Grid.Controllers
                 .ToList();
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var estate = DB.Estates
+                .Include(x => x.Rules)
+                .Where(x => x.Id == id)
+                .Single();
+            if (!User.IsInRole("系统管理员"))
+            {
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                if (!areas.Contains(estate.Area))
+                {
+                    return Prompt(x =>
+                    {
+                        x.Title = "删除失败";
+                        x.Details = "您无权删除该楼座";
+                    });
+                }
+            }
+            var rulesStr = "";
+            foreach (var x in estate.Rules)
+                rulesStr += x.Rule + ",";
+            rulesStr = rulesStr.TrimEnd(',');
+            ViewBag.Rules = rulesStr;
+            return View(estate);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, string rules, string title, double lon, double lat, string area)
+        {
+            var estate = DB.Estates
+                .Include(x => x.Rules)
+                .Where(x => x.Id == id)
+                .Single();
+            if (!User.IsInRole("系统管理员"))
+            {
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                if (!areas.Contains(estate.Area) || !areas.Contains(area))
+                {
+                    return Prompt(x =>
+                    {
+                        x.Title = "删除失败";
+                        x.Details = "您无权删除该楼座";
+                    });
+                }
+            }
+            estate.Title = title;
+            estate.Lon = lon;
+            estate.Lat = lat;
+            estate.Area = area;
+            foreach (var x in estate.Rules)
+                DB.EstateRules.Remove(x);
+            foreach (var x in rules.TrimEnd(' ').TrimEnd(',').Split(','))
+                if (!string.IsNullOrEmpty(x))
+                    DB.EstateRules.Add(new EstateRule
+                    {
+                        EstateId = estate.Id,
+                        Rule = x
+                    });
+            DB.SaveChanges();
+            return RedirectToAction("Build", "Grid");
+        }
     }
 }
