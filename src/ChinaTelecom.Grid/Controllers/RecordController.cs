@@ -108,7 +108,7 @@ namespace ChinaTelecom.Grid.Controllers
                         var rows = schemaTable.Rows;
                         foreach (DataRow r in rows)
                         {
-                            if (r["TABLE_NAME"].ToString() == "_xlnm#_FilterDatabase")
+                            if (r["TABLE_NAME"].ToString().Last() != '$')
                                 continue;
                             using (var adapter = new OleDbDataAdapter($"select * from [{r["TABLE_NAME"].ToString()}]", conn))
                             using (var dt = new DataTable())
@@ -319,6 +319,7 @@ namespace ChinaTelecom.Grid.Controllers
                                     }
                                 }
                             }
+                            break;
                         }
                     }
                 }
