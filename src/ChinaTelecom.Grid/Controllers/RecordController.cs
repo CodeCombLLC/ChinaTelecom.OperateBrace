@@ -288,6 +288,7 @@ namespace ChinaTelecom.Grid.Controllers
                             }
                             series.Status = SeriesStatus.导入完成;
                             DB.SaveChanges();
+                            GC.Collect();
                         }
                     }
                 }
