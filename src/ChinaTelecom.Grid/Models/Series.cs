@@ -8,6 +8,7 @@ namespace ChinaTelecom.Grid.Models
 {
     public enum SeriesStatus
     {
+        等待中,
         导入中,
         导入完成
     }
@@ -20,7 +21,9 @@ namespace ChinaTelecom.Grid.Models
         {
             get
             {
-                if (FailedCount + ImportedCount >= TotalCount)
+                if (FailedCount == 0 && TotalCount == 0 && ImportedCount == 0 && DateTime.Now <= Time.AddMinutes(5))
+                    return SeriesStatus.等待中;
+                else if (FailedCount + ImportedCount >= TotalCount)
                     return SeriesStatus.导入完成;
                 else
                     return SeriesStatus.导入中;

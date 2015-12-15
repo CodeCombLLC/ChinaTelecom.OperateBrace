@@ -9,6 +9,14 @@
     "DefaultConnection": {
       "Mode": "PostgreSQL",
       "ConnectionString": "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ctgrid;"
+    },
+    "SQLiteConnection": {
+      "Mode": "SQLite",
+      "ConnectionString": "Data source={appRoot}/Database/ctgrid.db"
+    },
+    "PostgreSQLConnection": {
+      "Mode": "PostgreSQL",
+      "ConnectionString": "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ctgrid;"
     }
   }
 }

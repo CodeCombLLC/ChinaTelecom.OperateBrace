@@ -68,9 +68,13 @@
                                             { 
                                                 <span class="badge badge-warning">@x.Status</span>
                                             }
-                                            else
+                                            else if (x.Status == SeriesStatus.导入完成)
                                             {
                                                 <span class="badge badge-success">@x.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge">@x.Status</span>
                                             }
                                         </td>
                                         <td>@x.ImportedCount</td>
