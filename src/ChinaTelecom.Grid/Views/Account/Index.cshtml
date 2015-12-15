@@ -2,7 +2,8 @@
 @{ 
     ViewBag.Title = "用户管理";
 }
-
+<link rel="stylesheet" type="text/css" href="~/assets/js/tag/jquery.tagsinput.css">
+<script type="text/javascript" src="~/assets/js/tag/jquery.tagsinput.js"></script>
 <div class="row">
     <div id="paper-top">
         <div class="col-sm-3">
@@ -128,7 +129,9 @@
                         </div>
                         <div class="form-group">
                             <label>片区权限</label>
-                            <textarea name="Area" class="form-control" placeholder="用英文半角逗号进行分隔，创建用户为系统管理员角色可不填本项">@ViewBag.Area</textarea>
+                            <input id="tagsArea" type="text" class="form-control tags" value="@ViewBag.Area">
+                            <span>输入片区名称，按逗号或回车添加该片区，点击片区右侧删除按钮可取消该用户对该片区的管辖权。</span>
+                            <input type="hidden" name="Area" id="hidAreas" />                        
                         </div>
                         <input type="submit" class="btn btn-primary" value="创建用户" />
                     </form>
@@ -146,4 +149,19 @@
         $('#accountId').val(id);
         $('#frmRemoveAccount').submit();
     }
+
+    function RebuildHidAreas()
+    {
+        var tmp = $('#tagsArea_tagsinput').find('.tag span');
+        var str = "";
+        for(var i = 0; i < tmp.length; i++)
+        {
+            str += $(tmp[i]).text().trim() + ",";
+        }
+        $('#hidAreas').val(str);
+    }
+    $('#tagsArea').tagsInput({
+        width: 'auto', onChange: function (elem, elem_tags) {
+            RebuildHidAreas();
+        }});
 </script>
