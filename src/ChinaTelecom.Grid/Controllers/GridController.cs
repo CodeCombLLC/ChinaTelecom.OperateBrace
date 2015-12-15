@@ -712,7 +712,7 @@ namespace ChinaTelecom.Grid.Controllers
                         Rule = x
                     });
             DB.SaveChanges();
-            return RedirectToAction("Build", "Grid");
+            return RedirectToAction("Estate", "Grid");
         }
     }
 }
