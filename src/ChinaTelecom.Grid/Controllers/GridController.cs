@@ -299,7 +299,13 @@ namespace ChinaTelecom.Grid.Controllers
                                 .LastOrDefault();
 
                             // 如果已经存在用户信息则不能创建关联
-                            if (DB.Houses.Where(a => a.BuildingId == _building.Id && a.Unit == unit.Value && a.Layer == layer.Value && a.Door == door.Value).Count() > 0)
+                            if (DB.Houses
+                                    .AsNoTracking()
+                                    .Where(a => a.BuildingId == _building.Id 
+                                        && a.Unit == unit.Value 
+                                        && a.Layer == layer.Value 
+                                        && a.Door == door.Value)
+                                    .Count() > 0)
                                 continue;
 
                             DB.Houses.Add(new House
@@ -321,8 +327,9 @@ namespace ChinaTelecom.Grid.Controllers
                         }
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex.ToString());
                 }
             }
             ViewBag.PendingAddresses = pendingAddress;

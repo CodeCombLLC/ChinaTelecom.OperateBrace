@@ -22,16 +22,23 @@ namespace ChinaTelecom.Grid.Controllers
         public IActionResult Index(string ContractorName, string StaffName, ServiceStatus? Status, string Name, string Address, string Account, string Set, string Phone, string raw, Guid? SeriesId, DateTime? BeginTime, DateTime? EndTime)
         {
             IEnumerable<Record> ret = DB.Records.AsNoTracking();
-            if (!string.IsNullOrEmpty(ContractorName))
-                ret = ret.Where(x => x.ContractorName == ContractorName);
-            if (!string.IsNullOrEmpty(StaffName))
-                ret = ret.Where(x => x.ServiceStaff == StaffName);
             if (Status.HasValue)
                 ret = ret.Where(x => x.Status == Status);
             if (!string.IsNullOrEmpty(Set))
                 ret = ret.Where(x => x.Set == Set);
             if (!string.IsNullOrEmpty(Address))
                 ret = ret.Where(x => x.ImplementAddress.Contains(Address) || x.StandardAddress.Contains(Address));
+            if (User.IsInRole("网格经理"))
+            {
+                ret = ret.Where(x => x.ContractorName == User.Current.FullName || x.ServiceStaff == User.Current.FullName);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(ContractorName))
+                    ret = ret.Where(x => x.ContractorName == ContractorName);
+                if (!string.IsNullOrEmpty(StaffName))
+                    ret = ret.Where(x => x.ServiceStaff == StaffName);
+            }
             if (!string.IsNullOrEmpty(Name))
                 ret = ret.Where(x => x.CustomerName == Name);
             if (!string.IsNullOrEmpty(Phone))
@@ -54,18 +61,26 @@ namespace ChinaTelecom.Grid.Controllers
                     .Select(x => x.Status.ToString())
                     .Distinct()
                     .ToList();
-                ViewBag.ContractorNames = DB.Records
-                    .Select(x => x.ContractorName)
-                    .Distinct()
-                    .ToList();
                 ViewBag.Sets = DB.Records
                     .Select(x => x.Set)
                     .Distinct()
                     .ToList();
-                ViewBag.Staff = DB.Records
+                if (User.IsInRole("网格经理"))
+                {
+                    ViewBag.Staff = new List<string> { User.Current.FullName };
+                    ViewBag.ContractorNames = new List<string> { User.Current.FullName };
+                }
+                else
+                {
+                    ViewBag.ContractorNames = DB.Records
+                        .Select(x => x.ContractorName)
+                        .Distinct()
+                        .ToList();
+                    ViewBag.Staff = DB.Records
                     .Select(x => x.ServiceStaff)
                     .Distinct()
                     .ToList();
+                }
                 ViewBag.RecordCount = ret.Count();
                 return PagedView(ret);
             }
