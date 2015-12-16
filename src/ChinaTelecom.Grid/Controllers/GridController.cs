@@ -226,7 +226,9 @@ namespace ChinaTelecom.Grid.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateBuilding(Guid id, Building Model)
         {
-            var estate = DB.Estates.Where(x => x.Id == id).Single();
+            var estate = DB.Estates
+                .Where(x => x.Id == id)
+                .Single();
             if (!User.IsInRole("系统管理员"))
             {
                 var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
@@ -243,7 +245,7 @@ namespace ChinaTelecom.Grid.Controllers
             Model.EstateId = id;
             DB.Buildings.Add(Model);
             DB.SaveChanges();
-            return RedirectToAction("Show", "Grid", new { id = id });
+            return RedirectToAction("Building", "Grid", new { id = Model.Id });
         }
         
         [HttpGet]
