@@ -52,19 +52,30 @@ namespace ChinaTelecom.Grid.Controllers
         [HttpGet]
         public IActionResult GetEstates(double left, double right, double top, double bottom)
         {
-            var estates = DB.Estates.Where(x => x.Lon >= left && x.Lon <= right && x.Lat <= top && x.Lat >= bottom);
+            var estates = DB.Estates
+                .AsNoTracking()
+                .Where(x => x.Lon >= left && x.Lon <= right && x.Lat <= top && x.Lat >= bottom)
+                .ToList();
             foreach(var x in estates)
             {
-                var tmp = DB.Houses
+                x.TotalCTUsers = DB.Houses
+                    .AsNoTracking()
                     .Include(y => y.Building)
-                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信);
-                x.TotalCTUsers = tmp.Count();
-                x.TotalInUsingUsers = tmp.Where(y => y.ServiceStatus == ServiceStatus.在用).Count();
+                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信)
+                    .Count();
+                x.TotalInUsingUsers = DB.Houses
+                    .AsNoTracking()
+                    .Include(y => y.Building)
+                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信)
+                    .Where(y => y.ServiceStatus == ServiceStatus.在用)
+                    .Count();
                 x.TotalNonCTUsers = DB.Houses
+                    .AsNoTracking()
                     .Include(y => y.Building)
                     .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.HouseStatus != HouseStatus.未装机)
                     .Count();
                 x.AddedUsers = DB.Houses
+                    .AsNoTracking()
                     .Include(y => y.Building)
                     .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.ServiceStatus == ServiceStatus.在用 && y.IsStatusChanged)
                     .Count();
