@@ -100,6 +100,8 @@ namespace ChinaTelecom.Grid.Controllers
                 using (var serviceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
                 {
                     DB = serviceScope.ServiceProvider.GetService<GridContext>();
+                    DB.ChangeTracker.AutoDetectChangesEnabled = false;
+                    DB.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
                     series = DB.Serieses.Where(x => x.Id == series.Id).Single();
                     using (var conn = new OleDbConnection(connStr))
                     {
@@ -116,7 +118,7 @@ namespace ChinaTelecom.Grid.Controllers
                                 adapter.Fill(dt);
                                 lock (this)
                                 {
-                                    series = DB.Serieses.Where(x => x.Id == series.Id).Single();
+                                    series = DB.Serieses.AsNoTracking().Where(x => x.Id == series.Id).Single();
                                     series.TotalCount = series.TotalCount + dt.Rows.Count;
                                     DB.SaveChanges();
                                 }
@@ -127,6 +129,8 @@ namespace ChinaTelecom.Grid.Controllers
                                     using (var innerServiceScope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
                                     using (var db = innerServiceScope.ServiceProvider.GetService<GridContext>())
                                     {
+                                        db.ChangeTracker.AutoDetectChangesEnabled = false;
+                                        db.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
                                         try
                                         {
                                             var record = new Record
@@ -208,20 +212,16 @@ namespace ChinaTelecom.Grid.Controllers
                                             #endregion
                                             db.Records.Add(record);
                                             db.SaveChanges();
-                                            lock (this)
-                                            {
-                                                series = db.Serieses.Where(x => x.Id == series.Id).Single();
-                                                series.ImportedCount++;
-                                                db.SaveChanges();
-                                            }
+                                            #region Mapping to house
                                             try
                                             {
                                                 var house = db.Houses
-                                                .Include(x => x.Building)
-                                                .ThenInclude(x => x.Estate)
-                                                .ThenInclude(x => x.Rules)
-                                                .Where(x => x.Account == record.Account)
-                                                .SingleOrDefault();
+                                                    .AsNoTracking()
+                                                    .Include(x => x.Building)
+                                                    .ThenInclude(x => x.Estate)
+                                                    .ThenInclude(x => x.Rules)
+                                                    .Where(x => x.Account == record.Account)
+                                                    .SingleOrDefault();
                                                 if (house != null)
                                                 {
                                                     // 检查地址变更
@@ -308,6 +308,7 @@ namespace ChinaTelecom.Grid.Controllers
                                             {
                                             }
                                             GC.Collect();
+                                            #endregion
                                         }
                                         catch (Exception ex)
                                         {

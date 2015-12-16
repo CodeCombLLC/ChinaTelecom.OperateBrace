@@ -12,10 +12,13 @@ namespace ChinaTelecom.Grid.Controllers
     [Authorize]
     public class HomeController : BaseController
     {
+        [ResponseCache(Duration = 600)]
         public IActionResult Index()
         {
-            ViewBag.UserStatistics = Lib.Counting.Count(DB.Records, DB.Houses);
+            ViewBag.UserStatistics = Lib.Counting.Count(DB.Records.AsNoTracking(), DB.Houses.AsNoTracking());
             ViewBag.SetStatistics = DB.Records
+                .AsNoTracking()
+                .Where(x => x.Status == Models.ServiceStatus.在用)
                 .OrderByDescending(x => x.ImportedTime)
                 .DistinctBy(x => x.Account)
                 .GroupBy(x => x.Set)
@@ -24,9 +27,12 @@ namespace ChinaTelecom.Grid.Controllers
                     Key = x.Key,
                     Count = x.Count()
                 })
+                .OrderByDescending(x => x.Count)
+                .Take(30)
                 .ToList();
 
             var area = DB.Estates
+                .AsNoTracking()
                 .DistinctBy(x => x.Area)
                 .Select(x => x.Area).ToList();
             var areaStatistics = new List<BarChartItem>();
@@ -45,6 +51,7 @@ namespace ChinaTelecom.Grid.Controllers
             ViewBag.AreaStatistics = areaStatistics;
 
             ViewBag.ContractorStatistics = DB.Records
+                .AsNoTracking()
                 .Where(x => x.Status == Models.ServiceStatus.在用)
                 .OrderByDescending(x => x.ImportedTime)
                 .DistinctBy(x => x.Account)

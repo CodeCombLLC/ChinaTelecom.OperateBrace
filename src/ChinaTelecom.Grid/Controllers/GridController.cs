@@ -239,14 +239,17 @@ namespace ChinaTelecom.Grid.Controllers
         public IActionResult Building(Guid id)
         {
             var ret = DB.Buildings
+                .AsNoTracking()
                 .Include(x => x.Estate)
                 .Include(x => x.Houses)
                 .Where(x => x.Id == id)
                 .Single();
             var accounts = DB.Houses
+                .AsNoTracking()
                 .Select(x => x.Account)
                 .ToList();
             var rules = DB.EstateRules
+                .AsNoTracking()
                 .Where(x => x.EstateId == ret.EstateId)
                 .Select(x => x.Rule)
                 .ToList();
@@ -574,19 +577,23 @@ namespace ChinaTelecom.Grid.Controllers
         public IActionResult Statistics()
         {
             ViewBag.Areas = DB.Estates
+                .AsNoTracking()
                 .OrderBy(x => x.Area)
                 .Select(x => x.Area)
                 .Distinct()
                 .ToList();
             ViewBag.Contractors = DB.Records
+                .AsNoTracking()
                 .Select(x => x.ContractorName)
                 .Distinct()
                 .ToList();
             ViewBag.Staff = DB.Records
+                .AsNoTracking()
                 .Select(x => x.ServiceStaff)
                 .Distinct()
                 .ToList();
             ViewBag.Sets = DB.Records
+                .AsNoTracking()
                 .Select(x => x.Set)
                 .Distinct()
                 .ToList();
@@ -596,6 +603,7 @@ namespace ChinaTelecom.Grid.Controllers
         public IActionResult GenerateStatistics(string[] Area, string[] Set, string[] Contractor)
         {
             var houses = DB.Houses
+                .AsNoTracking()
                 .Include(x => x.Building)
                 .ThenInclude(x => x.Estate)
                 .ToList()
@@ -604,6 +612,7 @@ namespace ChinaTelecom.Grid.Controllers
 
             var tmp = houses.Select(x => x.Account).ToList();
             var records = DB.Records
+                .AsNoTracking()
                 .Where(x => Set.Contains(x.Set) 
                     && (Contractor.Contains(x.ContractorName) || Contractor.Contains(x.ServiceStaff))
                     && tmp.Contains(x.Account))
@@ -622,6 +631,7 @@ namespace ChinaTelecom.Grid.Controllers
                 .ToList();
 
             var area = DB.Estates
+                .AsNoTracking()
                 .Where(x => Area.Contains(x.Area))
                 .DistinctBy(x => x.Area)
                 .Select(x => x.Area).ToList();
