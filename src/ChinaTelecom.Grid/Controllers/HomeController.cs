@@ -12,7 +12,6 @@ namespace ChinaTelecom.Grid.Controllers
     [Authorize]
     public class HomeController : BaseController
     {
-        [ResponseCache(Duration = 600)]
         public IActionResult Index()
         {
             ViewBag.UserStatistics = Lib.Counting.Count(DB.Records.AsNoTracking(), DB.Houses.AsNoTracking());

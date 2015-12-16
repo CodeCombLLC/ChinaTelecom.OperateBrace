@@ -3178,3 +3178,18 @@ form .row {
     margin:0;
     padding:0;
 }
+
+.valueLabels {
+	font-size:70%;
+	color:black;
+}
+div.valueLabelLight {
+	opacity:0.5;
+	background-color: white;
+	border:none;
+	position:absolute;
+}
+div.valueLabel {
+	position:absolute;
+	border:none;
+}
