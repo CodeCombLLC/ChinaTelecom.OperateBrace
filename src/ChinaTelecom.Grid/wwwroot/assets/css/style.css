@@ -11,7 +11,7 @@
     font-family:'FontAwesome', sans-serif;
 }
 body {
-    color: #9ea7b3!important;
+    color: #888!important;
     font-family:"Microsoft YaHei", "Open Sans", Arial, sans-serif!important;
     font-size: 13px!important;
     line-height: 20px;
@@ -393,6 +393,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     outline: 0;
     -webkit-box-shadow: none!important;
     box-shadow: none!important;
+    color: #777!important;
 }
 .nav .open > a, .nav .open > a:hover, .nav .open > a:focus {
     background: none!important;
@@ -764,7 +765,7 @@ img.ikon {
 #search input[type="text"] {
     background: url("../img/search-dark.png") no-repeat scroll 14px 10px #FFFFFF;
     border: 0 none;
-    color: #9EA7B3 !important;
+    color: #777 !important;
     width: 150px;
     padding: 6px 15px 6px 35px;
     -webkit-border-radius: 4px;
@@ -1667,7 +1668,7 @@ ul.topnav h4 {
     text-shadow: none!important;
 }
 .breadcrumb li a {
-    color: #9EA7B3 !important;
+    color: #777 !important;
     font-size: 13px;
     transition: all 0.4s ease 0s;
 }
@@ -1708,7 +1709,7 @@ ul.topnav h4 {
     background-position:right;
     padding-right: 0;
     text-decoration: none;
-    color:#9EA7B3;
+    color:#777;
 }
 .home {
     border: none;
@@ -1735,7 +1736,7 @@ ul.topnav h4 {
     padding: 15px 0 0;
 }
 .tittle-content-header {
-    color: #9EA7B3 !important;
+    color: #777 !important;
     font-family:"Open Sans";
     font-size: 16px;
     font-weight: normal;
@@ -1876,7 +1877,7 @@ img.sidebar-icon {
     border-bottom: 1px dotted #DDDDDD;
 }
 .nest .title-alt h6 {
-    color: #9EA7B3;
+    color: #777;
     float: left;
     font-family:'Open Sans', serif;
     font-size: 14px;
@@ -1890,7 +1891,7 @@ img.sidebar-icon {
 .nest .title-alt .titleIcon {
     background: none repeat scroll 0 0 #323a45;
     border-radius: 3px 0 0 0;
-    color: #9EA7B3;
+    color: #777;
     float: left;
     font-size: 18px;
     height: 30px;

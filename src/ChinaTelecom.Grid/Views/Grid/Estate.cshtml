@@ -47,6 +47,19 @@
                     </div>
                 </div>
                 <div class="body-nest" id="EstateList">
+                    <form asp-controller="Grid" asp-action="Estate" class="row">
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="title" placeholder="小区名称" value="@Context.Request.Query["title"]" />
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="area" placeholder="片区编号" value="@Context.Request.Query["area"]" />
+                        </div>
+                        <div class="col-sm-4">
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="submit" class="btn btn-primary float-right" value="检索" />
+                        </div>
+                    </form>
                     <div class="x-scroll">
                         <table class="table">
                             <thead>
