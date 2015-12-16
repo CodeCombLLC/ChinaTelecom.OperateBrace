@@ -81,8 +81,10 @@
                                     <option value="">承包人</option>
                                     @foreach (string x in ViewBag.ContractorNames)
                                     {
-			                            <!option @(Context.Request.Query["ContractorName"] == x ? "selected" : "")>@x</!option>               
-                                    }
+                                        @if (!string.IsNullOrEmpty(x))
+                                        {
+			                            <!option @(Context.Request.Query["ContractorName"] == x ? "selected" : "")>@x</!option>                    }
+}
                                 </select>
                             </div>
                             <div class="col-sm-3">
@@ -90,7 +92,10 @@
                                     <option value="">包服人</option>
                                     @foreach (string x in ViewBag.Staff)
                                     {
-			                            <!option @(Context.Request.Query["StaffName"] == x ? "selected" : "")>@x</!option>                }
+                                        @if (!string.IsNullOrEmpty(x))
+                                        {
+			                            <!option @(Context.Request.Query["StaffName"] == x ? "selected" : "")>@x</!option>              }
+}
                                 </select>
 
                             </div>

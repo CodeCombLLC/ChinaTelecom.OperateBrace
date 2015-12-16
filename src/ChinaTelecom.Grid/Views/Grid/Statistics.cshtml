@@ -76,6 +76,10 @@
                             <label><input type="checkbox" id="allContractors" /> 客户经理选择</label>
                             @for (var i = 0; i < Contractors.Count; i++)
                             {
+                                @if (string.IsNullOrEmpty(Contractors[i]))
+                                {
+                                    continue;
+                                }
                                 if (i % 6 == 0)
                                 {
                                     @(new HtmlString("<div class=\"row\">"))
@@ -97,6 +101,10 @@
                             <label><input type="checkbox" id="allStaff" /> 包服人选择</label>
                             @for (var i = 0; i < Staff.Count; i++)
                             {
+                                @if (string.IsNullOrEmpty(Staff[i]))
+                                {
+                                    continue;
+                                }
                                 if (i % 6 == 0)
                                 {
                                     @(new HtmlString("<div class=\"row\">"))
