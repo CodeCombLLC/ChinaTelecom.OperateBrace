@@ -66,6 +66,7 @@ namespace ChinaTelecom.Grid.Controllers
                     .Select(x => x.ServiceStaff)
                     .Distinct()
                     .ToList();
+                ViewBag.RecordCount = ret.Count();
                 return PagedView(ret);
             }
             else

@@ -3193,3 +3193,8 @@ div.valueLabel {
 	position:absolute;
 	border:none;
 }
+
+.pager-info {
+    float: right;
+    margin-top: 25px;
+}
