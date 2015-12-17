@@ -169,6 +169,9 @@
                         </table>
                     </div>
                     @Html.MakePager("footable-page", "active", "pagination pagination-centered")
+                    <div class="pager-info">
+                        共计 @ViewBag.TotalCustomerCount 条
+                    </div>
                 </div>
             </div>
         </div>

@@ -294,7 +294,7 @@ namespace ChinaTelecom.Grid.Controllers
             DB.SaveChanges();
             return RedirectToAction("Building", "Grid", new { id = Model.Id });
         }
-        
+
         [HttpGet]
         public IActionResult Building(Guid id)
         {
@@ -345,9 +345,9 @@ namespace ChinaTelecom.Grid.Controllers
 
                             // 如果已经存在用户信息则不能创建关联
                             if (DB.Houses
-                                    .Where(a => a.BuildingId == _building.Id 
-                                        && a.Unit == unit.Value 
-                                        && a.Layer == layer.Value 
+                                    .Where(a => a.BuildingId == _building.Id
+                                        && a.Unit == unit.Value
+                                        && a.Layer == layer.Value
                                         && a.Door == door.Value)
                                     .Count() > 0)
                                 continue;
@@ -675,7 +675,7 @@ namespace ChinaTelecom.Grid.Controllers
             var tmp = houses.Select(x => x.Account).ToList();
             var records = DB.Records
                 .AsNoTracking()
-                .Where(x => Set.Contains(x.Set) 
+                .Where(x => Set.Contains(x.Set)
                     && (Contractor.Contains(x.ContractorName) || Contractor.Contains(x.ServiceStaff))
                     && tmp.Contains(x.Account))
                 .ToList();
@@ -824,15 +824,15 @@ namespace ChinaTelecom.Grid.Controllers
             return Redirect(Referer);
         }
 
-        public async Task<IActionResult> Customer(string account, 
-            string fullname, 
-            ServiceStatus? status, 
-            bool change, 
-            string area, 
-            string estate, 
+        public async Task<IActionResult> Customer(string account,
+            string fullname,
+            ServiceStatus? status,
+            bool change,
+            string area,
+            string estate,
             HouseStatus? provider,
             string building,
-            int? unit, 
+            int? unit,
             int? layer,
             int? door,
             bool? raw)
@@ -875,6 +875,7 @@ namespace ChinaTelecom.Grid.Controllers
                 ret = ret.Where(x => x.Layer == layer.Value);
             if (door.HasValue)
                 ret = ret.Where(x => x.Door == door.Value);
+            ViewBag.TotalCustomerCount = ret.Count();
             if (raw.HasValue && raw.Value)
                 return XlsView(ret, "customers.xls", "ExportCustomer");
             else
@@ -918,6 +919,113 @@ namespace ChinaTelecom.Grid.Controllers
                 }
             }
             DB.Houses.Remove(house);
+            DB.SaveChanges();
+            return Redirect(Referer);
+        }
+
+        [HttpGet]
+        public IActionResult Relation(string address, bool? raw)
+        {
+            var houses = DB.Houses
+                .Select(x => x.Account)
+                .Distinct();
+            IEnumerable<Record> ret = DB.Records
+                .AsNoTracking()
+                .Where(x => !houses.Contains(x.Account));
+            if (!string.IsNullOrEmpty(address))
+                ret = ret.Where(x => x.ImplementAddress.Contains(address) || x.StandardAddress.Contains(address));
+            if (User.IsInRole("网格经理"))
+                ret = ret.Where(x => x.ServiceStaff == User.Current.FullName || x.ContractorName == User.Current.FullName);
+            ret = ret.OrderByDescending(x => x.Account)
+                .DistinctBy(x => x.Account);
+            if (raw.HasValue && raw.Value)
+                return XlsView(ret, "non-relation-customers.xls", "ExportRelation");
+            else
+                return PagedView(ret);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Mapping(string estate, string building, Guid id, int unit, int layer, int door, string account, [FromHeader] string Referer)
+        {
+            if (DB.Houses.Where(x => x.Account == account).Count() >0 )
+            {
+                return Prompt(x =>
+                {
+                    x.Title = "操作失败";
+                    x.Details = "该用户已经存在关联关系！";
+                });
+            }
+
+            var estateId = DB.EstateRules
+                    .Include(x => x.Estate)
+                    .Where(x => x.Rule.Contains(estate))
+                    .Select(x => x.EstateId)
+                    .FirstOrDefault();
+
+            if (estateId == null)
+            {
+                return Prompt(x =>
+                {
+                    x.Title = "操作失败";
+                    x.Details = "没有找到该小区！";
+                });
+            }
+
+            var _building = DB.Buildings
+                    .Include(x => x.Estate)
+                    .Where(x => x.EstateId == estateId && x.Title == building)
+                    .SingleOrDefault();
+
+            if (_building == null)
+            {
+                return Prompt(x =>
+                {
+                    x.Title = "操作失败";
+                    x.Details = "没有找到该楼座！";
+                });
+            }
+
+            if (!User.IsInRole("系统管理员"))
+            {
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                if (!areas.Contains(_building.Estate.Area))
+                {
+                    return Prompt(x =>
+                    {
+                        x.Title = "操作失败";
+                        x.Details = "您没有权限向该楼座添加用户！";
+                    });
+                }
+            }
+
+            var record = DB.Records
+                .Where(x => x.Account == account)
+                .Last();
+
+            if (User.IsInRole("网格经理") && record.ServiceStaff != User.Current.FullName && record.ContractorName != User.Current.FullName)
+            {
+                return Prompt(x =>
+                {
+                    x.Title = "操作失败";
+                    x.Details = "您没有权限将该用户映射至楼宇！";
+                });
+            }
+
+            DB.Houses.Add(new House
+            {
+                BuildingId = _building.Id,
+                Account = account,
+                Unit = unit,
+                Layer = layer,
+                Door = door,
+                HouseStatus = HouseStatus.中国电信,
+                LastUpdate = DateTime.Now,
+                IsStatusChanged = true,
+                Phone = record.Phone,
+                ServiceStatus = record.Status,
+                FullName = record.CustomerName
+            });
             DB.SaveChanges();
             return Redirect(Referer);
         }
