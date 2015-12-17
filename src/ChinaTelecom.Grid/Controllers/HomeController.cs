@@ -14,7 +14,7 @@ namespace ChinaTelecom.Grid.Controllers
     {
         public IActionResult Index()
         {
-            ViewBag.UserStatistics = Lib.Counting.Count(DB.Records.AsNoTracking(), DB.Houses.AsNoTracking());
+            ViewBag.UserStatistics = Lib.Counting.Count(DB.Records.AsNoTracking(), DB.Houses);
             ViewBag.SetStatistics = DB.Records
                 .AsNoTracking()
                 .Where(x => x.Status == Models.ServiceStatus.在用)

@@ -45,8 +45,6 @@
                     <ul class="date-top">
                         <li class="entypo-calendar" style="margin-right:5px"></li>
                         <li id="Date">@DateTime.Now.ToString("yyyy年MM月dd日")</li>
-
-
                     </ul>
 
                     <ul id="digital-clock" class="digital">
@@ -223,6 +221,21 @@
                             <a class="tooltip-tip ajax-load" asp-controller="Grid" asp-action="Estate" title="小区管理">
                                 <i class="icon-home"></i>
                                 <span>小区管理</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-controller="Grid" asp-action="Customer" title="客户列表">
+                                <i class="icon-user-group"></i>
+                                <span>客户列表</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-controller="Grid" asp-action="Relation" title="待对应楼宇用户">
+                                <i class="icon-information"></i>
+                                <span>待对应楼宇用户</span>
+                                <div class="noft-purple-number" style="display: inline-block; float: none;">@ViewBag.NoRelationCustomerCount</div>
                             </a>
                         </li>
 

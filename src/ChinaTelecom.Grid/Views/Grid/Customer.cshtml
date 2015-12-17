@@ -1,0 +1,189 @@
+﻿@model IEnumerable<House>
+@{
+    ViewBag.Title = "客户列表";
+}
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Estate" asp-controller="Customer" title="客户列表">客户列表</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-12">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        客户列表
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#EstateList">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="EstateList">
+                    <form id="frmFilter">
+                        <input type="hidden" value="false" name="raw" id="hidRaw" />
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" name="account" placeholder="接入号" value="@Context.Request.Query["account"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" name="fullname" placeholder="客户姓名" value="@Context.Request.Query["fullname"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <select name="status" class="form-control">
+                                    <option value="">状态</option>
+                                    @foreach (var x in Enum.GetNames(typeof(ServiceStatus)))
+                                    {
+			                            <!option @(Context.Request.Query["status"] == x ? "selected" : "")>@x</!option>                
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <label>
+                                    <!input type="checkbox" value="true" name="change" @(Context.Request.Query["change"] == "true" ? "checked" : "") />
+                                    状态变化
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" name="area" placeholder="片区编号" value="@Context.Request.Query["area"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" name="estate" placeholder="小区名称" value="@Context.Request.Query["estate"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <select name="provider" class="form-control">
+                                    <option value="">运营商</option>
+                                    @foreach (var x in Enum.GetNames(typeof(HouseStatus)))
+                                    {
+                                        <!option @(Context.Request.Query["provider"] == x ? "selected" : "")>@x</!option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" name="building" placeholder="楼座" value="@Context.Request.Query["building"]" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" name="unit" placeholder="单元" value="@Context.Request.Query["unit"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" name="layer" placeholder="楼层" value="@Context.Request.Query["layer"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" name="door" placeholder="门" value="@Context.Request.Query["door"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="submit" class="btn btn-primary float-right" value="检索" />
+                            </div>
+                        </div>
+                    </form>
+                    <hr />
+                    <div class="x-scroll">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>更新时间</th>
+                                    <th>状态变更</th>
+                                    <th>接入号</th>
+                                    <th>用户姓名</th>
+                                    <th>联系电话</th>
+                                    <th>用户状态</th>
+                                    <th>运营商</th>
+                                    <th>片区</th>
+                                    <th>小区</th>
+                                    <th>楼座</th>
+                                    <th>单元</th>
+                                    <th>楼层</th>
+                                    <th>门</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var x in Model)
+                                {
+                                    <tr>
+                                        <td>@x.LastUpdate.ToString("yyyy-MM-dd")</td>
+                                        <td>@(x.IsStatusChanged ? "是" : "否")</td>
+                                        <td>@x.Account</td>
+                                        <td>@x.FullName</td>
+                                        <td>@x.Phone</td>
+                                        <td>
+                                            @if (x.ServiceStatus == ServiceStatus.在用)
+                                            {
+                                                <span class="badge badge-success">@x.ServiceStatus</span>
+                                            }
+                                            else if (x.ServiceStatus == ServiceStatus.未知)
+                                            {
+                                                <span class="badge badge-warning">@x.ServiceStatus</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-error">@x.ServiceStatus</span>
+                                            }
+                                        </td>
+                                        <td>@x.HouseStatus</td>
+                                        <td>@x.Building.Estate.Area</td>
+                                        <td>@x.Building.Estate.Title</td>
+                                        <td>@x.Building.Title</td>
+                                        <td>@x.Unit</td>
+                                        <td>@x.Layer</td>
+                                        <td>@x.Door</td>
+                                        <td>
+                                            <a asp-action="Building" asp-controller="Grid" asp-route-id="@x.BuildingId" asp-route-unit="@x.Unit" target="_blank">在楼宇中查看</a>
+                                            <a asp-action="Index" asp-controller="Record" asp-route-account="@x.Account" target="_blank">在明细中查看</a>
+                                            <a href="javascript:Remove('@x.Id')">解除楼宇对应</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @Html.MakePager("footable-page", "active", "pagination pagination-centered")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form asp-action="RemoveHouse" asp-controller="Grid" method="post" id="frmRemoveHouse">
+    <input type="hidden" id="houseId" />
+</form>
+<script>
+    function Remove(id)
+    {
+        $('#houseId').val(id);
+        $('#frmRemoveHouse').submit();
+    }
+    $('#btnExport').click(function () {
+        $('#hidRaw').val('true');
+        $('#frmFilter').submit();
+    });
+</script>

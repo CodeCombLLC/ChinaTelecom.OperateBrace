@@ -1,0 +1,40 @@
+﻿@model IEnumerable<House>
+@{
+    Layout = null;
+}
+
+<table>
+    <tr>
+        <td>更新时间</td>
+        <td>状态变更</td>
+        <td>接入号</td>
+        <td>用户姓名</td>
+        <td>联系电话</td>
+        <td>用户状态</td>
+        <td>运营商</td>
+        <td>片区</td>
+        <td>小区</td>
+        <td>楼座</td>
+        <td>单元</td>
+        <td>楼层</td>
+        <td>门</td>
+    </tr>
+    @foreach (var x in Model)
+    {
+        <tr>
+            <td>@x.LastUpdate.ToString("yyyy-MM-dd")</td>
+            <td>@(x.IsStatusChanged ? "是" : "否")</td>
+            <td>@x.Account</td>
+            <td>@x.FullName</td>
+            <td>@x.Phone</td>
+            <td>@x.ServiceStatus</td>
+            <td>@x.HouseStatus</td>
+            <td>@x.Building.Estate.Area</td>
+            <td>@x.Building.Estate.Title</td>
+            <td>@x.Building.Title</td>
+            <td>@x.Unit</td>
+            <td>@x.Layer</td>
+            <td>@x.Door</td>
+        </tr>
+    }
+</table>

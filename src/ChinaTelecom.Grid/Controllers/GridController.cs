@@ -823,5 +823,97 @@ namespace ChinaTelecom.Grid.Controllers
             DB.SaveChanges();
             return Redirect(Referer);
         }
+
+        public IActionResult Customer(string account, 
+            string fullname, 
+            ServiceStatus? status, 
+            bool change, 
+            string area, 
+            string estate, 
+            HouseStatus? provider,
+            string building,
+            int? unit, 
+            int? layer,
+            int? door,
+            bool? raw)
+        {
+            var ret = DB.Houses
+                .Include(x => x.Building)
+                .ThenInclude(x => x.Estate)
+                .AsNoTracking();
+            if (!string.IsNullOrEmpty(account))
+                ret = ret.Where(x => x.Account == account);
+            if (!string.IsNullOrEmpty(fullname))
+                ret = ret.Where(x => x.FullName == fullname);
+            if (status.HasValue)
+                ret = ret.Where(x => x.ServiceStatus == status.Value);
+            if (change)
+                ret = ret.Where(x => x.IsStatusChanged);
+            if (!string.IsNullOrEmpty(area))
+                ret = ret.Where(x => x.Building.Estate.Area == area);
+            if (!string.IsNullOrEmpty(estate))
+            {
+                var estateId = DB.EstateRules
+                    .Include(x => x.Estate)
+                    .Where(x => x.Rule.Contains(estate))
+                    .Select(x => x.EstateId)
+                    .FirstOrDefault();
+                ret = ret.Where(x => x.Building.EstateId == estateId);
+            }
+            if (provider.HasValue)
+                ret = ret.Where(x => x.HouseStatus == provider.Value);
+            if (!string.IsNullOrEmpty(building))
+                ret = ret.Where(x => x.Building.Title == building);
+            if (unit.HasValue)
+                ret = ret.Where(x => x.Unit == unit.Value);
+            if (layer.HasValue)
+                ret = ret.Where(x => x.Layer == layer.Value);
+            if (door.HasValue)
+                ret = ret.Where(x => x.Door == door.Value);
+            if (raw.HasValue && raw.Value)
+                return XlsView(ret, "customers.xls", "ExportCustomer");
+            else
+                return PagedView(ret);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveHouse(Guid id, [FromHeader] string Referer)
+        {
+            var house = DB.Houses
+                .Include(x => x.Building)
+                .ThenInclude(x => x.Estate)
+                .Single();
+
+            if (!User.IsInRole("系统管理员"))
+            {
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                if (!areas.Contains(house.Building.Estate.Area))
+                {
+                    return Prompt(x =>
+                    {
+                        x.Title = "删除失败";
+                        x.Details = "您无权删除该用户对应关系";
+                    });
+                }
+            }
+            if (!string.IsNullOrEmpty(house.Account))
+            {
+                var record = DB.Records
+                .Where(x => x.Account == house.Account)
+                .LastOrDefault();
+                if (record == null || (record.ContractorName != User.Current.FullName && record.ServiceStaff != User.Current.FullName))
+                {
+                    return Prompt(x =>
+                    {
+                        x.Title = "删除失败";
+                        x.Details = "您无权删除该用户对应关系";
+                    });
+                }
+            }
+            DB.Houses.Remove(house);
+            DB.SaveChanges();
+            return Redirect(Referer);
+        }
     }
 }
