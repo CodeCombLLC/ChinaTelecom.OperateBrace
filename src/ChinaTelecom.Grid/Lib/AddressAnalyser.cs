@@ -50,10 +50,10 @@ namespace ChinaTelecom.Grid.Lib
 
         public static int? GetLayer(string src)
         {
-            return GetLayer(GetNumbers(FilterBrackets(src)));
+            return GetLayer(GetNumbers(FilterBrackets(src)), src);
         }
 
-        public static int? GetLayer(List<string> src)
+        private static int? GetLayer(List<string> src, string src2)
         {
             if (src.Count < 2)
                 return null;
@@ -74,7 +74,7 @@ namespace ChinaTelecom.Grid.Lib
                 ret = null;
             if (ret.HasValue)
             {
-                if (src.IndexOf("B" + ret) > 0 || src.IndexOf("负" + ret) > 0)
+                if (src2.IndexOf("B" + ret) >= 0 || src2.IndexOf("负" + ret) >= 0)
                     return -ret.Value;
                 else
                     return ret.Value;
@@ -176,7 +176,20 @@ namespace ChinaTelecom.Grid.Lib
 
         public static string GetDistrict(string src)
         {
-            return null;
+            var city = GetCity(src);
+            if (city != null)
+                src = src.Replace(city, "");
+            if (src.IndexOf("区") < 0)
+                return null;
+            var ret = "";
+            foreach (var x in src)
+            {
+                if (x != '区')
+                    ret += x;
+                else
+                    break;
+            }
+            return ret + "区";
         }
 
         public static string GetEstate(string src)
