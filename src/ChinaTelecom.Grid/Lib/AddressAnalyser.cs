@@ -7,6 +7,7 @@ namespace ChinaTelecom.Grid.Lib
 {
     public static class AddressAnalyser
     {
+        private const string template = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM-1234567890";
         public static string FilterBrackets(string src)
         {
             var ret = "";
@@ -27,7 +28,6 @@ namespace ChinaTelecom.Grid.Lib
 
         public static List<string> GetNumbers(string src)
         {
-            var template = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM-1234567890";
             var ret = new List<string>();
             var tmp = "";
             foreach(var x in src)
@@ -194,6 +194,28 @@ namespace ChinaTelecom.Grid.Lib
 
         public static string GetEstate(string src)
         {
+            var city = GetCity(src);
+            if (city != null)
+                src = src.Replace(city, "");
+            var district = GetDistrict(src);
+            if (district != null)
+                src = src.Replace(district, "");
+            var ret = "";
+            src = src.Replace("小区", "@")
+                .Replace("号楼", "$")
+                .Replace("号", "%");
+            if (src.IndexOf("%") >= 0 && src.IndexOf("@") < 0)
+                return src.Substring(0, src.IndexOf("%")) + "号";
+
+            foreach (var x in src)
+            {
+                if (template.Contains(x))
+                    return ret + "小区";
+                else if (x == '@')
+                    return ret + "小区";
+                else
+                    ret += x;
+            }
             return null;
         }
     }
