@@ -888,6 +888,7 @@ namespace ChinaTelecom.Grid.Controllers
             var house = DB.Houses
                 .Include(x => x.Building)
                 .ThenInclude(x => x.Estate)
+                .Where(x => x.Id == id)
                 .Single();
 
             if (!User.IsInRole("系统管理员"))
