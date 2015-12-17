@@ -538,7 +538,7 @@ namespace ChinaTelecom.Grid.Controllers
                 });
             }
             DB.SaveChanges();
-            return Redirect(Referer);
+            return RedirectToAction("Building", "Grid", new { id = id, unit = unit });
         }
 
         [HttpPost]
@@ -824,7 +824,7 @@ namespace ChinaTelecom.Grid.Controllers
             return Redirect(Referer);
         }
 
-        public IActionResult Customer(string account, 
+        public async Task<IActionResult> Customer(string account, 
             string fullname, 
             ServiceStatus? status, 
             bool change, 
@@ -841,6 +841,11 @@ namespace ChinaTelecom.Grid.Controllers
                 .Include(x => x.Building)
                 .ThenInclude(x => x.Estate)
                 .AsNoTracking();
+            if (!User.IsInRole("系统管理员"))
+            {
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                ret = ret.Where(x => areas.Contains(x.Building.Estate.Area));
+            }
             if (!string.IsNullOrEmpty(account))
                 ret = ret.Where(x => x.Account == account);
             if (!string.IsNullOrEmpty(fullname))

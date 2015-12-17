@@ -114,9 +114,9 @@
                                     <th>更新时间</th>
                                     <th>状态变更</th>
                                     <th>接入号</th>
+                                    <th>用户状态</th>
                                     <th>用户姓名</th>
                                     <th>联系电话</th>
-                                    <th>用户状态</th>
                                     <th>运营商</th>
                                     <th>片区</th>
                                     <th>小区</th>
@@ -134,8 +134,6 @@
                                         <td>@x.LastUpdate.ToString("yyyy-MM-dd")</td>
                                         <td>@(x.IsStatusChanged ? "是" : "否")</td>
                                         <td>@x.Account</td>
-                                        <td>@x.FullName</td>
-                                        <td>@x.Phone</td>
                                         <td>
                                             @if (x.ServiceStatus == ServiceStatus.在用)
                                             {
@@ -150,6 +148,8 @@
                                                 <span class="badge badge-error">@x.ServiceStatus</span>
                                             }
                                         </td>
+                                        <td>@x.FullName</td>
+                                        <td>@x.Phone</td>
                                         <td>@x.HouseStatus</td>
                                         <td>@x.Building.Estate.Area</td>
                                         <td>@x.Building.Estate.Title</td>
