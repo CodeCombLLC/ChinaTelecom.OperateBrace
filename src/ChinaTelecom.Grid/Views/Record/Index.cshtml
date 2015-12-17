@@ -74,7 +74,8 @@
                     </div>
                 </div>
                 <div class="body-nest" id="RecordList">
-                    <form>
+                    <form id="frmFilter">
+                        <input type="hidden" name="xls" id="xls" />
                         <div class="row">
                             <div class="col-sm-3">
                                 <select name="ContractorName" class="form-control">
@@ -258,4 +259,8 @@
 <script>
     $('#beginTime').datepicker()
     $('#endTime').datepicker()
+    $('#btnExport').click(function () {
+        $('#xls').val('true');
+        $('#frmFilter').submit();
+    });
 </script>

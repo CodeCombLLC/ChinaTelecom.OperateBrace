@@ -19,7 +19,7 @@ namespace ChinaTelecom.Grid.Controllers
         [FromServices]
         public IServiceProvider services { get; set; }
 
-        public IActionResult Index(string ContractorName, string StaffName, ServiceStatus? Status, string Name, string Address, string Account, string Set, string Phone, string raw, Guid? SeriesId, DateTime? BeginTime, DateTime? EndTime)
+        public IActionResult Index(string ContractorName, string StaffName, ServiceStatus? Status, string Name, string Address, string Account, string Set, string Phone, string xls, Guid? SeriesId, DateTime? BeginTime, DateTime? EndTime)
         {
             IEnumerable<Record> ret = DB.Records.AsNoTracking();
             if (Status.HasValue)
@@ -55,7 +55,7 @@ namespace ChinaTelecom.Grid.Controllers
                 ret = ret.Where(x => x.ImportedTime < EndTime.Value);
             }
             ret = ret.OrderByDescending(x => x.ImportedTime);
-            if (raw != "true")
+            if (xls != "true")
             {
                 ViewBag.Statuses = DB.Records
                     .Select(x => x.Status.ToString())

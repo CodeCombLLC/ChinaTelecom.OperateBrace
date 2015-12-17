@@ -114,7 +114,7 @@ namespace ChinaTelecom.Grid.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Area(bool? raw)
+        public async Task<IActionResult> Area(bool? xls)
         {
             IEnumerable<Estate> tmp = DB.Estates
                 .Include(x => x.Buildings)
@@ -138,7 +138,7 @@ namespace ChinaTelecom.Grid.Controllers
                     Lon = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lon,
                     Lat = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lat
                 });
-            if (raw.HasValue && raw.Value)
+            if (xls.HasValue && xls.Value)
                 return XlsView(ret.ToList(), "Area.xls", "ExportArea");
             else
                 return PagedView(ret);
