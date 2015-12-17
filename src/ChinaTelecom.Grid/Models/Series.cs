@@ -34,6 +34,7 @@ namespace ChinaTelecom.Grid.Models
 
         public long TotalCount { get; set; }
 
+        [NotMapped]
         public long ImportedCount { get; set; }
 
         public DateTime Time { get; set; }
