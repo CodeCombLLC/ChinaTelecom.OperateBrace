@@ -24,7 +24,26 @@
     #estate table td {
         padding: 5px;
     }
+
+    #options {
+        width: 160px;
+        position: absolute;
+        bottom: 60px;
+        right: 20px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 10px;
+        z-index: 10;
+    }
 </style>
+<div id="options">
+    <p>
+        <label>
+            <input type="checkbox" id="chkNoCustomerEstate" />
+            显示没有用户的小区
+        </label>
+    </p>
+</div>
 <div class="modal fade" id="modalCreateEstate" tabindex="-1" role="dialog" aria-labelledby="modalCreateEstate">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -141,6 +160,7 @@
     var icon = new BMap.Icon("/assets/img/estate.png", new BMap.Size(25, 52));
     var icon2 = new BMap.Icon("/assets/img/estate-warning.png", new BMap.Size(25, 52));
     var icon3 = new BMap.Icon("/assets/img/estate-error.png", new BMap.Size(25, 52));
+    var icon4 = new BMap.Icon("/assets/img/estate-inverse.png", new BMap.Size(25, 52));
     var lock = false;
 
     // Building overlays
@@ -166,6 +186,10 @@
                     ico = icon2;
                 else if (data[i].Level == 2)
                     ico = icon3;
+                else if (data[i].Level == 3)
+                    ico = icon4;
+                if (!$('#chkNoCustomerEstate').is(':checked') && data[i].Level == 3)
+                    continue;
                 var marker = new BMap.Marker(pt, { icon: ico });
                 marker.Id = data[i].Id;
                 marker.enableDragging();
@@ -232,5 +256,9 @@
         width: 'auto', onChange: function (elem, elem_tags) {
             RebuildHidRules();
         }
+    });
+
+    $('#chkNoCustomerEstate').change(function () {
+        BuildOverlays();
     });
 </script>

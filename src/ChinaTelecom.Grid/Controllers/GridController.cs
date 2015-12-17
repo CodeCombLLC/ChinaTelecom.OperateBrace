@@ -123,11 +123,13 @@ namespace ChinaTelecom.Grid.Controllers
             foreach (var x in estates)
             {
                 if (!tmp.Any(a => a.Key == x.Id))
-                    x.Level = 0;
+                    x.Level = 3;
                 else
                 {
                     var s = tmp.Where(a => a.Key == x.Id).Single();
-                    if (s.Count <= 20)
+                    if (s.Count == 0)
+                        x.Level = 0;
+                    else if (s.Count <= 20)
                         x.Level = 1;
                     else
                         x.Level = 2;
