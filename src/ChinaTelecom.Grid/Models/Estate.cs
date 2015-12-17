@@ -18,7 +18,11 @@ namespace ChinaTelecom.Grid.Models
 
         public double Lat { get; set; }
 
+        [NotMapped]
+        public int Level { get; set; }
+
         [MaxLength(32)]
+        [Required(AllowEmptyStrings = true)]
         public string Area { get; set; }
 
         [JsonIgnore]
@@ -26,23 +30,5 @@ namespace ChinaTelecom.Grid.Models
 
         [JsonIgnore]
         public virtual ICollection<EstateRule> Rules { get; set; } = new List<EstateRule>(); 
-
-        [NotMapped]
-        public virtual double UsingRate { get; set; }
-
-        [NotMapped]
-        public virtual long TotalCTUsers { get; set; }
-
-        [NotMapped]
-        public virtual long TotalNonCTUsers { get; set; }
-
-        [NotMapped]
-        public virtual long TotalInUsingUsers { get; set; }
-
-        [NotMapped]
-        public virtual long AddedUsers { get; set; }
-
-        [NotMapped] 
-        public virtual long LeftUsers { get; set; }
     }
 }

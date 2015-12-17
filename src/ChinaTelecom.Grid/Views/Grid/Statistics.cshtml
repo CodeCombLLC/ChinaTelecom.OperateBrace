@@ -60,10 +60,20 @@
                                     @(new HtmlString("<div class=\"row\">"))
                                 }
                                 <div class="col-sm-1">
-                                    <label>
-                                        <input class="chk-area" type="checkbox" value="@Areas[i]" name="Area" />
-                                        @Areas[i]
-                                    </label>
+                                    @if (string.IsNullOrEmpty(Areas[i]))
+                                    {
+                                        <label>
+                                            <input class="chk-area" type="checkbox" value="@Areas[i]" name="Area" />
+                                            未填写
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <label>
+                                            <input class="chk-area" type="checkbox" value="@Areas[i]" name="Area" />
+                                            @Areas[i]
+                                        </label>
+                                    }
                                 </div>
                                 if (i % 12 == 11)
                                 {

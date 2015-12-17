@@ -87,7 +87,8 @@
     </div>
 </div>
 <div id="estate">
-    <table>
+    <span id="infoEstate">加载中，请稍候...</span>
+    <table id="tableEstate">
         <tr>
             <td class="td-gray">小区名称</td>
             <td id="estate-name"></td>
@@ -161,20 +162,12 @@
             {
                 var pt = new BMap.Point(data[i].Lon, data[i].Lat);
                 var ico = icon;
-                if (data[i].UsingRate >= 0.5 && data[i].UsingRate < 1)
+                if (data[i].Level == 1)
                     ico = icon2;
-                else if (data[i].UsingRate < 0.5)
+                else if (data[i].Level == 2)
                     ico = icon3;
                 var marker = new BMap.Marker(pt, { icon: ico });
                 marker.Id = data[i].Id;
-                marker.Title = data[i].Title;
-                marker.Area = data[i].Area;
-                marker.UsingRate = data[i].UsingRate;
-                marker.TotalCTUsers = data[i].TotalCTUsers;
-                marker.TotalNonCTUsers = data[i].TotalNonCTUsers;
-                marker.TotalInUsingUsers = data[i].TotalInUsingUsers;
-                marker.AddedUsers = data[i].AddedUsers;
-                marker.LeftUsers = data[i].LeftUsers;
                 marker.enableDragging();
                 marker.addEventListener("click", function (e) {
                     window.location = '/Grid/Show/' + e.target.Id
@@ -185,16 +178,22 @@
                 marker.addEventListener("mouseover", function (e) {
                     var x = e.clientX;
                     var y = e.clientY;
-                    $("#estate-name").text(e.target.Title);
-                    $("#estate-area").text(e.target.Area);
-                    $("#estate-rate").text((e.target.UsingRate * 100).toFixed(2) + "%");
-                    $("#estate-user").text(e.target.TotalInUsingUsers + " / " + e.target.TotalCTUsers);
-                    $("#estate-user-non-ct").text(e.target.TotalNonCTUsers);
-                    $("#estate-user-add").text(e.target.AddedUsers);
-                    $("#estate-user-left").text(e.target.LeftUsers);
                     $("#estate").css("left", x);
                     $("#estate").css("top", y);
+                    $('#infoEstate').show();
+                    $('#tableEstate').hide();
                     $("#estate").show();
+                    $.getJSON('/Grid/GetEstateDetail/' + e.target.Id, {}, function (data) {
+                        $("#estate-name").text(data.Title);
+                        $("#estate-area").text(data.Area);
+                        $("#estate-rate").text((data.UsingRate * 100).toFixed(2) + "%");
+                        $("#estate-user").text(data.TotalInUsingUsers + " / " + data.TotalCTUsers);
+                        $("#estate-user-non-ct").text(data.TotalNonCTUsers);
+                        $("#estate-user-add").text(data.AddedUsers);
+                        $("#estate-user-left").text(data.LeftUsers);
+                        $('#infoEstate').hide();
+                        $('#tableEstate').show();
+                    });
                 });
                 marker.addEventListener("mouseout", function (e) {
                     $("#estate").hide();

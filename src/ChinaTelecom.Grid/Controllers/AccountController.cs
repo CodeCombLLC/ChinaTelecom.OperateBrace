@@ -46,7 +46,8 @@ namespace ChinaTelecom.Grid.Controllers
             var user = new User { UserName = name, FullName = fullname };
             await UserManager.CreateAsync(user, pwd);
             await UserManager.AddToRoleAsync(user, role);
-            foreach(var x in area.TrimEnd(' ').TrimEnd(',').Split(','))
+            await UserManager.AddClaimAsync(user, new System.Security.Claims.Claim("管辖片区", string.Empty));
+            foreach (var x in area.TrimEnd(' ').TrimEnd(',').Split(','))
             {
                 await UserManager.AddClaimAsync(user, new System.Security.Claims.Claim("管辖片区", x));
             }
@@ -138,7 +139,8 @@ namespace ChinaTelecom.Grid.Controllers
             var areastr = "";
             foreach(var x in claims)
             {
-                areastr += x + ", ";
+                if (!string.IsNullOrEmpty(x))
+                    areastr += x + ", ";
             }
             ViewBag.Area = areastr.TrimEnd(' ').TrimEnd(',');
             return View(user);
@@ -162,6 +164,8 @@ namespace ChinaTelecom.Grid.Controllers
                 var token = await UserManager.GeneratePasswordResetTokenAsync(user);
                 await UserManager.ResetPasswordAsync(user, token, NewPwd);
             }
+            
+            await UserManager.AddClaimAsync(user, new System.Security.Claims.Claim("管辖片区", string.Empty));
             var role = await UserManager.GetRolesAsync(user);
             await UserManager.RemoveFromRoleAsync(user, role.First());
             await UserManager.AddToRoleAsync(user, Role);

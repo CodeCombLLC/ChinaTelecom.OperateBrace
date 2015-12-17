@@ -146,7 +146,7 @@ namespace ChinaTelecom.Grid.Lib
                 splitChar = "座";
             }
             if (string.IsNullOrEmpty(splitChar))
-                return null;
+                return "1";
             var tmp = src.Split(splitChar.ToArray());
             if (tmp.Count() >= 2)
             {
@@ -155,7 +155,7 @@ namespace ChinaTelecom.Grid.Lib
             }
             else
             {
-                return null;
+                return "1";
             }
         }
 

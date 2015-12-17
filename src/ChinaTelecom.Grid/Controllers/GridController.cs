@@ -15,7 +15,9 @@ namespace ChinaTelecom.Grid.Controllers
     {
         public async Task<IActionResult> Index()
         {
-            ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+            ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).
+                Where(x => x.Type == "管辖片区")
+                .Select(x => x.Value).ToList();
             return View();
         }
 
@@ -50,43 +52,86 @@ namespace ChinaTelecom.Grid.Controllers
         }
 
         [HttpGet]
+        public IActionResult GetEstateDetail(Guid id)
+        {
+            var x = DB.Estates
+                .AsNoTracking()
+                .Where(a => a.Id == id)
+                .Single();
+            var ret = new EstateMap
+            {
+                Title = x.Title,
+                Area = x.Area,
+                TotalCTUsers = DB.Houses
+                        .AsNoTracking()
+                        .Include(y => y.Building)
+                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信)
+                        .Count(),
+                TotalInUsingUsers = DB.Houses
+                        .AsNoTracking()
+                        .Include(y => y.Building)
+                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信)
+                        .Where(y => y.ServiceStatus == ServiceStatus.在用)
+                        .Count(),
+                TotalNonCTUsers = DB.Houses
+                        .AsNoTracking()
+                        .Include(y => y.Building)
+                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.HouseStatus != HouseStatus.未装机)
+                        .Count(),
+                AddedUsers = DB.Houses
+                        .AsNoTracking()
+                        .Include(y => y.Building)
+                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.ServiceStatus == ServiceStatus.在用 && y.IsStatusChanged)
+                        .Count(),
+                LeftUsers = DB.Houses
+                        .Include(y => y.Building)
+                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.ServiceStatus != ServiceStatus.在用 && y.IsStatusChanged)
+                        .Count()
+            };
+            if (ret.TotalCTUsers == 0)
+                ret.UsingRate = 0;
+            else
+                ret.UsingRate = (double)ret.TotalInUsingUsers / (double)ret.TotalCTUsers;
+            return Json(ret);
+        }
+
+        [HttpGet]
         public IActionResult GetEstates(double left, double right, double top, double bottom)
         {
             var estates = DB.Estates
                 .AsNoTracking()
                 .Where(x => x.Lon >= left && x.Lon <= right && x.Lat <= top && x.Lat >= bottom)
                 .ToList();
-            foreach(var x in estates)
+            var id = estates
+                .Select(x => x.Id)
+                .ToList();
+            var tmp = DB.Buildings
+                .Include(x => x.Houses)
+                .Include(x => x.Estate)
+                .AsNoTracking()
+                .GroupBy(x => x.EstateId)
+                .ToList()
+                .Select(x => new
+                {
+                    Key = x.Key,
+                    Count = x.Sum(y => y.Houses.Where(z => id.Contains(z.Building.EstateId)
+                        && z.IsStatusChanged == true
+                        && z.HouseStatus == HouseStatus.中国电信
+                        && z.ServiceStatus != ServiceStatus.在用).Count())
+                })
+                .ToList();
+            foreach (var x in estates)
             {
-                x.TotalCTUsers = DB.Houses
-                    .AsNoTracking()
-                    .Include(y => y.Building)
-                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信)
-                    .Count();
-                x.TotalInUsingUsers = DB.Houses
-                    .AsNoTracking()
-                    .Include(y => y.Building)
-                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信)
-                    .Where(y => y.ServiceStatus == ServiceStatus.在用)
-                    .Count();
-                x.TotalNonCTUsers = DB.Houses
-                    .AsNoTracking()
-                    .Include(y => y.Building)
-                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.HouseStatus != HouseStatus.未装机)
-                    .Count();
-                x.AddedUsers = DB.Houses
-                    .AsNoTracking()
-                    .Include(y => y.Building)
-                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.ServiceStatus == ServiceStatus.在用 && y.IsStatusChanged)
-                    .Count();
-                x.LeftUsers = DB.Houses
-                    .Include(y => y.Building)
-                    .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.ServiceStatus != ServiceStatus.在用 && y.IsStatusChanged)
-                    .Count();
-                if (x.TotalCTUsers == 0)
-                    x.UsingRate = 0;
+                if (!tmp.Any(a => a.Key == x.Id))
+                    x.Level = 0;
                 else
-                    x.UsingRate = (double)x.TotalInUsingUsers / (double)x.TotalCTUsers;
+                {
+                    var s = tmp.Where(a => a.Key == x.Id).Single();
+                    if (s.Count <= 20)
+                        x.Level = 1;
+                    else
+                        x.Level = 2;
+                }
             }
             return Json(estates);
         }
@@ -252,17 +297,14 @@ namespace ChinaTelecom.Grid.Controllers
         public IActionResult Building(Guid id)
         {
             var ret = DB.Buildings
-                .AsNoTracking()
                 .Include(x => x.Estate)
                 .Include(x => x.Houses)
                 .Where(x => x.Id == id)
                 .Single();
             var accounts = DB.Houses
-                .AsNoTracking()
                 .Select(x => x.Account)
                 .ToList();
             var rules = DB.EstateRules
-                .AsNoTracking()
                 .Where(x => x.EstateId == ret.EstateId)
                 .Select(x => x.Rule)
                 .ToList();
@@ -272,7 +314,6 @@ namespace ChinaTelecom.Grid.Controllers
             foreach (var x in rules)
             {
                 pendingAddress.AddRange(DB.Records
-                    .AsNoTracking()
                     .Where(a => !DB.Houses
                     .Select(b => b.Account)
                     .Contains(a.Account))
@@ -302,7 +343,6 @@ namespace ChinaTelecom.Grid.Controllers
 
                             // 如果已经存在用户信息则不能创建关联
                             if (DB.Houses
-                                    .AsNoTracking()
                                     .Where(a => a.BuildingId == _building.Id 
                                         && a.Unit == unit.Value 
                                         && a.Layer == layer.Value 
