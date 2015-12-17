@@ -137,7 +137,7 @@ namespace ChinaTelecom.Grid.Controllers
                                 adapter.Fill(dt);
                                 lock (this)
                                 {
-                                    series = DB.Serieses.AsNoTracking().Where(x => x.Id == series.Id).Single();
+                                    series = DB.Serieses.Where(x => x.Id == series.Id).Single();
                                     series.TotalCount = series.TotalCount + dt.Rows.Count;
                                     DB.SaveChanges();
                                 }
@@ -380,7 +380,7 @@ namespace ChinaTelecom.Grid.Controllers
                                                                     Title = estateTitle,
                                                                     Lon = bmap.result.location.lng,
                                                                     Lat = bmap.result.location.lat,
-                                                                    Area = null
+                                                                    Area = ""
                                                                 };
                                                                 db.Estates.Add(es);
                                                                 db.EstateRules.Add(new EstateRule
