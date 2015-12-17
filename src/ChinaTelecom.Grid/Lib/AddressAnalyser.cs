@@ -210,11 +210,18 @@ namespace ChinaTelecom.Grid.Lib
             foreach (var x in src)
             {
                 if (template.Contains(x))
-                    return ret + "小区";
+                    break;
                 else if (x == '@')
-                    return ret + "小区";
+                    break;
                 else
                     ret += x;
+            }
+            if (!string.IsNullOrEmpty(ret))
+            {
+                if (ret.Length <= 4)
+                    return ret + "小区";
+                else
+                    return ret;
             }
             return null;
         }
