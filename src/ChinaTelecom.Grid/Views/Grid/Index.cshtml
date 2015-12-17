@@ -138,6 +138,8 @@
         BuildOverlays();
     });
     var icon = new BMap.Icon("/assets/img/estate.png", new BMap.Size(25, 52));
+    var icon2 = new BMap.Icon("/assets/img/estate-warning.png", new BMap.Size(25, 52));
+    var icon3 = new BMap.Icon("/assets/img/estate-error.png", new BMap.Size(25, 52));
     var lock = false;
 
     // Building overlays
@@ -158,13 +160,12 @@
             for(var i = 0; i < data.length; i++)
             {
                 var pt = new BMap.Point(data[i].Lon, data[i].Lat);
-                var color = 'green';
+                var ico = icon;
                 if (data[i].UsingRate >= 0.5 && data[i].UsingRate < 1)
-                    color = 'yellow';
+                    ico = icon2;
                 else if (data[i].UsingRate < 0.5)
-                    color = 'red';
-                var circle = new BMap.Circle(pt, 500, { fillColor: color, strokerColor: color, strokerWeight: 0.01, fillOpacity: 0.1, strokeOpacity: 0.01 });
-                var marker = new BMap.Marker(pt, { icon: icon });
+                    ico = icon3;
+                var marker = new BMap.Marker(pt, { icon: ico });
                 marker.Id = data[i].Id;
                 marker.Title = data[i].Title;
                 marker.Area = data[i].Area;
@@ -174,23 +175,12 @@
                 marker.TotalInUsingUsers = data[i].TotalInUsingUsers;
                 marker.AddedUsers = data[i].AddedUsers;
                 marker.LeftUsers = data[i].LeftUsers;
-                marker.circle = circle;
                 marker.enableDragging();
                 marker.addEventListener("click", function (e) {
                     window.location = '/Grid/Show/' + e.target.Id
                 });
                 marker.addEventListener("dragend", function (e) {
-                    map.removeOverlay(e.target.circle);
                     $.post('/grid/modifyposition', { lon: e.point.lng, lat: e.point.lat, id: e.target.Id });
-                    var newpos = { lat: e.point.lat, lon: e.point.lng };
-                    var _color = 'green';
-                    if (e.target.UsingRate >= 0.5 && e.target.UsingRate < 1)
-                        _color = 'yellow';
-                    else if (e.target.UsingRate < 0.5)
-                        _color = 'red';
-                    var _circle = new BMap.Circle(new BMap.Point(newpos.lon, newpos.lat), 500, { fillColor: _color, strokerColor: 'red', strokerWeight: 0.01, fillOpacity: 0.1, strokeOpacity: 0.01 });
-                    e.target.circle = _circle;
-                    map.addOverlay(e.target.circle);
                 });
                 marker.addEventListener("mouseover", function (e) {
                     var x = e.clientX;

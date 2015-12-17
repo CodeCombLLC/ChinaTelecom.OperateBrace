@@ -29,7 +29,7 @@ namespace ChinaTelecom.Grid.Models
 
             builder.Entity<EstateRule>(e =>
             {
-                e.HasIndex(x => x.Rule);
+                e.HasIndex(x => x.Rule).IsUnique();
             });
 
             builder.Entity<Building>(e =>
