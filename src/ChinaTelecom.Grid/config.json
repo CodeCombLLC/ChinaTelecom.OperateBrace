@@ -7,8 +7,8 @@
   },
   "Data": {
     "DefaultConnection": {
-      "Mode": "SQLite",
-      "ConnectionString": "Data source={appRoot}/Database/ctgrid.db"
+      "Mode": "PostgreSQL",
+      "ConnectionString": "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ctgrid;"
     },
     "SQLiteConnection": {
       "Mode": "SQLite",
@@ -20,7 +20,7 @@
     }
   },
   "BMap": {
-    "ApplicationKey": "NXEnERYLgAVs3WYl3jd0NCKR&callback=showLocation",
+    "ApplicationKey": "NXEnERYLgAVs3WYl3jd0NCKR",
     "City": "哈尔滨市"
   }
 }

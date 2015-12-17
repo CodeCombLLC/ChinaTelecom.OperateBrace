@@ -7763,6 +7763,8 @@
       "Npgsql >= 3.1.0-alpha6",
       "CodeComb.AspNet.Extensions >= 2.0.0-rc1-final-2"
     ],
-    "DNX,Version=v4.5.1": []
+    "DNX,Version=v4.5.1": [
+      "fx/System.Net.Http.WebRequest >= 4.0.0"
+    ]
   }
 }

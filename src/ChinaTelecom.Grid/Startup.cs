@@ -25,6 +25,7 @@ namespace ChinaTelecom.Grid
             services.AddSmartUser<User, string>();
             services.AddSmartCookies();
             services.AddConfiguration(out Config);
+            services.AddSQLFieldParser();
 
             if (Config["Data:DefaultConnection:Mode"] == "SQLite")
             {

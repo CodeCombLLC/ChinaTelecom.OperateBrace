@@ -218,7 +218,7 @@ namespace ChinaTelecom.Grid.Lib
             }
             if (!string.IsNullOrEmpty(ret))
             {
-                if (ret.Length <= 4)
+                if (src.IndexOf("@") >= 0)
                     return ret + "小区";
                 else
                     return ret;

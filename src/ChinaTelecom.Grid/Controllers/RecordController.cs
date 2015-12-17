@@ -8,8 +8,11 @@ using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Data.Entity;
+using Newtonsoft.Json;
 using ChinaTelecom.Grid.Models;
+using ChinaTelecom.Grid.Lib;
 
 namespace ChinaTelecom.Grid.Controllers
 {
@@ -93,7 +96,7 @@ namespace ChinaTelecom.Grid.Controllers
         [AnyRoles("系统管理员, 网格主管")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Import(IFormFile file)
+        public IActionResult Import(IFormFile file, [FromServices] IConfiguration Config)
         {
             // 创建明细系列
             var series = new Series
@@ -301,27 +304,137 @@ namespace ChinaTelecom.Grid.Controllers
                                                         var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
                                                         var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
                                                         var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
-                                                        if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue && _building != null)
+                                                        if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue)
                                                         {
-                                                            house = new House();
-                                                            house.Account = record.Account;
-                                                            house.BuildingId = _building.Id;
-                                                            house.Unit = unit.Value;
-                                                            house.Layer = layer.Value;
-                                                            house.Door = door.Value;
-                                                            house.Phone = record.Phone;
-                                                            house.FullName = record.CustomerName;
-                                                            house.IsStatusChanged = true;
-                                                            house.ServiceStatus = record.Status;
-                                                            house.LastUpdate = DateTime.Now;
-                                                            house.HouseStatus = HouseStatus.中国电信;
+                                                            if (_building != null)
+                                                            {
+                                                                if (unit.Value > _building.Units)
+                                                                    _building.Units = unit.Value;
+                                                                if (layer.Value < _building.BottomLayers)
+                                                                    _building.BottomLayers = layer.Value;
+                                                                if (layer.Value > _building.TopLayers)
+                                                                    _building.TopLayers = layer.Value;
+                                                                if (door > _building.Doors)
+                                                                    _building.Doors = door.Value;
+                                                                house = new House();
+                                                                house.Account = record.Account;
+                                                                house.BuildingId = _building.Id;
+                                                                house.Unit = unit.Value;
+                                                                house.Layer = layer.Value;
+                                                                house.Door = door.Value;
+                                                                house.Phone = record.Phone;
+                                                                house.FullName = record.CustomerName;
+                                                                house.IsStatusChanged = true;
+                                                                house.ServiceStatus = record.Status;
+                                                                house.LastUpdate = DateTime.Now;
+                                                                house.HouseStatus = HouseStatus.中国电信;
+                                                                db.Houses.Add(house);
+                                                            }
+                                                            else
+                                                            {
+                                                                if (door < 2)
+                                                                    door = 2;
+                                                                int bottom = 1;
+                                                                int top = 1;
+                                                                if (layer < 0)
+                                                                    bottom = layer.Value;
+                                                                if (layer > 0)
+                                                                    top = layer.Value;
+                                                                _building = new Building
+                                                                {
+                                                                    Title = building,
+                                                                    EstateId = estate.Id,
+                                                                    BottomLayers = bottom,
+                                                                    TopLayers = top,
+                                                                    Units = unit.Value,
+                                                                    Doors = door.Value
+                                                                };
+                                                                db.Buildings.Add(_building);
+                                                                house = new House();
+                                                                house.Account = record.Account;
+                                                                house.BuildingId = _building.Id;
+                                                                house.Unit = unit.Value;
+                                                                house.Layer = layer.Value;
+                                                                house.Door = door.Value;
+                                                                house.Phone = record.Phone;
+                                                                house.FullName = record.CustomerName;
+                                                                house.IsStatusChanged = true;
+                                                                house.ServiceStatus = record.Status;
+                                                                house.LastUpdate = DateTime.Now;
+                                                                house.HouseStatus = HouseStatus.中国电信;
+                                                                db.Houses.Add(house);
+                                                            }
+                                                        }
+                                                    }
+                                                    else // 不存在则尝试创建
+                                                    {
+                                                        var estateTitle = Lib.AddressAnalyser.GetEstate(record.ImplementAddress);
+                                                        if (!string.IsNullOrEmpty(estateTitle))
+                                                        {
+                                                            var bmapJson = Lib.HttpHelper.Get($"http://api.map.baidu.com/geocoder/v2/?city={Config["BMap:City"]}&address={estateTitle}&output=json&ak={Config["BMap:ApplicationKey"]}");
+                                                            dynamic bmap = JsonConvert.DeserializeObject<dynamic>(bmapJson);
+                                                            if (bmap.status == 0)
+                                                            {
+                                                                var es = new Estate
+                                                                {
+                                                                    Title = estateTitle,
+                                                                    Lon = bmap.result.location.lng,
+                                                                    Lat = bmap.result.location.lat,
+                                                                    Area = null
+                                                                };
+                                                                db.Estates.Add(es);
+                                                                db.EstateRules.Add(new EstateRule
+                                                                {
+                                                                    EstateId = es.Id,
+                                                                    Rule = estateTitle
+                                                                });
+                                                                var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
+                                                                var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
+                                                                var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
+                                                                var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
+                                                                if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue)
+                                                                {
+                                                                    if (door < 2)
+                                                                        door = 2;
+                                                                    int bottom = 1;
+                                                                    int top = 1;
+                                                                    if (layer < 0)
+                                                                        bottom = layer.Value;
+                                                                    if (layer > 0)
+                                                                        top = layer.Value;
+                                                                    var _building = new Building
+                                                                    {
+                                                                        Title = building,
+                                                                        EstateId = es.Id,
+                                                                        BottomLayers = bottom,
+                                                                        TopLayers = top,
+                                                                        Units = unit.Value,
+                                                                        Doors = door.Value
+                                                                    };
+                                                                    db.Buildings.Add(_building);
+                                                                    house = new House();
+                                                                    house.Account = record.Account;
+                                                                    house.BuildingId = _building.Id;
+                                                                    house.Unit = unit.Value;
+                                                                    house.Layer = layer.Value;
+                                                                    house.Door = door.Value;
+                                                                    house.Phone = record.Phone;
+                                                                    house.FullName = record.CustomerName;
+                                                                    house.IsStatusChanged = true;
+                                                                    house.ServiceStatus = record.Status;
+                                                                    house.LastUpdate = DateTime.Now;
+                                                                    house.HouseStatus = HouseStatus.中国电信;
+                                                                    db.Houses.Add(house);
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }
                                                 db.SaveChanges();
                                             }
-                                            catch
+                                            catch (Exception ex)
                                             {
+                                                Console.WriteLine(ex.ToString());
                                             }
                                             GC.Collect();
                                             #endregion

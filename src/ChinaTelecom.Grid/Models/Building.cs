@@ -13,12 +13,6 @@ namespace ChinaTelecom.Grid.Models
         
         public string Title { get; set; }
 
-        [MaxLength(64)]
-        public string Account { get; set; }
-
-        [MaxLength(32)]
-        public string Flag { get; set; }
-
         public int TopLayers { get; set; }
 
         public int BottomLayers { get; set; }
