@@ -158,5 +158,30 @@ namespace ChinaTelecom.Grid.Lib
                 return null;
             }
         }
+
+        public static string GetCity(string src)
+        {
+            if (src.IndexOf("市") < 0)
+                return null;
+            var ret = "";
+            foreach(var x in src)
+            {
+                if (x != '市')
+                    ret += x;
+                else
+                    break;
+            }
+            return ret + "市";
+        }
+
+        public static string GetDistrict(string src)
+        {
+            return null;
+        }
+
+        public static string GetEstate(string src)
+        {
+            return null;
+        }
     }
 }

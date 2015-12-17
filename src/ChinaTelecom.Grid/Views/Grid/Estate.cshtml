@@ -80,7 +80,16 @@
                                 @foreach (var x in Model)
                                 {
                                     <tr>
-                                        <td>@x.Area</td>
+                                        <td>
+                                            @if (string.IsNullOrEmpty(x.Area))
+                                            {
+                                                <span class="badge badge-warning">未填写</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-success">@x.Area</span>
+                                            }
+                                        </td>
                                         <td>@x.Title</td>
                                         <td>@x.Buildings.Count</td>
                                         <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信).Count())</td>

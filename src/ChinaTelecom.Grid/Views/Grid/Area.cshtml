@@ -65,7 +65,16 @@
                                 @foreach (var x in Model)
                                 {
                                     <tr>
-                                        <td>@x.Id</td>
+                                        <td>
+                                            @if (string.IsNullOrEmpty(x.Id))
+                                            {
+                                                <span class="badge badge-warning">未填写</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-success">@x.Id</span>
+                                            }
+                                        </td>
                                         <td>@x.Count</td>
                                         <td>@x.CTUsers</td>
                                         <td>@x.CTInUsingUsers</td>
