@@ -90,11 +90,11 @@
                                                 <td>
                                                     @if (i > 0)
                                                     {
-                                                        <span>@i 层</span>
+                                                        <span class="badge badge-warning">@i 层</span>
                                                     }
                                                     else
                                                     {
-                                                        <span>B@(-i) 层</span>
+                                                        <span class="badge badge-warning">B@(-i) 层</span>
                                                     }
                                                 </td>
                                                 @for (var j = 1; j <= Model.Doors; j++)

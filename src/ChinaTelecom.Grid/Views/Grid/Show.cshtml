@@ -113,7 +113,7 @@
                                 @foreach (var x in Model)
                                 {
                                     <tr data-id="@x.Id">
-                                        <td class="building-title">@x.Title</td>
+                                        <td class="building-title"><span class="badge badge-warning">@x.Title</span></td>
                                         <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信).Count()</td>
                                         <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用).Count()</td>
                                         <td>@x.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信 && a.HouseStatus != HouseStatus.未装机).Count()</td>
