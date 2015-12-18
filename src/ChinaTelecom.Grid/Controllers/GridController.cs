@@ -666,6 +666,9 @@ namespace ChinaTelecom.Grid.Controllers
 
         public IActionResult GenerateStatistics(string[] Area, string[] Set, string[] Contractor)
         {
+            for (var i = 0; i < Area.Count(); i++)
+                if (Area[i] == null)
+                    Area[i] = "";
             var houses = DB.Houses
                 .AsNoTracking()
                 .Include(x => x.Building)
