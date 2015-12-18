@@ -11,8 +11,51 @@ namespace ChinaTelecom.Grid.Lib
         public double Y { get; set; }
     }
 
+    public class Edge
+    {
+        public double MinLon { get; set; }
+        public double MaxLon { get; set; }
+        public double MinLat { get; set; }
+        public double MaxLat { get; set; }
+    }
+
     public static class Circle
     {
+        public static Edge GetEdge(Point[] src)
+        {
+            if (src.Count() == 1)
+            {
+                return new Edge {
+                    MinLon = src.First().X,
+                    MaxLon = src.First().X,
+                    MinLat = src.First().Y,
+                    MaxLat = src.First().Y
+                };
+            }
+            else if (src.Count() > 1)
+            {
+                var ret = new Edge
+                {
+                    MinLon = src.First().X,
+                    MaxLon = src.First().X,
+                    MinLat = src.First().Y,
+                    MaxLat = src.First().Y
+                };
+                for (var i =1; i < src.Count(); i++)
+                {
+                    ret.MinLon = Math.Min(ret.MinLon, src[i].X);
+                    ret.MaxLon = Math.Max(ret.MaxLon, src[i].X);
+                    ret.MinLat = Math.Min(ret.MinLat, src[i].Y);
+                    ret.MaxLat = Math.Max(ret.MaxLat, src[i].Y);
+                }
+                return ret;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public static Point[] StringToPoints(string src)
         {
             var ret = new List<Point>();

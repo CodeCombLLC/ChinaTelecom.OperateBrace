@@ -11,6 +11,8 @@
       "ConnectionString": "Data source={appRoot}/Database/ctgrid.db"
     },
     "SQLiteConnection": {
+      "Mode": "SQLite",
+      "ConnectionString": "Data source={appRoot}/Database/ctgrid.db"
     },
     "PostgreSQLConnection": {
       "Mode": "PostgreSQL",

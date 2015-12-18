@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Authorization;
+using Microsoft.Extensions.Configuration;
 using ChinaTelecom.Grid.Models;
 using ChinaTelecom.Grid.ViewModels;
 
@@ -193,7 +194,7 @@ namespace ChinaTelecom.Grid.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Estate(string Area, string Title, bool? raw)
+        public async Task<IActionResult> Estate(string Area, string Title, string Circle, bool? raw)
         {
             IEnumerable<Estate> ret = DB.Estates
                 .Include(x => x.Buildings)
@@ -208,6 +209,24 @@ namespace ChinaTelecom.Grid.Controllers
                 ret = ret.Where(x => x.Area == Area);
             if (!string.IsNullOrEmpty(Title))
                 ret = ret.Where(x => x.Title.Contains(Title));
+            if (!string.IsNullOrEmpty(Circle))
+            {
+                var points = Lib.Circle.StringToPoints(Circle);
+                var edge = Lib.Circle.GetEdge(points);
+                var estates = DB.Estates
+                    .Where(x => x.Lat >= edge.MinLat && x.Lat <= edge.MaxLat && x.Lon >= edge.MinLon && x.Lon <= edge.MaxLon)
+                    .Select(x => new
+                    {
+                        Id = x.Id,
+                        Lon = x.Lon,
+                        Lat = x.Lat
+                    })
+                    .ToList();
+                var estateIds = estates
+                    .Where(x => Lib.Circle.PointInFences(new Lib.Point { X = x.Lon, Y = x.Lat }, points)).Select(x => x.Id)
+                    .ToList();
+                ret = ret.Where(x => estateIds.Contains(x.Id));
+            }
             ret = ret.OrderBy(x => x.Area);
             ViewBag.EstateCount = ret.Count();
             if (raw.HasValue && raw.Value)
@@ -664,26 +683,82 @@ namespace ChinaTelecom.Grid.Controllers
             return View();
         }
 
-        public IActionResult GenerateStatistics(string[] Area, string[] Set, string[] Contractor)
+        public IActionResult GenerateStatistics(string[] Area, string[] Set, string[] Contractor, string Circle, [FromServices] IConfiguration Config)
         {
             for (var i = 0; i < Area.Count(); i++)
                 if (Area[i] == null)
                     Area[i] = "";
-            var houses = DB.Houses
-                .AsNoTracking()
-                .Include(x => x.Building)
-                .ThenInclude(x => x.Estate)
-                .ToList()
-                .Where(x => Area.Contains(x.Building.Estate.Area))
-                .ToList();
+
+            List<House> houses;
+            if (string.IsNullOrEmpty(Circle))
+            {
+                houses = DB.Houses
+                    .AsNoTracking()
+                    .Include(x => x.Building)
+                    .ThenInclude(x => x.Estate)
+                    .ToList()
+                    .Where(x => Area.Contains(x.Building.Estate.Area))
+                    .ToList();
+            }
+            else
+            {
+                var points = Lib.Circle.StringToPoints(Circle);
+                var edge = Lib.Circle.GetEdge(points);
+                var estates = DB.Estates
+                    .Where(x => x.Lat >= edge.MinLat && x.Lat <= edge.MaxLat && x.Lon >= edge.MinLon && x.Lon <= edge.MaxLon)
+                    .Select(x => new
+                    {
+                        Id = x.Id,
+                        Lon = x.Lon,
+                        Lat = x.Lat
+                    })
+                    .ToList();
+                var estateIds = estates
+                    .Where(x => Lib.Circle.PointInFences(new Lib.Point { X = x.Lon, Y = x.Lat }, points))
+                    .Select(x => x.Id)
+                    .ToList();
+                if (Config["Data:DefaultConnection:Mode"] != "SQLite")
+                {
+                    var buildingIds = DB.Buildings
+                    .Where(x => estateIds.Contains(x.EstateId))
+                    .Select(x => x.Id)
+                    .ToList();
+                    houses = DB.Houses
+                        .Include(x => x.Building)
+                        .ThenInclude(x => x.Estate)
+                        .Where(x => buildingIds.Contains(x.BuildingId))
+                        .ToList();
+                }
+                else
+                {
+                    var houseIds = new List<Guid>();
+                    houses = new List<House>();
+                    foreach (var x in estateIds)
+                        houses.AddRange(DB.Houses
+                            .Include(a => a.Building)
+                            .ThenInclude(a => a.Estate)
+                            .Where(a => a.Building.EstateId == x)
+                            .ToList());
+                }
+            }
 
             var tmp = houses.Select(x => x.Account).ToList();
-            var records = DB.Records
+            List<Record> records;
+            if (string.IsNullOrEmpty(Circle))
+            {
+                records = DB.Records
                 .AsNoTracking()
                 .Where(x => Set.Contains(x.Set)
                     && (Contractor.Contains(x.ContractorName) || Contractor.Contains(x.ServiceStaff))
                     && tmp.Contains(x.Account))
                 .ToList();
+            }
+            else
+            {
+                records = DB.Records
+                    .Where(x => tmp.Contains(x.Account))
+                    .ToList();
+            }
 
             ViewBag.UserStatistics = Lib.Counting.Count(records, houses);
             ViewBag.SetStatistics = records
@@ -697,11 +772,41 @@ namespace ChinaTelecom.Grid.Controllers
                 })
                 .ToList();
 
-            var area = DB.Estates
-                .AsNoTracking()
-                .Where(x => Area.Contains(x.Area))
-                .DistinctBy(x => x.Area)
-                .Select(x => x.Area).ToList();
+            List<string> area;
+            if (string.IsNullOrEmpty(Circle))
+            {
+                area = DB.Estates
+                    .AsNoTracking()
+                    .Where(x => Area.Contains(x.Area))
+                    .DistinctBy(x => x.Area)
+                    .Select(x => x.Area)
+                    .ToList();
+            }
+            else
+            {
+                var points = Lib.Circle.StringToPoints(Circle);
+                var edge = Lib.Circle.GetEdge(points);
+                var estates = DB.Estates
+                    .Where(x => x.Lat >= edge.MinLat && x.Lat <= edge.MaxLat && x.Lon >= edge.MinLon && x.Lon <= edge.MaxLon)
+                    .Select(x => new
+                    {
+                        Id = x.Id,
+                        Lon = x.Lon,
+                        Lat = x.Lat
+                    })
+                    .ToList();
+                var estateIds = estates
+                    .Where(x => Lib.Circle.PointInFences(new Lib.Point { X = x.Lon, Y = x.Lat }, points)).Select(x => x.Id)
+                    .ToList();
+                area = new List<string>();
+                foreach (var y in estateIds)
+                    area.AddRange(DB.Estates
+                        .Where(x => x.Id == y)
+                        .DistinctBy(x => x.Area)
+                        .Select(x => x.Area)
+                        .ToList());
+            }
+
             var areaStatistics = new List<BarChartItem>();
             foreach (var x in area)
             {
@@ -840,12 +945,15 @@ namespace ChinaTelecom.Grid.Controllers
             int? unit,
             int? layer,
             int? door,
-            bool? raw)
+            string Circle,
+            bool? raw,
+            [FromServices] IConfiguration Config)
         {
-            var ret = DB.Houses
+            IEnumerable<House> ret = DB.Houses
                 .Include(x => x.Building)
-                .ThenInclude(x => x.Estate)
-                .AsNoTracking();
+                .ThenInclude(x => x.Estate);
+            if (Config["Data:DefaultConnection:Mode"] != "SQLite")
+                ret = (ret as Microsoft.Data.Entity.Query.IIncludableQueryable<House, Estate>).AsNoTracking();
             if (!User.IsInRole("系统管理员"))
             {
                 var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
@@ -880,6 +988,44 @@ namespace ChinaTelecom.Grid.Controllers
                 ret = ret.Where(x => x.Layer == layer.Value);
             if (door.HasValue)
                 ret = ret.Where(x => x.Door == door.Value);
+            if (!string.IsNullOrEmpty(Circle))
+            {
+                var points = Lib.Circle.StringToPoints(Circle);
+                var edge = Lib.Circle.GetEdge(points);
+                var estates = DB.Estates
+                    .Where(x => x.Lat >= edge.MinLat && x.Lat <= edge.MaxLat && x.Lon >= edge.MinLon && x.Lon <= edge.MaxLon)
+                    .Select(x => new
+                    {
+                        Id = x.Id,
+                        Lon = x.Lon,
+                        Lat = x.Lat
+                    })
+                    .ToList();
+                var estateIds = estates
+                    .Where(x => Lib.Circle.PointInFences(new Lib.Point { X = x.Lon, Y = x.Lat }, points))
+                    .Select(x => x.Id)
+                    .ToList();
+                if (Config["Data:DefaultConnection:Mode"] != "SQLite")
+                {
+                    var buildingIds = DB.Buildings
+                    .Where(x => estateIds.Contains(x.EstateId))
+                    .Select(x => x.Id)
+                    .ToList();
+                    ret = ret.Where(x => buildingIds.Contains(x.BuildingId));
+                }
+                else
+                {
+                    var houseIds = new List<Guid>();
+                    foreach (var x in estateIds)
+                        houseIds.AddRange(DB.Houses
+                            .AsNoTracking()
+                            .Include(a => a.Building)
+                            .Where(a => a.Building.EstateId == x)
+                            .Select(a => a.Id)
+                            .ToList());
+                    ret = ret.Where(x => houseIds.Contains(x.Id));
+                }
+            }
             ViewBag.TotalCustomerCount = ret.Count();
             if (raw.HasValue && raw.Value)
                 return XlsView(ret, "customers.xls", "ExportCustomer");
