@@ -139,6 +139,7 @@ namespace ChinaTelecom.Grid.Controllers
                                 {
                                     series = DB.Serieses.Where(x => x.Id == series.Id).Single();
                                     series.TotalCount = series.TotalCount + dt.Rows.Count;
+                                    DB.Update(series);
                                     DB.SaveChanges();
                                 }
 
@@ -464,6 +465,7 @@ namespace ChinaTelecom.Grid.Controllers
                                         {
                                             series = db.Serieses.Where(x => x.Id == series.Id).Single();
                                             series.FailedCount++;
+                                            db.Update(series);
                                             db.SaveChanges();
                                             Console.WriteLine(ex.ToString());
                                         }
