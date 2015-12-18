@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<Record>
 @{
-    ViewBag.Title = "待对应楼宇用户";
+    ViewBag.Title = "未对应楼宇用户";
 }
 <div class="modal fade" id="modalMapping" tabindex="-1" role="dialog" aria-labelledby="modalMapping">
     <div class="modal-dialog" role="document">
@@ -68,7 +68,7 @@
         <i class="fa fa-lg fa-angle-right"></i>
     </li>
     <li>
-        <a asp-action="Estate" asp-controller="Customer" title="客户列表">客户列表</a>
+        <a asp-action="Estate" asp-controller="Relation" title="未对应楼宇用户">未对应楼宇用户</a>
     </li>
 </ul>
 <div class="row">

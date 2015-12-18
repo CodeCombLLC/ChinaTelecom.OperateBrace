@@ -371,7 +371,7 @@ namespace ChinaTelecom.Grid.Controllers
                                                         var estateTitle = Lib.AddressAnalyser.GetEstate(record.ImplementAddress);
                                                         if (!string.IsNullOrEmpty(estateTitle))
                                                         {
-                                                            var bmapJson = Lib.HttpHelper.Get($"http://api.map.baidu.com/geocoder/v2/?city={Config["BMap:City"]}&address={estateTitle}&output=json&ak={Config["BMap:ApplicationKey"]}");
+                                                            var bmapJson = Lib.HttpHelper.Get($"http://api.map.baidu.com/geocoder/v2/?city={Config["BMap:City"]}&address={record.ImplementAddress}&output=json&ak={Config["BMap:ApplicationKey"]}");
                                                             dynamic bmap = JsonConvert.DeserializeObject<dynamic>(bmapJson);
                                                             if (bmap.status == 0)
                                                             {
