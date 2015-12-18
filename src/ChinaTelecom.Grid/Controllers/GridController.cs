@@ -185,6 +185,7 @@ namespace ChinaTelecom.Grid.Controllers
                     Lon = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lon,
                     Lat = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lat
                 });
+            ViewBag.AreaCount = ret.Count();
             if (xls.HasValue && xls.Value)
                 return XlsView(ret.ToList(), "Area.xls", "ExportArea");
             else
@@ -208,6 +209,7 @@ namespace ChinaTelecom.Grid.Controllers
             if (!string.IsNullOrEmpty(Title))
                 ret = ret.Where(x => x.Title.Contains(Title));
             ret = ret.OrderBy(x => x.Area);
+            ViewBag.EstateCount = ret.Count();
             if (raw.HasValue && raw.Value)
                 return XlsView(ret.ToList(), "Estate.xls", "ExportEstate");
             else

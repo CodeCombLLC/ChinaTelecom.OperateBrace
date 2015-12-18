@@ -234,8 +234,8 @@ namespace ChinaTelecom.Grid.Controllers
                                             #region Mapping to house
                                             try
                                             {
+                                                // 查找是否有对应到楼宇的记录
                                                 var house = db.Houses
-                                                    .AsNoTracking()
                                                     .Include(x => x.Building)
                                                     .ThenInclude(x => x.Estate)
                                                     .ThenInclude(x => x.Rules)
@@ -269,22 +269,35 @@ namespace ChinaTelecom.Grid.Controllers
                                                         if (estate != null)
                                                         {
                                                             var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
-                                                            var _building = estate.Buildings.Where(a => a.Title == building).SingleOrDefault();
+                                                            var _building = estate.Buildings
+                                                                .Where(a => a.Title == building)
+                                                                .SingleOrDefault();
                                                             var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
                                                             var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
                                                             var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
                                                             if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue && _building != null)
                                                             {
-                                                                house.BuildingId = _building.Id;
-                                                                house.Unit = unit.Value;
-                                                                house.Layer = layer.Value;
-                                                                house.Door = door.Value;
-                                                                house.Phone = record.Phone;
-                                                                house.FullName = record.CustomerName;
-                                                                house.IsStatusChanged = record.Status == house.ServiceStatus;
-                                                                house.ServiceStatus = record.Status;
-                                                                house.LastUpdate = DateTime.Now;
-                                                                house.HouseStatus = HouseStatus.中国电信;
+                                                                if (db.Houses.Where(x => x.BuildingId == _building.Id && x.Unit == unit.Value && x.Layer == layer.Value && x.Door == door.Value).Count() == 0)
+                                                                {
+                                                                    if (unit.Value > _building.Units)
+                                                                        _building.Units = unit.Value;
+                                                                    if (layer.Value < _building.BottomLayers)
+                                                                        _building.BottomLayers = layer.Value;
+                                                                    if (layer.Value > _building.TopLayers)
+                                                                        _building.TopLayers = layer.Value;
+                                                                    if (door > _building.Doors)
+                                                                        _building.Doors = door.Value;
+                                                                    house.BuildingId = _building.Id;
+                                                                    house.Unit = unit.Value;
+                                                                    house.Layer = layer.Value;
+                                                                    house.Door = door.Value;
+                                                                    house.Phone = record.Phone;
+                                                                    house.FullName = record.CustomerName;
+                                                                    house.IsStatusChanged = record.Status == house.ServiceStatus;
+                                                                    house.ServiceStatus = record.Status;
+                                                                    house.LastUpdate = DateTime.Now;
+                                                                    house.HouseStatus = HouseStatus.中国电信;
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -300,7 +313,9 @@ namespace ChinaTelecom.Grid.Controllers
                                                     if (estate != null)
                                                     {
                                                         var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
-                                                        var _building = estate.Buildings.Where(a => a.Title == building).SingleOrDefault();
+                                                        var _building = db.Buildings
+                                                            .Where(a => a.EstateId == estate.Id && a.Title == building)
+                                                            .SingleOrDefault();
                                                         var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
                                                         var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
                                                         var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
@@ -308,27 +323,32 @@ namespace ChinaTelecom.Grid.Controllers
                                                         {
                                                             if (_building != null)
                                                             {
-                                                                if (unit.Value > _building.Units)
-                                                                    _building.Units = unit.Value;
-                                                                if (layer.Value < _building.BottomLayers)
-                                                                    _building.BottomLayers = layer.Value;
-                                                                if (layer.Value > _building.TopLayers)
-                                                                    _building.TopLayers = layer.Value;
-                                                                if (door > _building.Doors)
-                                                                    _building.Doors = door.Value;
-                                                                house = new House();
-                                                                house.Account = record.Account;
-                                                                house.BuildingId = _building.Id;
-                                                                house.Unit = unit.Value;
-                                                                house.Layer = layer.Value;
-                                                                house.Door = door.Value;
-                                                                house.Phone = record.Phone;
-                                                                house.FullName = record.CustomerName;
-                                                                house.IsStatusChanged = true;
-                                                                house.ServiceStatus = record.Status;
-                                                                house.LastUpdate = DateTime.Now;
-                                                                house.HouseStatus = HouseStatus.中国电信;
-                                                                db.Houses.Add(house);
+                                                                if (db.Houses.Where(x => x.BuildingId == _building.Id && x.Unit == unit.Value && x.Layer == layer.Value && x.Door == door.Value).Count() == 0)
+                                                                {
+                                                                    if (unit.Value > _building.Units)
+                                                                        _building.Units = unit.Value;
+                                                                    if (layer.Value < _building.BottomLayers)
+                                                                        _building.BottomLayers = layer.Value;
+                                                                    if (layer.Value > _building.TopLayers)
+                                                                        _building.TopLayers = layer.Value;
+                                                                    if (door > _building.Doors)
+                                                                        _building.Doors = door.Value;
+                                                                    db.Update(_building);
+                                                                    db.SaveChanges();
+                                                                    house = new House();
+                                                                    house.Account = record.Account;
+                                                                    house.BuildingId = _building.Id;
+                                                                    house.Unit = unit.Value;
+                                                                    house.Layer = layer.Value;
+                                                                    house.Door = door.Value;
+                                                                    house.Phone = record.Phone;
+                                                                    house.FullName = record.CustomerName;
+                                                                    house.IsStatusChanged = true;
+                                                                    house.ServiceStatus = record.Status;
+                                                                    house.LastUpdate = DateTime.Now;
+                                                                    house.HouseStatus = HouseStatus.中国电信;
+                                                                    db.Houses.Add(house);
+                                                                }
                                                             }
                                                             else
                                                             {
@@ -430,6 +450,7 @@ namespace ChinaTelecom.Grid.Controllers
                                                         }
                                                     }
                                                 }
+                                                db.ChangeTracker.DetectChanges();
                                                 db.SaveChanges();
                                             }
                                             catch (Exception ex)
