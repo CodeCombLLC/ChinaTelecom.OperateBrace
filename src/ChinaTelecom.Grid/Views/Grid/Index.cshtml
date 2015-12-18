@@ -42,6 +42,14 @@
             <input type="checkbox" id="chkNoCustomerEstate" />
             显示没有用户的小区
         </label>
+        <label>
+            <input type="checkbox" id="chkLostEstate" checked />
+            显示流失用户的小区
+        </label>
+        <label>
+            <input type="checkbox" id="chkNormalEstate" checked />
+            显示未流失的小区
+        </label>
     </p>
 </div>
 <div class="modal fade" id="modalCreateEstate" tabindex="-1" role="dialog" aria-labelledby="modalCreateEstate">
@@ -187,8 +195,12 @@
                 else if (data[i].Level == 2)
                     ico = icon3;
                 else if (data[i].Level == 3)
-                    ico = icon4;
+                ico = icon4;
                 if (!$('#chkNoCustomerEstate').is(':checked') && data[i].Level == 3)
+                    continue;
+                if (!$('#chkNormalEstate').is(':checked') && data[i].Level == 0)
+                    continue;
+                if (!$('#chkLostEstate').is(':checked') && (data[i].Level == 1 || data[i].Level == 2))
                     continue;
                 var marker = new BMap.Marker(pt, { icon: ico });
                 marker.Id = data[i].Id;
@@ -259,6 +271,12 @@
     });
 
     $('#chkNoCustomerEstate').change(function () {
+        BuildOverlays();
+    });
+    $('#chkLostEstate').change(function () {
+        BuildOverlays();
+    });
+    $('#chkNormalEstate').change(function () {
         BuildOverlays();
     });
 </script>
