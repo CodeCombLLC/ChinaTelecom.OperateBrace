@@ -39,6 +39,10 @@
 <div id="options">
     <p>
         <label>
+            <input type="checkbox" id="chkMoveEstate" />
+            允许拖拽移动小区
+        </label>
+        <label>
             <input type="checkbox" id="chkNoCustomerEstate" />
             显示没有用户的小区
         </label>
@@ -204,7 +208,8 @@
                     continue;
                 var marker = new BMap.Marker(pt, { icon: ico });
                 marker.Id = data[i].Id;
-                marker.enableDragging();
+                if ($('#chkMoveEstate').is(':checked'))
+                    marker.enableDragging();
                 marker.addEventListener("click", function (e) {
                     window.location = '/Grid/Show/' + e.target.Id
                 });
@@ -277,6 +282,9 @@
         BuildOverlays();
     });
     $('#chkNormalEstate').change(function () {
+        BuildOverlays();
+    });
+    $('#chkMoveEstate').change(function () {
         BuildOverlays();
     });
 </script>
