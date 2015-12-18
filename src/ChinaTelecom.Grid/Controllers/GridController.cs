@@ -129,7 +129,7 @@ namespace ChinaTelecom.Grid.Controllers
                     var s = tmp.Where(a => a.Key == x.Id).Single();
                     if (s.Count == 0)
                         x.Level = 0;
-                    else if (s.Count <= 20)
+                    else if (s.Count <= 10)
                         x.Level = 1;
                     else
                         x.Level = 2;
