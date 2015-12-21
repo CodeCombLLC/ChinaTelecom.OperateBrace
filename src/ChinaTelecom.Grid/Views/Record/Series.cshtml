@@ -83,6 +83,7 @@
                                         </td>
                                         <td>@x.ImportedCount</td>
                                         <td>@x.FailedCount</td>
+                                        <td>@(((x.ImportedCount + x.FailedCount) * 100 / x.TotalCount).ToString("0.00"))%</td>
                                         <td>
                                             <a asp-controller="Record" asp-action="Index" asp-route-seriesid="@x.Id">查看明细</a>
                                             <a href="javascript:Remove('@x.Id')">删除明细</a>
