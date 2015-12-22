@@ -1060,7 +1060,7 @@ namespace ChinaTelecom.Grid.Controllers
                 var record = DB.Records
                 .Where(x => x.Account == house.Account)
                 .LastOrDefault();
-                if (record == null || (record.ContractorName != User.Current.FullName && record.ServiceStaff != User.Current.FullName))
+                if (record == null || (record.ContractorName != User.Current.FullName && record.ServiceStaff != User.Current.FullName && !User.IsInRole("系统管理员")))
                 {
                     return Prompt(x =>
                     {
@@ -1099,7 +1099,7 @@ namespace ChinaTelecom.Grid.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Mapping(string estate, string building, Guid id, int unit, int layer, int door, string account, [FromHeader] string Referer)
         {
-            if (DB.Houses.Where(x => x.Account == account).Count() >0 )
+            if (DB.Houses.Where(x => x.Account == account).Count() > 0)
             {
                 return Prompt(x =>
                 {
