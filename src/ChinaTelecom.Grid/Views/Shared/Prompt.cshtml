@@ -64,8 +64,12 @@
                     @Model.Details
                 </p>
                 <p>
-                    <a href="javascript:history.go(-1);">返回上一页</a>
-                    <a href="/">回到首页</a>
+                    @if (!string.IsNullOrEmpty(Model.RedirectText))
+                    {
+                        <a class="btn btn-primary" href="@Model.RedirectUrl">@Model.RedirectText</a>
+                    }
+                    <a class="btn btn-info" href="javascript:history.go(-1);" class="prompt-link">返回上一页</a>
+                    <a class="btn btn-warning" href="/" class="prompt-link">回到首页</a>
                 </p>
             </div>
             <!-- /.error-content -->
@@ -73,12 +77,6 @@
         <!-- /.error-page -->
 
     </section>
-
-
-
-
-
-
 
 
     <!--  END OF PAPER WRAP -->

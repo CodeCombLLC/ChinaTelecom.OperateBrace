@@ -865,6 +865,8 @@ namespace ChinaTelecom.Grid.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, string rules, string title, double lon, double lat, string area)
         {
+            if (area == null)
+                area = "";
             var estate = DB.Estates
                 .Include(x => x.Rules)
                 .Where(x => x.Id == id)
@@ -1179,6 +1181,64 @@ namespace ChinaTelecom.Grid.Controllers
             });
             DB.SaveChanges();
             return Redirect(Referer);
+        }
+
+        [HttpGet]
+        [AnyRoles("系统管理员")]
+        public IActionResult Assign(string Circle)
+        {
+            var points = Lib.Circle.StringToPoints(Circle);
+            var edge = Lib.Circle.GetEdge(points);
+            var estates = DB.Estates
+                .Where(x => x.Lat >= edge.MinLat && x.Lat <= edge.MaxLat && x.Lon >= edge.MinLon && x.Lon <= edge.MaxLon)
+                .ToList();
+            var ret = estates
+                .Where(x => Lib.Circle.PointInFences(new Lib.Point { X = x.Lon, Y = x.Lat }, points))
+                .ToList();
+            return View(ret);
+        }
+
+        [HttpPost]
+        [AnyRoles("系统管理员")]
+        [ValidateAntiForgeryToken]
+        public IActionResult Assign(Guid[] estates, string area, [FromServices] IConfiguration Config)
+        {
+            if (area == null)
+                area = "";
+            Estate first = null;
+            if (Config["Data:DefaultConnection:Mode"] != "SQLite")
+            {
+                var tmp = DB.Estates
+                .Where(x => estates.Contains(x.Id))
+                .ToList();
+                foreach (var x in tmp)
+                    x.Area = area;
+                first = tmp.FirstOrDefault();
+                DB.SaveChanges();
+            }
+            else
+            {
+                foreach(var x in estates)
+                {
+                    var y = DB.Estates
+                        .Where(z => z.Id == x)
+                        .SingleOrDefault();
+                    if (first == null)
+                        first = y;
+                    y.Area = area;
+                    DB.SaveChanges();
+                }
+            }
+            return Prompt(x =>
+            {
+                x.Title = "片区指派成功";
+                x.Details = $"共{estates.Count()}个小区被指派到了{area}片区中";
+                x.RedirectText = "返回地图";
+                if (first == null)
+                    x.RedirectUrl = Url.Action("Index", "Grid");
+                else
+                    x.RedirectUrl = Url.Action("Index", "Grid", new { lon = first.Lon, first.Lat });
+            });
         }
     }
 }
