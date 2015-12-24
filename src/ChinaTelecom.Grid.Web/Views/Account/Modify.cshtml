@@ -1,0 +1,109 @@
+﻿@model User
+@{
+    ViewBag.Title = "编辑用户";
+}
+<link rel="stylesheet" type="text/css" href="~/assets/js/tag/jquery.tagsinput.css">
+<script type="text/javascript" src="~/assets/js/tag/jquery.tagsinput.js"></script>
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    编辑用户
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="用户管理">用户管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="用户信息">用户信息</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Profile" asp-controller="Account" asp-route-id="@Model.Id" title="@Model.FullName">@Model.FullName</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="编辑用户">编辑用户</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-9">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        编辑用户
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#Profile">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="Profile">
+                    <form asp-action="Modify" asp-controller="Account" asp-route-id="@Model.Id" method="post">
+                        <div class="form-group">
+                            <label>姓名</label>
+                            <input name="FullName" autocomplete="off" type="text" value="@Model.FullName" class="form-control" value="@Model.FullName" />
+                        </div>
+                        <div class="form-group">
+                            <label>角色</label>
+                            <select name="Role" class="form-control">
+                                <!option @((await User.Manager.GetRolesAsync(Model)).First() == "网格经理" ? "selected" : "")>网格经理</!option>
+                                <!option @((await User.Manager.GetRolesAsync(Model)).First() == "网格主管" ? "selected" : "")>网格主管</!option>
+                                <!option @((await User.Manager.GetRolesAsync(Model)).First() == "系统管理员" ? "selected" : "")>系统管理员</!option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>片区权限</label>
+                            <input id="tagsArea" type="text" class="form-control tags" value="@ViewBag.Area">
+                            <span>输入片区名称，按逗号或回车添加该片区，点击片区右侧删除按钮可取消该用户对该片区的管辖权，请注意区分大小写。</span>
+                            <input type="hidden" name="Area" id="hidAreas" />
+                        </div>
+                        <div class="form-group">
+                            <label>重置密码</label>
+                            <input name="NewPwd" type="password" autocomplete="off" class="form-control" placeholder="不修改请留空" />
+                        </div>
+                        <input type="submit" class="btn btn-primary" value="修改" />
+                    </form>
+                </div>
+            </div>
+        </div>
+        @Html.Partial("SideBar")
+    </div>
+</div>
+<script>
+    function RebuildHidAreas()
+    {
+        var tmp = $('#tagsArea_tagsinput').find('.tag span');
+        var str = "";
+        for(var i = 0; i < tmp.length; i++)
+        {
+            str += $(tmp[i]).text().trim() + ",";
+        }
+        $('#hidAreas').val(str);
+    }
+    $('#tagsArea').tagsInput({
+        width: 'auto', onChange: function (elem, elem_tags) {
+            RebuildHidAreas();
+        }});
+</script>

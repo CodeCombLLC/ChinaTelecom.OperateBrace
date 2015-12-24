@@ -1,0 +1,334 @@
+﻿@model Building
+@{
+    ViewBag.Title = "管理小区 - " + Model.Estate;
+}
+<link rel="stylesheet" href="~/assets/js/wizard/css/jquery.steps.css">
+<style>
+    section {
+        overflow-y: auto;
+    }
+</style>
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    管理小区
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Estate" asp-controller="Grid" title="小区管理">小区管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Show" asp-controller="Grid" asp-route-id="@Model.EstateId" title="@Model.Estate.Title">@Model.Estate.Title</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="@Model.Title">@Model.Title</a>
+    </li>
+</ul>
+<div class="col-sm-8">
+    <div class="content-wrap">
+        <div class="row">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        单元信息
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#Buildings">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div id="Buildings">
+                    <div id="wizard-tab">
+                        @for (var x = 1; x <= Model.Units; x++)
+                        {
+                            <h2>@x</h2>
+                            <section>
+                                <table class="table building">
+                                    <thead>
+                                        <tr>
+                                            <th>楼层</th>
+                                            @for (var i = 1; i <= Model.Doors; i++)
+                                            {
+                                                <th>@i 门</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (var i = Model.TopLayers; i >= Model.BottomLayers; i--)
+                                        {
+                                            if (i == 0)
+                                            {
+                                                continue;
+                                            }
+                                            <tr>
+                                                <td>
+                                                    @if (i > 0)
+                                                    {
+                                                        <span class="badge badge-warning">@i 层</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge badge-warning">B@(-i) 层</span>
+                                                    }
+                                                </td>
+                                                @for (var j = 1; j <= Model.Doors; j++)
+                                                {
+                                                    <td class="dragable" ondrop="drop(event)" ondragover="allowDrop(event)" data-unit="@x" data-layer="@i" data-door="@j">
+                                                        @{
+                                                            var house = Model.Houses.Where(a => a.Unit == x && a.Layer == i && a.Door == j).SingleOrDefault();
+                                                        }
+                                                        @if (house != null)
+                                                        {
+                                                            @if (house.HouseStatus == HouseStatus.中国电信)
+                                                            {
+                                                            <div ondragstart="drag(event)" class="house-item @(house.ServiceStatus == ServiceStatus.在用 ? "status-using" : "")" draggable="true" data-account="@house.Account">
+                                                                <img class="icon-provider" src="~/assets/img/ct.png" draggable="false" />
+                                                                <a draggable="false" asp-action="Index" asp-controller="Record" asp-route-account="@house.Account" target="_blank">@house.FullName (@house.Phone)</a>
+                                                            </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div ondragstart="drag(event)" class="house-item non-ct-user status-unknown" draggable="true" data-id="@house.Id" data-full-name="@house.FullName" data-phone="@house.Phone" data-provider="@house.HouseStatus">
+                                                                    @if (house.HouseStatus == HouseStatus.中国移动)
+                                                                    {
+                                                                        <img class="icon-provider" src="~/assets/img/cm.png" draggable="false" />
+                                                                    }
+                                                                    else if (house.HouseStatus == HouseStatus.中国联通)
+                                                                    {
+                                                                        <img class="icon-provider" src="~/assets/img/cu.png" draggable="false" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <img class="icon-provider" src="~/assets/img/unknown.png" draggable="false" />
+                                                                    }
+                                                                    <span>@house.FullName (@house.Phone)</span>
+                                                                </div>
+                                                            }
+                                                        }
+                                                    </td>
+                                                    }
+                                            </tr>
+                                            }
+                                    </tbody>
+                                </table>
+                            </section>
+                            }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-sm-4">
+    <div class="content-wrap">
+        <div class="row">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        未匹配用户
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#PendingAddress">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="PendingAddress">
+                    <div class="pending-addresses" ondrop="drop(event)" ondragover="allowDrop(event)">
+                        @foreach (Record x in ViewBag.PendingAddresses)
+                        {
+                            <div class="pending-address @(x.Status == ServiceStatus.在用 ? "status-using" : "")" draggable="true" ondragstart="drag(event)" data-account="@x.Account">
+                                <img class="icon-provider" src="~/assets/img/ct.png" draggable="false" />
+                                <a asp-action="Index" asp-controller="Record" asp-route-account="@x.Account" draggable="false" target="_blank">@x.ImplementAddress</a>
+                            </div>
+                        }
+                    </div>
+                    <span>将未匹配的用户拖拽至楼层以建立关联关系，将楼层中已有用户拖拽至此可解除关联。</span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        添加其他运营商用户
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#OtherProvider">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="OtherProvider">
+                    <form asp-controller="Grid" asp-action="CreateHouse" asp-route-id="@Model.Id">
+                        <div class="form-group">
+                            <label>单元</label>
+                            <select name="unit" class="form-control">
+                                @for (var i = 1; i <= Model.Units; i++)
+                                {
+                                    <option>@i</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>楼层</label>
+                            <select name="layer" class="form-control">
+                                @for (var i = Model.TopLayers; i >= Model.BottomLayers; i--)
+                                {
+                                    @if (i == 0) { continue; }
+                                    <option>@i</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>门</label>
+                            <select name="door" class="form-control">
+                                @for (var i = 1; i <= Model.Doors; i++)
+                                {
+                                    <option>@i</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>运营商</label>
+                            <select id="lstProviders" name="provider" class="form-control">
+                                @foreach (var x in Enum.GetNames(typeof(HouseStatus)))
+                                {
+                                    <option>@x</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group house-account-field">
+                            <label>接入号</label>
+                            <input type="text" class="form-control" name="account" />
+                        </div>
+                        <div class="form-group house-details">
+                            <label>姓名</label>
+                            <input type="text" class="form-control" name="fullname" />
+                        </div>
+                        <div class="form-group house-details">
+                            <label>联系电话</label>
+                            <input type="text" class="form-control" name="phone" />
+                        </div>
+                        <input type="submit" class="btn btn-primary" value="提交" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/assets/js/wizard/build/jquery.steps.js"></script>
+<script>
+    var buildingid = '@Model.Id';
+    var item;
+    $("#wizard-tab").steps({
+        headerTag: "h2",
+        bodyTag: "section",
+        transitionEffect: "none",
+        enableFinishButton: false,
+        enablePagination: false,
+        enableAllSteps: true,
+        titleTemplate: "#title#",
+        cssClass: "tabcontrol"
+    });
+    $(document).ready(function () {
+        DisplayFields();
+        @if (Context.Request.Query.ContainsKey("unit"))
+        {
+            @(new HtmlString($"$('#wizard-tab-t-{Convert.ToInt32(Context.Request.Query["unit"]) - 1}').click();"))
+        }
+    });
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        console.log(ev);
+        console.log(ev.target);
+        item = ev.target;
+    }
+
+    function drop(ev) {
+        if ($(ev.target).hasClass('pending-addresses')) {
+            console.log('解除楼层对应');
+            ev.preventDefault();
+            $(ev.target).append($(item));
+            if ($(item).hasClass('non-ct-user'))
+                $.post('/Grid/Move', {
+                    id: $(item).attr('data-id'),
+                    phone: $(item).attr('data-phone'),
+                    fullname: $(item).attr('data-full-name'),
+                    provider: $(item).attr('data-provider')
+                }, function () { });
+            else
+                $.post('/Grid/Transfer', {
+                    account: $(item).attr('data-account')
+                }, function () { });
+        }
+        else if ($(ev.target).hasClass('dragable')) {
+            console.log('添加楼层对应');
+            ev.preventDefault();
+            $(ev.target).append($(item));
+            if ($(item).hasClass('non-ct-user'))
+                $.post('/Grid/Move', {
+                    id: $(item).attr('data-id'),
+                    buildingid: buildingid,
+                    unit: $(ev.target).attr('data-unit'),
+                    layer: $(ev.target).attr('data-layer'),
+                    door: $(ev.target).attr('data-door'),
+                    phone: $(item).attr('data-phone'),
+                    fullname: $(item).attr('data-full-name'),
+                    provider: $(item).attr('data-provider')
+                }, function () { });
+            else
+                $.post('/Grid/Transfer', {
+                    buildingid: buildingid,
+                    account: $(item).attr('data-account'),
+                    unit: $(ev.target).attr('data-unit'),
+                    layer: $(ev.target).attr('data-layer'),
+                    door: $(ev.target).attr('data-door')
+                }, function () { });
+        }
+    }
+
+    function DisplayFields() {
+        if ($('#lstProviders').val() == "中国电信") {
+            $('.house-details').hide();
+            $('.house-account-field').show();
+        } else {
+            $('.house-details').show();
+            $('.house-account-field').hide();
+        }
+    }
+
+    $('#lstProviders').change(function () {
+        DisplayFields();
+    });
+</script>

@@ -1,0 +1,100 @@
+﻿@model IEnumerable<Estate>
+@{ 
+    ViewBag.Title = "分配片区";
+}
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Index" asp-controller="Grid" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="分配片区">分配片区</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-12">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        所圈定的小区列表
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#EstateList">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <form asp-action="Assign" asp-controller="Grid" method="post" class="body-nest" id="EstateList">
+                    <div class="x-scroll">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="chkAll" checked /></th>
+                                    <th>小区名称</th>
+                                    <th>当前片区</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var x in Model)
+                                {
+                                    <tr>
+                                        <td><input type="checkbox" checked value="@x.Id" name="estates" /></td>
+                                        <td>@x.Title</td>
+                                        <td>
+                                            @if (string.IsNullOrEmpty(x.Area))
+                                            {
+                                                <span class="badge badge-error">未指派</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-success">@x.Area</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Grid" asp-action="Index" asp-route-lon="@x.Lon" asp-route-lat="@x.Lat" target="_blank">在地图上查看</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" name="area" style="display:inline-block;min-width:100px" placeholder="欲指派的片区编号" />
+                        </div>
+                        <div class="col-sm-9">
+                            <input type="submit" value="提交" class="btn btn-danger" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#chkAll').change(function () {
+        $('input[type="checkbox"]').prop("checked", $('#chkAll').is(':checked'));
+    });
+</script>

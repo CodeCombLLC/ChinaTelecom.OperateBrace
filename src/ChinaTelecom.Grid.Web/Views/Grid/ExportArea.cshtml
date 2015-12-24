@@ -1,0 +1,28 @@
+﻿@model IEnumerable<Area>
+@{ 
+    Layout = null;
+}
+
+<table>
+    <tr>
+        <td>片区编号</td>
+        <td>小区数</td>
+        <td>电信总用户数</td>
+        <td>电信在网用户数</td>
+        <td>非电信用户数</td>
+        <td>新增</td>
+        <td>离网</td>
+    </tr>
+    @foreach (var x in Model)
+    {
+        <tr>
+            <td>@x.Id</td>
+            <td>@x.Count</td>
+            <td>@x.CTUsers</td>
+            <td>@x.CTInUsingUsers</td>
+            <td>@x.NonCTUsers</td>
+            <td>@x.AddedUsers</td>
+            <td>@x.LeftUsers</td>
+        </tr>
+    }
+</table>

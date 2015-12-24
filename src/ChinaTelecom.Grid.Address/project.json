@@ -1,0 +1,12 @@
+﻿{
+  "version": "1.0.0-*",
+  "description": "ChinaTelecom.Grid.AddressAnalysis Class Library",
+  "authors": [ "Yuuko" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+
+  "frameworks": {
+    "net451": { }
+  }
+}

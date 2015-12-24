@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>@ViewBag.Title - 中国电信网格管理系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Le styles -->
+    <script type="text/javascript" src="~/assets/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/assets/css/style.css">
+    <link rel="stylesheet" href="~/assets/css/loader-style.css">
+    <link rel="stylesheet" href="~/assets/css/bootstrap.css">
+    <link rel="stylesheet" href="~/assets/js/calendar/css/calendar.css">
+    <!--[if lt IE 9]>
+        <script src="~/assets/js/html5.js"></script>
+        <![endif]-->
+    <link rel="shortcut icon" href="~/assets/ico/minus.png">
+    <style>
+        @if (Cookies.ContainsKey("styles"))
+        {
+            @(new HtmlString("body {" + Cookies["styles"] + "}"))
+        }
+    </style>
+</head>
+<body>
+    <!-- TOP NAVBAR -->
+    <nav role="navigation" class="navbar navbar-static-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button data-target="#bs-example-navbar-collapse-1" data-toggle="collapse" class="navbar-toggle" type="button">
+                    <span class="entypo-menu"></span>
+                </button>
+                <div id="logo-mobile" class="visible-xs">
+                    <h1>
+                        中国电信
+                        <span>@Config["Settings:Authorization"]</span>
+                    </h1>
+                </div>
+            </div>
+            <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse">
+                <div id="nt-title-container" class="navbar-left running-text visible-lg">
+                    <ul class="date-top">
+                        <li class="entypo-calendar" style="margin-right:5px"></li>
+                        <li id="Date">@DateTime.Now.ToString("yyyy年MM月dd日")</li>
+                    </ul>
+
+                    <ul id="digital-clock" class="digital">
+                        <li class="entypo-clock" style="margin-right:5px"></li>
+                        <li class="hour">13</li>
+                        <li>:</li>
+                        <li class="min">19</li>
+                        <li>:</li>
+                        <li class="sec">57</li>
+                        <li class="meridiem">PM</li>
+                    </ul>
+                    <ul id="nt-title" style="height: 18px; overflow: hidden;">
+                        <li style="margin-top: 0px;">
+                            <i class="wi-cloud-refresh"></i>&nbsp;&nbsp;明细数&nbsp;
+                            <b>@ViewBag.HeaderRecordCount</b>
+                        </li>
+                        <li style="margin-top: 0px;">
+                            <i class="wi-cloud-refresh"></i>&nbsp;&nbsp;系统用户&nbsp;
+                            <b>@ViewBag.HeaderUserCount</b>
+                        </li>
+                        <li style="margin-top: 0px;">
+                            <i class="wi-cloud-refresh"></i>&nbsp;&nbsp;小区数&nbsp;
+                            <b>@ViewBag.HeaderEstateCount</b>
+                        </li>
+                    </ul>
+                </div>
+
+                <ul style="margin-right:0;" class="nav navbar-nav navbar-right">
+                    <li>
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            @if (User.Current.Avatar == null || User.Current.Avatar.Length == 0)
+                            {
+                                <img alt="" class="admin-pic img-circle" src="~/assets/img/non-avatar.png">@User.Current.UserName <b class="caret"></b>
+                            }
+                            else
+                            {
+                                <img alt="" class="admin-pic img-circle" src="@Url.Action("Avatar", "Account", new { id = User.Current.Id })">@User.Current.UserName <b class="caret"></b>
+                            }
+                        </a>
+                        <ul style="margin-top:14px;" role="menu" class="dropdown-setting dropdown-menu">
+                            <li>
+                                <a asp-action="Profile" asp-controller="Account" asp-route-id="@User.Current.Id">
+                                    <span class="entypo-user"></span>&nbsp;&nbsp;我的资料
+                                </a>
+                            </li>
+                            <li>
+                                <a asp-action="Setting" asp-controller="Account">
+                                    <span class="entypo-vcard"></span>&nbsp;&nbsp;账号设定
+                                </a>
+                            </li>
+
+                            <li class="divider"></li>
+
+                            <li>
+                                <a class="tooltip-tip ajax-load" href="javascript:$('#frmLogout').submit()" title="注销">
+                                    <i class="icon-forward"></i>
+                                    <span>注销</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                            <span class="icon-gear"></span>&nbsp;&nbsp;皮肤
+                        </a>
+                        <ul role="menu" class="dropdown-setting dropdown-menu">
+
+                            <li class="theme-bg">
+                                <div id="button-bg"></div>
+                                <div id="button-bg2"></div>
+                                <div id="button-bg3"></div>
+                                <div id="button-bg5"></div>
+                                <div id="button-bg6"></div>
+                                <div id="button-bg7"></div>
+                                <div id="button-bg8"></div>
+                                <div id="button-bg9"></div>
+                                <div id="button-bg10"></div>
+                                <div id="button-bg11"></div>
+                                <div id="button-bg12"></div>
+                                <div id="button-bg13"></div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+
+    <!-- /END OF TOP NAVBAR -->
+    <!-- SIDE MENU -->
+    <div id="skin-select">
+        <div id="logo">
+            <h1 class="logo-outer">
+                <img src="~/assets/img/logo.png" class="ct-logo" />
+                <span>@Config["Settings:Authorization"]</span>
+            </h1>
+        </div>
+
+        <a id="toggle">
+            <span class="entypo-menu"></span>
+        </a>
+        <div class="dark">
+            <form action="#">
+                <span>
+                    <input type="text" name="search" value="" class="search rounded id_search" placeholder="搜索菜单..." autofocus="">
+                </span>
+            </form>
+        </div>
+
+        <div class="search-hover">
+            <form id="demo-2">
+                <input type="search" placeholder="搜索菜单..." class="id_search">
+            </form>
+        </div>
+        <div class="skin-part">
+            <div id="tree-wrap">
+                <div class="side-bar">
+                    <ul class="topnav menu-left-nest">
+                        <li>
+                            <a href="#" style="border-left:0px solid!important;" class="title-menu-left">
+
+                                <span class="widget-menu"></span>
+                                <i data-toggle="tooltip" class="entypo-cog pull-right config-wrap"></i>
+
+                            </a>
+                        </li>
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-action="Index" asp-controller="Home" title="仪表盘">
+                                <i class="icon-graph-pie"></i>
+                                <span>仪表盘</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-action="Index" asp-controller="Record" title="明细列表">
+                                <i class="icon-menu"></i>
+                                <span>明细列表</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-action="Series" asp-controller="Record" title="导入记录">
+                                <i class="icon-view-list-large"></i>
+                                <span>导入记录</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <ul class="topnav menu-left-nest">
+                        <li>
+                            <a href="#" style="border-left:0px solid!important;" class="title-menu-left">
+
+                                <span class="design-kit"></span>
+                                <i data-toggle="tooltip" class="entypo-cog pull-right config-wrap"></i>
+
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-controller="Grid" asp-action="Index" title="查看地图">
+                                <i class="icon-map"></i>
+                                <span>查看地图</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-controller="Grid" asp-action="Area" title="片区管理">
+                                <i class="icon-help"></i>
+                                <span>片区管理</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-controller="Grid" asp-action="Estate" title="小区管理">
+                                <i class="icon-home"></i>
+                                <span>小区管理</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-controller="Grid" asp-action="Customer" title="客户列表">
+                                <i class="icon-user-group"></i>
+                                <span>客户列表</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-controller="Grid" asp-action="Relation" title="未对应楼宇用户">
+                                <i class="icon-information"></i>
+                                <span>未对应楼宇用户</span>
+                                <div class="noft-purple-number" style="display: inline-block; float: none;">@ViewBag.NoRelationCustomerCount</div>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-controller="Grid" asp-action="Statistics" title="报表统计">
+                                <i class="icon-graph-bar"></i>
+                                <span>报表统计</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    @if (User.IsInRole("系统管理员"))
+                    {
+                        <ul id="menu-showhide" class="topnav menu-left-nest">
+                            <li>
+                                <a href="#" style="border-left:0px solid!important;" class="title-menu-left">
+                                    <span class="component"></span>
+                                    <i data-toggle="tooltip" class="entypo-cog pull-right config-wrap"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="tooltip-tip ajax-load" asp-action="Index" asp-controller="Account" title="用户管理">
+                                    <i class="icon-user"></i>
+                                    <span>用户管理</span>
+                                </a>
+                            </li>
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END OF SIDE MENU -->
+    <div class="wrap-fluid" style="width: auto; margin-left: 250px;">
+        <div class="container-fluid paper-wrap bevel tlbr">
+            @RenderBody()
+            <div class="footer-space"></div>
+            <div id="footer">
+                <div class="devider-footer-left"></div>
+                <div class="time">
+                    <p id="spanDate">
+                    </p><p id="clock">
+                    </p>
+                </div>
+                <div class="copyright">
+                    © 2015 <a href="http://www.codecomb.com">Harbin Code Comb Technology</a>. All right Reserved.
+                </div>
+                <div class="devider-footer"></div>
+            </div>
+        </div>
+    </div>
+    <form asp-action="Logout" asp-controller="Account" method="post" id="frmLogout"></form>
+    <!-- MAIN EFFECT -->
+    <script type="text/javascript" src="~/assets/js/preloader.js"></script>
+    <script type="text/javascript" src="~/assets/js/bootstrap.js"></script>
+    <script type="text/javascript" src="~/assets/js/app.js"></script>
+    <script type="text/javascript" src="~/assets/js/load.js"></script>
+    <script type="text/javascript" src="~/assets/js/main.js"></script>
+
+    <!-- /MAIN EFFECT -->
+    <!-- GAGE -->
+    <script type="text/javascript" src="~/assets/js/calendar/underscore/underscore-min.js"></script>
+    <!-- <script type="text/javascript" src="~/assets/js/calendar/bootstrap3/js/bootstrap.min.js"></script> -->
+    <script type="text/javascript" src="~/assets/js/calendar/jstimezonedetect/jstz.min.js"></script>
+
+    <script type="text/javascript" src="~/assets/js/calendar/language/fr-FR.js"></script>
+    <script type="text/javascript" src="~/assets/js/calendar/language/de-DE.js"></script>
+    <script type="text/javascript" src="~/assets/js/calendar/language/el-GR.js"></script>
+    <script type="text/javascript" src="~/assets/js/calendar/language/it-IT.js"></script>
+    <script type="text/javascript" src="~/assets/js/calendar/language/pl-PL.js"></script>
+    <script type="text/javascript" src="~/assets/js/calendar/language/pt-BR.js"></script>
+    <script type="text/javascript" src="~/assets/js/calendar/language/es-MX.js"></script>
+    <script type="text/javascript" src="~/assets/js/calendar/language/es-ES.js"></script>
+    <script type="text/javascript" src="~/assets/js/calendar/language/ru-RU.js"></script>
+    <script type="text/javascript" src="~/assets/js/calendar/language/sv-SE.js"></script>
+    <script type="text/javascript" src="~/assets/js/calendar/calendar.js"></script>
+    <script type="text/javascript" src="~/assets/js/calendar/app.js"></script>
+</body>
+</html>

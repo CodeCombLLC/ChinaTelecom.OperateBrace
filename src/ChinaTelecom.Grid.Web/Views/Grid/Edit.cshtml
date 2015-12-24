@@ -1,0 +1,107 @@
+﻿@model Estate
+@{
+    ViewBag.Title = "编辑小区";
+}
+<link rel="stylesheet" type="text/css" href="~/assets/js/tag/jquery.tagsinput.css">
+<script type="text/javascript" src="~/assets/js/tag/jquery.tagsinput.js"></script>
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    管理小区
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Estate" asp-controller="Grid" title="小区管理">小区管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Show" asp-controller="Grid" asp-route-id="@Model.Id" title="@Model.Title">@Model.Title</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="编辑小区">编辑小区</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-12">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        编辑小区
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#EditEstate">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="EditEstate">
+                    <form asp-action="Edit" asp-controller="Grid" asp-route-id="@Model.Id" method="post">
+                        <div class="form-group">
+                            <label>小区名称</label>
+                            <input type="text" name="title" value="@Model.Title" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>片区编码</label>
+                            <input type="text" name="area" value="@Model.Area" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>经度</label>
+                            <input type="text" name="lon" value="@Model.Lon" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>纬度</label>
+                            <input type="text" name="lat" value="@Model.Lat" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>匹配规则</label>
+                            <input type="text" class="form-control" id="tagsRule" value="@ViewBag.Rules" />
+                            <span>填写匹配规则，与明细中的地址对应，应为"XXX小区"、"XXX街XXX号"</span>
+                            <input type="hidden" id="hidRules" name="rules" />
+                        </div>
+                        <input type="submit" class="btn btn-primary" value="保存" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function RebuildHidRules() {
+        var tmp = $('#tagsRule_tagsinput').find('.tag span');
+        var str = "";
+        for (var i = 0; i < tmp.length; i++) {
+            str += $(tmp[i]).text().trim() + ",";
+        }
+        $('#hidRules').val(str);
+    }
+    $('#tagsRule').tagsInput({
+        width: 'auto', onChange: function (elem, elem_tags) {
+            RebuildHidRules();
+        }
+    });
+</script>

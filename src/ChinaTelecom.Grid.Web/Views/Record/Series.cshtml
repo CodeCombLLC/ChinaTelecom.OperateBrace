@@ -1,0 +1,148 @@
+﻿@model IEnumerable<Series>
+@{ 
+    ViewBag.Title = "导入记录";
+}
+
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="明细管理">明细管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Series" asp-controller="Record" title="导入记录">导入记录</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-9">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        导入记录列表
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#RecordList">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="RecordList">
+                    <div class="x-scroll">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>导入时间</th>
+                                    <th>状态</th>
+                                    <th>导入明细数量</th>
+                                    <th>失败数量</th>
+                                    <th>进度</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var x in Model)
+                                {
+                                    { 
+                                        x.ImportedCount = Html.SeriesCaculate(x.Id);
+                                    }
+                                    <tr>
+                                        <td>@x.Time.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                        <td>
+                                            @if (x.Status == SeriesStatus.导入中)
+                                            { 
+                                                <span class="badge badge-warning">@x.Status</span>
+                                            }
+                                            else if (x.Status == SeriesStatus.导入完成)
+                                            {
+                                                <span class="badge badge-success">@x.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge">@x.Status</span>
+                                            }
+                                        </td>
+                                        <td>@x.ImportedCount</td>
+                                        <td>@x.FailedCount</td>
+                                        @if (x.TotalCount > 0)
+                                        {
+                                            <td>@(((x.ImportedCount + x.FailedCount) * 100 / x.TotalCount).ToString("0.00"))%</td>
+                                        }
+                                        else
+                                        {
+                                            <td>-</td>
+                                        }
+                                        <td>
+                                            <a asp-controller="Record" asp-action="Index" asp-route-seriesid="@x.Id">查看明细</a>
+                                            <a href="javascript:Remove('@x.Id')">删除明细</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @Html.MakePager("footable-page", "active", "pagination pagination-centered")
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        导入明细
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#ImportXls">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="ImportXls">
+                    @if (User.AnyRoles("系统管理员, 网格主管"))
+                    {
+                        <form asp-action="Import" asp-controller="Record" enctype="multipart/form-data" method="post">
+                            <div class="form-group">
+                                <label>上传文件(*.xls, *.xlsx)</label>
+                                <input type="file" name="file">
+                            </div>
+                            <button class="btn btn-info" type="submit">导入</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span>您的帐号没有导入明细的权限！</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form asp-action="RemoveSeries" asp-controller="Record" method="post" id="frmRemoveSeries">
+    <input id="seriesId" name="id" type="hidden" />
+</form>
+<script>
+    function Remove(id)
+    {
+        $('#seriesId').val(id);
+        $('#frmRemoveSeries').submit();
+    }
+</script>

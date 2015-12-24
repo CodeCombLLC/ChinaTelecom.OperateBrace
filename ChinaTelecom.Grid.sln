@@ -16,7 +16,11 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ChinaTelecom.Grid", "src\Ch
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{C20D865A-0197-46A0-8366-9EB16CFF8740}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ChinaTelecom.Grid.Tests", "test\ChinaTelecom.Grid.Tests\ChinaTelecom.Grid.Tests.xproj", "{8DF9A460-8E24-4122-99CF-EA5C250CFB2E}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ChinaTelecom.Grid.AddressAnalysis.Tests", "test\ChinaTelecom.Grid.Tests\ChinaTelecom.Grid.AddressAnalysis.Tests.xproj", "{8DF9A460-8E24-4122-99CF-EA5C250CFB2E}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ChinaTelecom.Grid.AddressAnalysis", "src\ChinaTelecom.Grid.AddressAnalysis\ChinaTelecom.Grid.AddressAnalysis.xproj", "{0B244455-BA7E-4653-8A42-383447B86014}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ChinaTelecom.Grid.Algorithm", "src\ChinaTelecom.Grid.Algorithm\ChinaTelecom.Grid.Algorithm.xproj", "{DFFF1018-5133-4BC2-A569-3AE0B84F1A17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +36,14 @@ Global
 		{8DF9A460-8E24-4122-99CF-EA5C250CFB2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DF9A460-8E24-4122-99CF-EA5C250CFB2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DF9A460-8E24-4122-99CF-EA5C250CFB2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B244455-BA7E-4653-8A42-383447B86014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B244455-BA7E-4653-8A42-383447B86014}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B244455-BA7E-4653-8A42-383447B86014}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B244455-BA7E-4653-8A42-383447B86014}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFFF1018-5133-4BC2-A569-3AE0B84F1A17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFFF1018-5133-4BC2-A569-3AE0B84F1A17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFFF1018-5133-4BC2-A569-3AE0B84F1A17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFFF1018-5133-4BC2-A569-3AE0B84F1A17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,5 +51,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D7043F99-25F1-4126-9F2D-91D296F2FE55} = {016B6402-C0C6-4E99-83AA-C6194F37EAC1}
 		{8DF9A460-8E24-4122-99CF-EA5C250CFB2E} = {C20D865A-0197-46A0-8366-9EB16CFF8740}
+		{0B244455-BA7E-4653-8A42-383447B86014} = {016B6402-C0C6-4E99-83AA-C6194F37EAC1}
+		{DFFF1018-5133-4BC2-A569-3AE0B84F1A17} = {016B6402-C0C6-4E99-83AA-C6194F37EAC1}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,213 @@
+﻿@{
+    ViewBag.Title = "生成结果";
+}
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Statistics" asp-controller="Grid" title="报表统计">报表统计</a>
+    </li>
+
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="生成结果">生成结果</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="nest">
+                    <div class="title-alt">
+                        <h6>
+                            套餐占比
+                        </h6>
+                        <div class="titleToggle">
+                            <a class="nav-toggle-alt" href="#SetStatistics">
+                                <span class="entypo-up-open"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="body-nest" id="SetStatistics">
+                        <div id="chartSetStatistics"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="nest">
+                    <div class="title-alt">
+                        <h6>
+                            用户状态
+                        </h6>
+                        <div class="titleToggle">
+                            <a class="nav-toggle-alt" href="#UserStatus">
+                                <span class="entypo-up-open"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="body-nest" id="UserStatus">
+                        <div id="chartUserStatus"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="nest">
+                    <div class="title-alt">
+                        <h6>
+                            片区统计
+                        </h6>
+                        <div class="titleToggle">
+                            <a class="nav-toggle-alt" href="#AreaStatistics">
+                                <span class="entypo-up-open"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="body-nest" id="AreaStatistics">
+                        <div id="chartAreaStatistics"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="nest">
+                    <div class="title-alt">
+                        <h6>
+                            客户经理在用统计
+                        </h6>
+                        <div class="titleToggle">
+                            <a class="nav-toggle-alt" href="#ContractorStatistics">
+                                <span class="entypo-up-open"></span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="body-nest" id="ContractorStatistics">
+                        <div id="chartContractorStatistics"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="~/assets/js/chart/jquery.flot.js"></script>
+<script type="text/javascript" src="~/assets/js/chart/jquery.flot.categories.js"></script>
+<script type="text/javascript" src="~/assets/js/chart/jquery.flot.resize.js"></script>
+<script type="text/javascript" src="~/assets/js/chart/jquery.flot.valuelabels.js"></script>
+
+<script>
+            var d1 = [
+                ["电信在用", @ViewBag.UserStatistics.CTUsingUsers],
+                ["非电信", @ViewBag.UserStatistics.NonCTUsers],
+                ["新增", @ViewBag.UserStatistics.Added],
+                ["离网", @ViewBag.UserStatistics.Left]
+            ];
+            $.plot("#chartUserStatus", [d1], {
+                series: {
+                    bars: {
+                        show: true,
+                        barWidth: 0.6,
+                        align: "center"
+                    },
+                    valueLabels: {
+                        show: true
+                    }
+                },
+                xaxis: {
+                    mode: "categories",
+                    tickLength: 0
+                }
+            });
+            var d2 = [
+                @foreach (BarChartItem x in ViewBag.SetStatistics)
+                {
+                    @(new HtmlString($"['{x.Key}', {x.Count}],"))
+                }
+            ];
+            $.plot("#chartSetStatistics", [d2], {
+                series: {
+                    bars: {
+                        show: true,
+                        barWidth: 0.6,
+                        align: "center"
+                    },
+                    valueLabels: {
+                        show: true
+                    }
+                },
+                xaxis: {
+                    mode: "categories",
+                    tickLength: 0
+                }
+            });
+            var d3 = [
+                        @foreach (BarChartItem x in ViewBag.AreaStatistics)
+            {
+                            @(new HtmlString($"['{x.Key}', {x.Count}],"))
+            }
+            ];
+            $.plot("#chartAreaStatistics", [d3], {
+                series: {
+                    bars: {
+                        show: true,
+                        barWidth: 0.6,
+                        align: "center"
+                    },
+                    valueLabels: {
+                        show: true
+                    }
+                },
+                xaxis: {
+                    mode: "categories",
+                    tickLength: 0
+                }
+            });
+
+            var d4 = [
+                                @foreach (BarChartItem x in ViewBag.ContractorStatistics)
+            {
+                                    @(new HtmlString($"['{x.Key}', {x.Count}],"))
+            }
+            ];
+            $.plot("#chartContractorStatistics", [d4], {
+                series: {
+                    bars: {
+                        show: true,
+                        barWidth: 0.6,
+                        align: "center"
+                    },
+                    valueLabels: {
+                        show: true
+                    }
+                },
+                xaxis: {
+                    mode: "categories",
+                    tickLength: 0
+                }
+            });
+</script>

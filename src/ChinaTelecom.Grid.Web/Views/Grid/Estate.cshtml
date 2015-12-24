@@ -1,0 +1,145 @@
+﻿@model IEnumerable<Estate>
+@{ 
+    ViewBag.Title = "小区管理";
+}
+
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Estate" asp-controller="Grid" title="小区管理">小区管理</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-9">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        小区列表
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#EstateList">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="EstateList">
+                    <form class="row">
+                        <input type="hidden" name="Circle" value="@Context.Request.Query["circle"]" />
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="title" placeholder="小区名称" value="@Context.Request.Query["title"]" />
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="area" placeholder="片区编号" value="@Context.Request.Query["area"]" />
+                        </div>
+                        <div class="col-sm-4">
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="submit" class="btn btn-primary float-right" value="检索" />
+                        </div>
+                    </form>
+                    <hr />
+                    <div class="x-scroll">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>片区编号</th>
+                                    <th>小区名称</th>
+                                    <th>楼宇数</th>
+                                    <th>电信总用户数</th>
+                                    <th>电信在网用户数</th>
+                                    <th>非电信用户数</th>
+                                    <th>新增</th>
+                                    <th>离网</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var x in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (string.IsNullOrEmpty(x.Area))
+                                            {
+                                                <span class="badge badge-warning">未填写</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-success">@x.Area</span>
+                                            }
+                                        </td>
+                                        <td>@x.Title</td>
+                                        <td>@x.Buildings.Count</td>
+                                        <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信).Count())</td>
+                                        <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.ServiceStatus == ServiceStatus.在用).Count())</td>
+                                        <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus != HouseStatus.中国电信 && z.HouseStatus != HouseStatus.未装机 && z.ServiceStatus == ServiceStatus.在用).Count())</td>
+                                        <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.ServiceStatus == ServiceStatus.在用 && z.IsStatusChanged).Count())</td>
+                                        <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.ServiceStatus != ServiceStatus.在用 && z.IsStatusChanged).Count())</td>
+                                        <td>
+                                            <a asp-action="Show" asp-controller="Grid" asp-route-id="@x.Id">管理</a>
+                                            <a asp-action="Index" asp-controller="Grid" asp-route-lon="@x.Lon" asp-route-lat="@x.Lat">地图</a>
+                                            <a asp-action="Edit" asp-controller="Grid" asp-route-id="@x.Id">修改</a>
+                                            <a href="javascript:Remove('@x.Id')">删除</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @Html.MakePager("footable-page", "active", "pagination pagination-centered")
+                    <div class="pager-info">共计 @ViewBag.EstateCount 条</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        导出小区信息
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#ExportXls">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="ExportXls">
+                    <a href="?raw=true" class="btn btn-primary">导出到Excel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form asp-action="RemoveEstate" asp-controller="Grid" id="frmRemoveEstate" method="post">
+    <input type="hidden" name="id" id="estateId" />
+</form>
+<script>
+    function Remove(id)
+    {
+        $('#estateId').val(id);
+        $('#frmRemoveEstate').submit();
+    }
+</script>

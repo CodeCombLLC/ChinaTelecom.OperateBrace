@@ -1,0 +1,116 @@
+﻿@model IEnumerable<Area>
+@{ 
+    ViewBag.Title = "片区管理";
+}
+
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Area" asp-controller="Grid" title="片区管理">片区管理</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-9">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        片区列表
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#AreaList">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="AreaList">
+                    <div class="x-scroll">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>片区编号</th>
+                                    <th>小区数</th>
+                                    <th>电信总用户数</th>
+                                    <th>电信在网用户数</th>
+                                    <th>非电信用户数</th>
+                                    <th>新增</th>
+                                    <th>离网</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var x in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (string.IsNullOrEmpty(x.Id))
+                                            {
+                                                <span class="badge badge-error">未填写</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-success">@x.Id</span>
+                                            }
+                                        </td>
+                                        <td>@x.Count</td>
+                                        <td>@x.CTUsers</td>
+                                        <td>@x.CTInUsingUsers</td>
+                                        <td>@x.NonCTUsers</td>
+                                        <td>@x.AddedUsers</td>
+                                        <td>@x.LeftUsers</td>
+                                        <td>
+                                            <a asp-action="Estate" asp-controller="Grid" asp-route-area="@x.Id">管理</a>
+                                            <a asp-action="Index" asp-controller="Grid" asp-route-lon="@x.Lon" asp-route-lat="@x.Lat">地图</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @Html.MakePager("footable-page", "active", "pagination pagination-centered")
+                    <div class="pager-info">共计 @ViewBag.AreaCount 条</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        导出片区信息
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#ExportXls">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="ExportXls">
+                    <a href="?xls=true" class="btn btn-primary">导出到Excel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

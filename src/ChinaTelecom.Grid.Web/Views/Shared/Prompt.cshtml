@@ -1,0 +1,93 @@
+﻿@model Prompt
+@{ 
+    Layout = null;
+    ViewBag.Title = Model.Title;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>@ViewBag.Title - 中国电信网格管理系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <style type="text/css">
+        body {
+            overflow: hidden !important;
+            padding-top: 120px;
+        }
+    </style>
+    <!-- Le styles -->
+    <script type="text/javascript" src="~/assets/js/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="~/assets/css/style.css">
+    <link rel="stylesheet" href="~/assets/css/loader-style.css">
+    <link rel="stylesheet" href="~/assets/css/bootstrap.css">
+    <link rel="stylesheet" href="~/assets/css/signin.css">
+    <link rel="stylesheet" href="~/assets/css/extra-pages.css">
+
+
+
+
+
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    <!-- Fav and touch icons -->
+    <link rel="shortcut icon" href="~/assets/ico/minus.png">
+    <style>
+        @if (Cookies.ContainsKey("styles"))
+        {
+            @(new HtmlString("body {" + Cookies["styles"] + "}"))
+        }
+    </style>
+</head>
+
+<body>
+    <div class="logo-error">
+        <h1>
+            <img src="~/assets/img/logo.png" class="ct-logo" />
+        </h1>
+    </div>
+
+    <!-- Main content -->
+    <section class="page-error">
+
+        <div class="error-page">
+            <h2 class="headline text-info">提示信息</h2>
+            <div class="error-content">
+                <h3><i class="fa fa-warning text-yellow"></i> @ViewBag.Title</h3>
+                <p>
+                    @Model.Details
+                </p>
+                <p>
+                    @if (!string.IsNullOrEmpty(Model.RedirectText))
+                    {
+                        <a class="btn btn-primary" href="@Model.RedirectUrl">@Model.RedirectText</a>
+                    }
+                    <a class="btn btn-info" href="javascript:history.go(-1);" class="prompt-link">返回上一页</a>
+                    <a class="btn btn-warning" href="/" class="prompt-link">回到首页</a>
+                </p>
+            </div>
+            <!-- /.error-content -->
+        </div>
+        <!-- /.error-page -->
+
+    </section>
+
+
+    <!--  END OF PAPER WRAP -->
+    <!-- MAIN EFFECT -->
+    <script type="text/javascript" src="~/assets/js/preloader.js"></script>
+    <script type="text/javascript" src="~/assets/js/bootstrap.js"></script>
+    <script type="text/javascript" src="~/assets/js/app.js"></script>
+    <script type="text/javascript" src="~/assets/js/load.js"></script>
+    <script type="text/javascript" src="~/assets/js/main.js"></script>
+
+
+</body>
+
+</html>

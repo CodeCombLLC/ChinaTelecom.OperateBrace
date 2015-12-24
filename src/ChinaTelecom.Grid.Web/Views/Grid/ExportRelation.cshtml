@@ -1,0 +1,26 @@
+﻿@model IEnumerable<Record>
+@{
+    Layout = null;
+}
+<table>
+    <tr>
+        <td>接入号</td>
+        <td>用户状态</td>
+        <td>用户姓名</td>
+        <td>联系电话</td>
+        <td>装机地址</td>
+        <td>标准地址</td>
+        <td>操作</td>
+    </tr>
+    @foreach (var x in Model)
+    {
+        <tr>
+            <td>@x.Account</td>
+            <td>@x.Status</td>
+            <td>@x.CustomerName</td>
+            <td>@x.Phone</td>
+            <td>@x.ImplementAddress</td>
+            <td>@x.StandardAddress</td>
+        </tr>
+    }
+</table>

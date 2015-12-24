@@ -1,0 +1,200 @@
+﻿@model IEnumerable<Building>
+@{
+    ViewBag.Title = "管理小区 - " + ViewBag.EstateTitle;
+}
+<div class="modal fade" id="modelEditBuilding" tabindex="-1" role="dialog" aria-labelledby="modelEditBuilding">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form asp-action="EditBuilding" asp-controller="Grid" method="post">
+                <input type="hidden" name="id" id="editBuildingId" />
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">修改楼宇信息</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>楼座</label>
+                        <input type="text" class="form-control" id="buildingTitle" name="title" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>单元数</label>
+                        <input type="text" class="form-control" id="buildingUnits" name="units" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>最高楼层</label>
+                        <input type="text" class="form-control" id="buildingTopLayers" name="toplayers" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>最低楼层</label>
+                        <input type="text" class="form-control" id="buildingBottomLayers" name="bottomlayers" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>每层户数</label>
+                        <input type="text" class="form-control" id="buildingDoors" name="doors" value="" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <input type="submit" class="btn btn-primary" value="修改" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    管理小区
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Estate" asp-controller="Grid" title="小区管理">小区管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="@ViewBag.EstateTitle">@ViewBag.EstateTitle</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-8">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        楼宇列表
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#BuildingList">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="BuildingList">
+                    <div class="x-scroll">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>楼座</th>
+                                    <th>电信总用户数</th>
+                                    <th>电信在网用户数</th>
+                                    <th>非电信用户数</th>
+                                    <th>新增</th>
+                                    <th>离网</th>
+                                    <th>单元数</th>
+                                    <th>最高楼层</th>
+                                    <th>最低楼层</th>
+                                    <th>每层户数</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var x in Model)
+                                {
+                                    <tr data-id="@x.Id">
+                                        <td class="building-title"><span class="badge badge-warning">@x.Title</span></td>
+                                        <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信).Count()</td>
+                                        <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用).Count()</td>
+                                        <td>@x.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信 && a.HouseStatus != HouseStatus.未装机).Count()</td>
+                                        <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用 && a.IsStatusChanged).Count()</td>
+                                        <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus != ServiceStatus.在用 && a.IsStatusChanged).Count()</td>
+                                        <td class="building-units">@x.Units</td>
+                                        <td class="building-top-layers">@x.TopLayers</td>
+                                        <td class="building-bottom-layers">@x.BottomLayers</td>
+                                        <td class="building-doors">@x.Doors</td>
+                                        <td>
+                                            <a asp-action="Building" asp-controller="Grid" asp-route-id="@x.Id">管理</a>
+                                            <a href="javascript: Modify('@x.Id')">修改</a>
+                                            <a href="javascript:Remove('@x.Id')">删除</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        添加楼宇
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#AddBuilding">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="AddBuilding">
+                    <form asp-action="CreateBuilding" asp-controller="Grid" asp-route-id="@ViewContext.RouteData.Values["id"]" method="post">
+                        <div class="form-group">
+                            <label>楼宇编号(楼座)</label>
+                            <input type="text" name="title" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>单元数</label>
+                            <input type="text" name="units" class="form-control" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>最高楼层</label>
+                            <input type="text" name="toplayers" class="form-control" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label>最低楼层</label>
+                            <input type="text" name="bottomlayers" class="form-control" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>每层户数</label>
+                            <input type="text" name="doors" class="form-control" value="2">
+                        </div>
+                        <input type="submit" value="创建" class="btn btn-primary" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form asp-action="RemoveBuilding" asp-controller="Grid" method="post" id="frmRemoveBuilding">
+    <input type="hidden" name="id" id="buildingId" />
+</form>
+<script>
+    function Remove(id)
+    {
+        $('#buildingId').val(id);
+        $('#frmRemoveBuilding').submit();
+    }
+
+    function Modify(id)
+    {
+        $('#editBuildingId').val(id);
+        $('#buildingTitle').val($('tr[data-id="' + id + '"]').find('.building-title').text());
+        $('#buildingUnits').val($('tr[data-id="' + id + '"]').find('.building-units').text());
+        $('#buildingTopLayers').val($('tr[data-id="' + id + '"]').find('.building-top-layers').text());
+        $('#buildingBottomLayers').val($('tr[data-id="' + id + '"]').find('.building-bottom-layers').text());
+        $('#buildingDoors').val($('tr[data-id="' + id + '"]').find('.building-doors').text());
+        $('#modelEditBuilding').modal('show');
+    }
+</script>

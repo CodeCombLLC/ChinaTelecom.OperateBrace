@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0-*",
+  "description": "ChinaTelecom.Grid.Caller Class Library",
+  "authors": [ "Yuuko" ],
+  "tags": [ "" ],
+  "projectUrl": "",
+  "licenseUrl": "",
+  "frameworks": {
+    "net451": {
+      "frameworkAssemblies": {
+        "System.Net": "4.0.0.0",
+        "System.Net.Http": "4.0.0.0"
+      }
+    }
+  },
+  "dependencies": {
+    "ChinaTelecom.Grid.SharedModels": "1.0.0-*",
+    "EntityFramework.Core": "7.0.0-rc1-final"
+  }
+}

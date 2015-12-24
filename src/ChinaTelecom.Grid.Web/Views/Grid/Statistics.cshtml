@@ -1,0 +1,189 @@
+﻿@{ 
+    ViewBag.Title = "报表统计";
+    List<string> Areas = ViewBag.Areas;
+    List<string> Contractors = ViewBag.Contractors;
+    List<string> Sets = ViewBag.Sets;
+    List<string> Staff = ViewBag.Staff;
+}
+
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Statistics" asp-controller="Grid" title="报表统计">报表统计</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-12">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        生成报表
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#GenerateStatistics">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="GenerateStatistics">
+                    <form asp-action="GenerateStatistics" asp-controller="Grid" method="get">
+                        <div class="form-group">
+                            <label><input type="checkbox" id="allAreas" /> 片区选择</label>
+                            @for (var i = 0; i < Areas.Count; i++)
+                            {
+                                if (i % 12 == 0)
+                                {
+                                    @(new HtmlString("<div class=\"row\">"))
+                                }
+                                <div class="col-sm-1">
+                                    @if (string.IsNullOrEmpty(Areas[i]))
+                                    {
+                                        <label>
+                                            <input class="chk-area" type="checkbox" value="@Areas[i]" name="Area" />
+                                            未填写
+                                        </label>
+                                    }
+                                    else
+                                    {
+                                        <label>
+                                            <input class="chk-area" type="checkbox" value="@Areas[i]" name="Area" />
+                                            @Areas[i]
+                                        </label>
+                                    }
+                                </div>
+                                if (i % 12 == 11)
+                                {
+                                    @(new HtmlString("</div>"))
+                                }
+                            }
+                        </div>
+                        <hr />
+                        <div class="form-group">
+                            <label><input type="checkbox" id="allContractors" /> 四级承包人选择</label>
+                            @for (var i = 0; i < Contractors.Count; i++)
+                            {
+                                @if (string.IsNullOrEmpty(Contractors[i]))
+                                {
+                                    continue;
+                                }
+                                if (i % 6 == 0)
+                                {
+                                    @(new HtmlString("<div class=\"row\">"))
+                                }
+                                <div class="col-sm-2">
+                                    <label>
+                                        <input class="chk-contractor" type="checkbox" value="@Contractors[i]" name="Contractor" />
+                                        @Contractors[i]
+                                    </label>
+                                </div>
+                                if (i % 6 == 5)
+                                {
+                                    @(new HtmlString("</div>"))
+                                }
+                            }
+                        </div>
+                        <hr />
+                        <div class="form-group">
+                            <label><input type="checkbox" id="allStaff" /> 包服人选择</label>
+                            @for (var i = 0; i < Staff.Count; i++)
+                            {
+                                @if (string.IsNullOrEmpty(Staff[i]))
+                                {
+                                    continue;
+                                }
+                                if (i % 6 == 0)
+                                {
+                                    @(new HtmlString("<div class=\"row\">"))
+                                }
+                                <div class="col-sm-2">
+                                    <label>
+                                        <input class="chk-staff" type="checkbox" value="@Staff[i]" name="Contractor" />
+                                        @Staff[i]
+                                    </label>
+                                </div>
+                                if (i % 6 == 5)
+                                {
+                                    @(new HtmlString("</div>"))
+                                }
+                            }
+                        </div>
+
+                        <hr />
+                        <div class="form-group">
+                            <label><input type="checkbox" id="allSets" /> 套餐选择</label>
+                            @for (var i = 0; i < Sets.Count; i++)
+                            {
+                                if (i % 2 == 0)
+                                {
+                                    @(new HtmlString("<div class=\"row\">"))
+                                }
+                                <div class="col-sm-6">
+                                    <label>
+                                        <input class="chk-set" type="checkbox" value="@Sets[i]" name="Set" />
+                                        @Sets[i]
+                                    </label>
+                                </div>
+                                if (i % 2 == 1)
+                                {
+                                    @(new HtmlString("</div>"))
+                                }
+                            }
+                        </div>
+                        <hr />
+                        <input type="submit" class="btn btn-primary" value="生成报表" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#allAreas').change(function () {
+        if ($(this).is(':checked'))
+            $('.chk-area').prop("checked", true);
+        else
+            $('.chk-area').prop("checked", false);
+    });
+    $('#allContractors').change(function () {
+        if ($(this).is(':checked'))
+            $('.chk-contractor').prop("checked", true);
+        else
+            $('.chk-contractor').prop("checked", false);
+    });
+    $('#allStaff').change(function () {
+        if ($(this).is(':checked'))
+            $('.chk-staff').prop("checked", true);
+        else
+            $('.chk-staff').prop("checked", false);
+    });
+    $('#allSets').change(function () {
+        if ($(this).is(':checked'))
+            $('.chk-set').prop("checked", true);
+        else
+            $('.chk-set').prop("checked", false);
+    });
+</script>

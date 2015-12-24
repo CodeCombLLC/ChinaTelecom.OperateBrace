@@ -1,0 +1,265 @@
+﻿@model IEnumerable<Record>
+@{
+    ViewBag.Title = "明细列表";
+}
+<link rel="stylesheet" href="~/assets/js/timepicker/bootstrap-timepicker.css">
+<link rel="stylesheet" href="~/assets/js/datepicker/datepicker.css">
+<link rel="stylesheet" href="~/assets/js/datepicker/clockface.css">
+<link rel="stylesheet" href="~/assets/js/datepicker/bootstrap-datetimepicker.css">
+<script type="text/javascript" src="~/assets/js/timepicker/bootstrap-timepicker.js"></script>
+<script type="text/javascript" src="~/assets/js/datepicker/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="~/assets/js/datepicker/clockface.js"></script>
+<script type="text/javascript" src="~/assets/js/datepicker/bootstrap-datetimepicker.js"></script>
+
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="明细管理">明细管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Index" asp-controller="Record" title="明细列表">明细列表</a>
+    </li>
+    @if (Context.Request.Query.ContainsKey("SeriesId"))
+    {
+        <li>
+            <i class="fa fa-lg fa-angle-right"></i>
+        </li>
+        <li>
+            <a asp-action="Index" asp-controller="Record" asp-route-seriesid="@Context.Request.Query["SeriesId"]" title="导入记录">导入记录</a>
+        </li>
+    }
+    @if (Context.Request.Query.ContainsKey("Account"))
+    {
+        <li>
+            <i class="fa fa-lg fa-angle-right"></i>
+        </li>
+        <li>
+            <a asp-action="Index" asp-controller="Record" asp-route-seriesid="@Context.Request.Query["Account"]" title="@Context.Request.Query["Account"]">@Context.Request.Query["Account"]</a>
+        </li>
+    }
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-9">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        明细列表
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#RecordList">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="RecordList">
+                    <form id="frmFilter">
+                        <input type="hidden" name="xls" id="xls" />
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <select name="ContractorName" class="form-control">
+                                    <option value="">承包人</option>
+                                    @foreach (string x in ViewBag.ContractorNames)
+                                    {
+                                        @if (!string.IsNullOrEmpty(x))
+                                        {
+			                            <!option @(Context.Request.Query["ContractorName"] == x ? "selected" : "")>@x</!option>                    }
+}
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <select name="StaffName" class="form-control">
+                                    <option value="">包服人</option>
+                                    @foreach (string x in ViewBag.Staff)
+                                    {
+                                        @if (!string.IsNullOrEmpty(x))
+                                        {
+			                            <!option @(Context.Request.Query["StaffName"] == x ? "selected" : "")>@x</!option>              }
+}
+                                </select>
+
+                            </div>
+                            <div class="col-sm-3">
+                                <select name="Status" class="form-control">
+                                    <option value="">状态</option>
+                                    @foreach (var x in Enum.GetNames(typeof(ServiceStatus)))
+                                    {
+			                            <!option @(Context.Request.Query["Status"] == x ? "selected" : "")>@x</!option>                
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <select name="Set" class="form-control">
+                                    <option value="">套餐</option>
+                                    @foreach (string x in ViewBag.Sets)
+                                    {
+			                            <!option @(Context.Request.Query["Set"] == x ? "selected" : "")>@x</!option>               }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input id="beginTime" type="text" placeholder="时间(从)" name="BeginTime" class="form-control" value="@Context.Request.Query["BeginTime"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <input id="endTime" type="text" placeholder="时间(到)" name="EndTime" class="form-control" value="@Context.Request.Query["EndTime"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" placeholder="用户姓名" name="Name" class="form-control" value="@Context.Request.Query["Name"]" />
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="text" placeholder="联系电话" name="Phone" class="form-control" value="@Context.Request.Query["Phone"]" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <input type="text" placeholder="地址" name="Address" class="form-control" value="@Context.Request.Query["Address"]" />
+                            </div>
+                            <div class="col-sm-3">
+
+                            </div>
+                            <div class="col-sm-3">
+
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="button" class="btn btn-success float-right" value="导出" id="btnExport" />
+                                <input type="submit" class="btn btn-primary float-right" value="检索" id="btnSearch" />
+                            </div>
+                        </div>
+                        <input type="hidden" value="false" name="raw" />
+                        <input type="hidden" value="@Context.Request.Query["SeriesId"]" name="SeriesId" />
+                        <input type="hidden" value="@Context.Request.Query["Account"]" name="Account" />
+                        <div class="clear"></div>
+                    </form>
+                    <hr />
+                    <div class="x-scroll">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>接入号</th>
+                                    <th>用户状态</th>
+                                    <th>用户姓名</th>
+                                    <th>四级承包人名称</th>
+                                    <th>四级承包体名称</th>
+                                    <th>包服人</th>
+                                    <th>当月出账</th>
+                                    <th>中投</th>
+                                    <th>代理费</th>
+                                    <th>一次佣金</th>
+                                    <th>欠费</th>
+                                    <th>装机地址</th>
+                                    <th>标准地址</th>
+                                    <th>套餐</th>
+                                    <th>身份证号码</th>
+                                    <th>联系电话</th>
+                                    <th>是否家庭融合宽带</th>
+                                    <th>更新时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var x in Model)
+                                {
+                                    <tr>
+                                        <td>@x.Account</td>
+                                        <td>
+                                            @if (x.Status == ServiceStatus.在用)
+                                            {
+                                                <span class="badge badge-success">@x.Status</span>
+                                            }
+                                            else if (x.Status == ServiceStatus.未知)
+                                            {
+                                                <span class="badge badge-warning">@x.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-error">@x.Status</span>
+                                            }
+                                        </td>
+                                        <td>@x.CustomerName</td>
+                                        <td>@x.ContractorName</td>
+                                        <td>@x.ContractorStruct</td>
+                                        <td>@x.ServiceStaff</td>
+                                        <td>@x.CurrentMonthBill</td>
+                                        <td>@x.MDS</td>
+                                        <td>@x.AgentFee</td>
+                                        <td>@x.Commission</td>
+                                        <td>@x.Arrearage</td>
+                                        <td>@x.ImplementAddress</td>
+                                        <td>@x.StandardAddress</td>
+                                        <td>@x.Set</td>
+                                        <td>@x.PRCID</td>
+                                        <td>@x.Phone</td>
+                                        <td>@(x.IsFuse ? "是" : "否")</td>
+                                        <td>@x.ImportedTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @Html.MakePager("footable-page", "active", "pagination pagination-centered")
+                    <div class="pager-info">
+                        共计 @ViewBag.RecordCount 条
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        导入明细
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#ImportXls">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="ImportXls">
+                    @if (User.AnyRoles("系统管理员, 网格主管"))
+                    {
+                        <form asp-action="Import" asp-controller="Record" enctype="multipart/form-data" method="post">
+                            <div class="form-group">
+                                <label>上传文件(*.xls, *.xlsx)</label>
+                                <input type="file" name="file">
+                            </div>
+                            <button class="btn btn-info" type="submit">导入</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span>您的帐号没有导入明细的权限！</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#beginTime').datepicker()
+    $('#endTime').datepicker()
+    $('#btnExport').click(function () {
+        $('#xls').val('true');
+        $('#frmFilter').submit();
+    });
+</script>

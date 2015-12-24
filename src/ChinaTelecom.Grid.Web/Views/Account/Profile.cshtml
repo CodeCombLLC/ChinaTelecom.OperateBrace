@@ -1,0 +1,125 @@
+﻿@model User
+@{ 
+    ViewBag.Title = "用户信息";
+}
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    用户信息
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="用户管理">用户管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="用户信息">用户信息</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Profile" asp-controller="Account" asp-route-id="@Model.Id" title="@Model.FullName">@Model.FullName</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-9">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        统计信息
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#Profile">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="Profile">
+                    @if (!await User.Manager.IsInRoleAsync(Model, "系统管理员"))
+                    {
+                        <label>管辖片区</label>
+                        @foreach (var x in (await User.Manager.GetClaimsAsync(Model)).Where(x => x.Type == "管辖片区"))
+                        {
+                            <span class="label label-info">@x.Value</span>
+                        }
+                        <hr />
+                    }
+                    <label>用户明细</label>
+                    <div id="chartUserStatus"></div>
+                    <label>在用用户套餐</label>
+                    <div id="chartSetStatistics"></div>
+                </div>
+            </div>
+        </div>
+        @Html.Partial("SideBar")
+    </div>
+</div>
+<script type="text/javascript" src="~/assets/js/chart/jquery.flot.js"></script>
+<script type="text/javascript" src="~/assets/js/chart/jquery.flot.categories.js"></script>
+<script type="text/javascript" src="~/assets/js/chart/jquery.flot.resize.js"></script>
+<script type="text/javascript" src="~/assets/js/chart/jquery.flot.valuelabels.js"></script>
+
+<script>
+    var d1 = [
+    @foreach (BarChartItem x in ViewBag.UserStatistics)
+    {
+        @(new HtmlString($"['{x.Key}', {x.Count}],"))
+    }
+    ];
+    $.plot("#chartUserStatus", [d1], {
+        series: {
+            bars: {
+                show: true,
+                barWidth: 0.6,
+                align: "center"
+            },
+            valueLabels: {
+                show: true
+            }
+        },
+        xaxis: {
+            mode: "categories",
+            tickLength: 0
+        }
+    });
+
+    var d2 = [
+    @foreach (BarChartItem x in ViewBag.SetStatistics)
+    {
+        @(new HtmlString($"['{x.Key}', {x.Count}],"))
+    }
+    ];
+    $.plot("#chartSetStatistics", [d2], {
+        series: {
+            bars: {
+                show: true,
+                barWidth: 0.6,
+                align: "center"
+            },
+            valueLabels: {
+                show: true
+            }
+        },
+        xaxis: {
+            mode: "categories",
+            tickLength: 0
+        }
+    });
+</script>
