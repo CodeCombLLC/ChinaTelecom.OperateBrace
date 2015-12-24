@@ -168,10 +168,8 @@
                     <ul class="topnav menu-left-nest">
                         <li>
                             <a href="#" style="border-left:0px solid!important;" class="title-menu-left">
-
-                                <span class="widget-menu"></span>
+                                <span class="details-menu"></span>
                                 <i data-toggle="tooltip" class="entypo-cog pull-right config-wrap"></i>
-
                             </a>
                         </li>
                         <li>
@@ -198,7 +196,7 @@
                         <li>
                             <a href="#" style="border-left:0px solid!important;" class="title-menu-left">
 
-                                <span class="design-kit"></span>
+                                <span class="customer"></span>
                                 <i data-toggle="tooltip" class="entypo-cog pull-right config-wrap"></i>
 
                             </a>
@@ -247,12 +245,73 @@
                         </li>
                     </ul>
 
-                    @if (User.IsInRole("系统管理员"))
+                    <ul>
+                        <li>
+                            <a href="#" style="border-left:0px solid!important;" class="title-menu-left">
+                                <span class="business-hall"></span>
+                                <i data-toggle="tooltip" class="entypo-cog pull-right config-wrap"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-controller="BusinessHall" asp-action="Index" title="查看地图">
+                                <i class="icon-map"></i>
+                                <span>查看地图</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-controller="BusinessHall" asp-action="List" title="营业厅列表">
+                                <i class="icon-location"></i>
+                                <span>营业厅列表</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="tooltip-tip ajax-load" asp-action="Statistics" asp-controller="BusinessHall" title="营业厅统计报表">
+                                <i class="icon-graph-pie"></i>
+                                <span>营业厅统计报表</span>
+                            </a>
+                        </li>
+                    </ul>
+
+                    @if (User.AnyRoles("系统管理员, 市公司管理员"))
+                    {
+                        <ul>
+                            <li>
+                                <a href="#" style="border-left:0px solid!important;" class="title-menu-left">
+                                    <span class="city"></span>
+                                    <i data-toggle="tooltip" class="entypo-cog pull-right config-wrap"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="tooltip-tip ajax-load" asp-controller="City" asp-action="Index" title="查看地图">
+                                    <i class="icon-map"></i>
+                                    <span>查看地图</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="tooltip-tip ajax-load" asp-controller="City" asp-action="List" title="地市列表">
+                                    <i class="icon-location"></i>
+                                    <span>地市列表</span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="tooltip-tip ajax-load" asp-action="Statistics" asp-controller="City" title="地市统计报表">
+                                    <i class="icon-graph-pie"></i>
+                                    <span>地市统计报表</span>
+                                </a>
+                            </li>
+                        </ul>
+                    }
+
+                    @if (User.AnyRoles("系统管理员, 市公司管理员, 营销中心管理员"))
                     {
                         <ul id="menu-showhide" class="topnav menu-left-nest">
                             <li>
                                 <a href="#" style="border-left:0px solid!important;" class="title-menu-left">
-                                    <span class="component"></span>
+                                    <span class="system-settings"></span>
                                     <i data-toggle="tooltip" class="entypo-cog pull-right config-wrap"></i>
                                 </a>
                             </li>
@@ -262,6 +321,15 @@
                                     <span>用户管理</span>
                                 </a>
                             </li>
+                            @if (User.IsInRole("系统管理员"))
+                            {
+                                <li>
+                                    <a class="tooltip-tip ajax-load" asp-action="Index" asp-controller="Node" title="分布式节点管理">
+                                        <i class="icon-window"></i>
+                                        <span>分布式节点管理</span>
+                                    </a>
+                                </li>
+                            }
                         </ul>
                     }
                 </div>

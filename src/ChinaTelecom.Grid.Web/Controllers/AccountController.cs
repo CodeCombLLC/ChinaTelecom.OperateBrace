@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Authorization;
-using ChinaTelecom.Grid.Web.ViewModels;
 using ChinaTelecom.Grid.SharedModels;
 using ChinaTelecom.Grid.Caller;
 

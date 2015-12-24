@@ -157,12 +157,18 @@
 .config-wrap[title]:hover:after {
     font-size: 9px!important;
 }
-.widget-menu:before {
+.details-menu:before {
     content:"明细管理" !important;
 }
-.design-kit:before {
-    content:"网格管理" !important;
+.customer:before {
+    content:"客户管理" !important;
 }
-.component:before {
+.business-hall:before {
+    content:"营业厅管理" !important;
+}
+.city:before {
+    content:"地市管理" !important;
+}
+.system-settings:before {
     content:"系统设置" !important;
 }
