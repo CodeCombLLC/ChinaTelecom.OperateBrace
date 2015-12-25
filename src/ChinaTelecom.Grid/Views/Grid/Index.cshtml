@@ -207,6 +207,7 @@
     var icon2 = new BMap.Icon("/assets/img/estate-warning.png", new BMap.Size(25, 52));
     var icon3 = new BMap.Icon("/assets/img/estate-error.png", new BMap.Size(25, 52));
     var icon4 = new BMap.Icon("/assets/img/estate-inverse.png", new BMap.Size(25, 52));
+    var icon5 = new BMap.Icon("/assets/img/estate-good.png", new BMap.Size(25, 52));
     var lock = false;
 
     // Building overlays
@@ -239,12 +240,14 @@
                 else if (data[i].Level == 2)
                     ico = icon3;
                 else if (data[i].Level == 3)
-                ico = icon4;
+                    ico = icon4;
+                else if (data[i].Level == 4 || data[i].Level == 5)
+                    ico = icon5;
                 if (!$('#chkNoCustomerEstate').is(':checked') && data[i].Level == 3)
                     continue;
-                if (!$('#chkNormalEstate').is(':checked') && data[i].Level == 0)
+                if (!$('#chkNormalEstate').is(':checked') && (data[i].Level == 0 || data[i].Level == 5))
                     continue;
-                if (!$('#chkLostEstate').is(':checked') && (data[i].Level == 1 || data[i].Level == 2))
+                if (!$('#chkLostEstate').is(':checked') && (data[i].Level == 1 || data[i].Level == 2 || data[i].Level == 4))
                     continue;
                 var marker = new BMap.Marker(pt, { icon: ico });
                 marker.Id = data[i].Id;

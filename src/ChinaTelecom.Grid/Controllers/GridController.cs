@@ -97,7 +97,7 @@ namespace ChinaTelecom.Grid.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetEstates(double left, double right, double top, double bottom)
+        public IActionResult GetEstates(double left, double right, double top, double bottom, [FromServices] IConfiguration Config)
         {
             var estates = DB.Estates
                 .AsNoTracking()
@@ -115,10 +115,14 @@ namespace ChinaTelecom.Grid.Controllers
                 .Select(x => new
                 {
                     Key = x.Key,
-                    Count = x.Sum(y => y.Houses.Where(z => id.Contains(z.Building.EstateId)
+                    LeftCount = x.Sum(y => y.Houses.Where(z => id.Contains(z.Building.EstateId)
                         && z.IsStatusChanged == true
                         && z.HouseStatus == HouseStatus.中国电信
-                        && z.ServiceStatus != ServiceStatus.在用).Count())
+                        && z.ServiceStatus != ServiceStatus.在用).Count()),
+                    AddedCount = x.Sum(y => y.Houses.Where(z => id.Contains(z.Building.EstateId)
+                        && z.IsStatusChanged == true
+                        && z.HouseStatus == HouseStatus.中国电信
+                        && z.ServiceStatus == ServiceStatus.在用).Count())
                 })
                 .ToList();
             foreach (var x in estates)
@@ -128,12 +132,16 @@ namespace ChinaTelecom.Grid.Controllers
                 else
                 {
                     var s = tmp.Where(a => a.Key == x.Id).Single();
-                    if (s.Count == 0)
+                    if (s.LeftCount == 0)
                         x.Level = 0;
-                    else if (s.Count <= 10)
+                    else if (s.LeftCount <= Convert.ToInt32(Config["Settings:Threshold:Customer:Yellow"]))
                         x.Level = 1;
                     else
                         x.Level = 2;
+                    if (x.Level == 0 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:Customer:Cyan"]))
+                        x.Level = 5;
+                    if (x.Level == 1 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:Customer:Cyan"]))
+                        x.Level = 4;
                 }
             }
             return Json(estates);
