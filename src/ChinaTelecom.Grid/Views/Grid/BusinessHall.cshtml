@@ -12,7 +12,7 @@
         position: absolute;
     }
 
-    #estate {
+    #business-hall {
         position: fixed;
         background-color: #fff;
         border: 1px solid #ccc;
@@ -21,7 +21,7 @@
         z-index: 10;
     }
     
-    #estate table td {
+    #business-hall table td {
         padding: 5px;
     }
 
@@ -34,10 +34,6 @@
         border: 1px solid #ccc;
         padding: 10px;
         z-index: 10;
-    }
-
-    #point-list .badge {
-        margin: 5px;
     }
 </style>
 <div id="options">
@@ -56,7 +52,7 @@
         </label>
     </p>
 </div>
-<div id="bh">
+<div id="business-hall">
     <table>
         <tr>
             <td class="td-gray">名称</td>
@@ -150,15 +146,15 @@
                 marker.addEventListener("mouseover", function (e) {
                     var x = e.clientX;
                     var y = e.clientY;
-                    $("#bh").css("left", x);
-                    $("#bh").css("top", y);
-                    $("#bh").show();
-                    $("#bh-name").text(data.Title);
-                    $("#bh-user-add").text(data.Added);
-                    $("#bh-user-left").text(data.Left);
+                    $("#business-hall").css("left", x);
+                    $("#business-hall").css("top", y);
+                    $("#business-hall").show();
+                    $("#bh-name").text(e.target.Title);
+                    $("#bh-user-add").text(e.target.Added);
+                    $("#bh-user-left").text(e.target.Left);
                 });
                 marker.addEventListener("mouseout", function (e) {
-                    $("#bh").hide();
+                    $("#business-hall").hide();
                 });
                 map.addOverlay(marker);
             }

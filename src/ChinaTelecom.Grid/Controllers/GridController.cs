@@ -1258,14 +1258,12 @@ namespace ChinaTelecom.Grid.Controllers
         public IActionResult GetBusinessHalls(double left, double right, double top, double bottom, [FromServices] IConfiguration Config)
         {
             var bhs = DB.BusinessHalls
-                .AsNoTracking()
                 .Where(x => x.Lon >= left && x.Lon <= right && x.Lat <= top && x.Lat >= bottom)
                 .ToList();
             var id = bhs
                 .Select(x => x.Id)
                 .ToList();
             var tmp = DB.Houses
-                .Where(x => x.Building.Estate.Lon >= left && x.Building.Estate.Lon <= right && x.Building.Estate.Lat <= top && x.Building.Estate.Lat >= bottom)
                 .GroupBy(x => x.BusinessHallId)
                 .Select(x => new
                 {
@@ -1277,7 +1275,7 @@ namespace ChinaTelecom.Grid.Controllers
             foreach (var x in bhs)
             {
                 if (!tmp.Any(a => a.Key == x.Id))
-                    bhs.Remove(x);
+                    x.Level = 3;
                 else
                 {
                     var s = tmp.Where(a => a.Key == x.Id).Single();
