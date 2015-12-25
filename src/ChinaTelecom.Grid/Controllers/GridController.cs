@@ -1295,5 +1295,21 @@ namespace ChinaTelecom.Grid.Controllers
             }
             return Json(bhs);
         }
+
+        [HttpGet]
+        public IActionResult Approach(string id)
+        {
+            var bh = DB.BusinessHalls
+                .SingleOrDefault(x => x.Id == id);
+            var estate = DB.Estates
+                .Where(x => x.Buildings.Where(y => y.Houses.Where(z => z.BusinessHallId == id).Count() > 0).Count() > 0)
+                .Select(x => new
+                {
+                    Lon = x.Lon,
+                    Lat = x.Lat
+                })
+                .ToList();
+            return Json(estate);
+        }
     }
 }
