@@ -43,6 +43,9 @@ namespace ChinaTelecom.Grid.Models
         public int Layer { get; set; }
 
         public int Door { get; set; }
+        
+        [MaxLength(32)]
+        public string BusinessHallId { get; set; }
 
         public bool IsStatusChanged { get; set; }
     }

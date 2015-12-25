@@ -134,13 +134,13 @@ namespace ChinaTelecom.Grid.Controllers
                     var s = tmp.Where(a => a.Key == x.Id).Single();
                     if (s.LeftCount == 0)
                         x.Level = 0;
-                    else if (s.LeftCount <= Convert.ToInt32(Config["Settings:Threshold:Customer:Yellow"]))
+                    else if (s.LeftCount <= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Yellow"]))
                         x.Level = 1;
                     else
                         x.Level = 2;
-                    if (x.Level == 0 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:Customer:Cyan"]))
+                    if (x.Level == 0 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Cyan"]))
                         x.Level = 5;
-                    if (x.Level == 1 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:Customer:Cyan"]))
+                    if (x.Level == 1 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Cyan"]))
                         x.Level = 4;
                 }
             }
@@ -1247,6 +1247,55 @@ namespace ChinaTelecom.Grid.Controllers
                 else
                     x.RedirectUrl = Url.Action("Index", "Grid", new { lon = first.Lon, first.Lat });
             });
+        }
+
+        public IActionResult BusinessHall()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult GetBusinessHalls(double left, double right, double top, double bottom, [FromServices] IConfiguration Config)
+        {
+            var bhs = DB.BusinessHalls
+                .AsNoTracking()
+                .Where(x => x.Lon >= left && x.Lon <= right && x.Lat <= top && x.Lat >= bottom)
+                .ToList();
+            var id = bhs
+                .Select(x => x.Id)
+                .ToList();
+            var tmp = DB.Houses
+                .Where(x => x.Building.Estate.Lon >= left && x.Building.Estate.Lon <= right && x.Building.Estate.Lat <= top && x.Building.Estate.Lat >= bottom)
+                .GroupBy(x => x.BusinessHallId)
+                .Select(x => new
+                {
+                    Key = x.Key,
+                    LeftCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && y.ServiceStatus != ServiceStatus.在用).Count(),
+                    AddedCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && y.ServiceStatus == ServiceStatus.在用).Count()
+                })
+                .ToList();
+            foreach (var x in bhs)
+            {
+                if (!tmp.Any(a => a.Key == x.Id))
+                    bhs.Remove(x);
+                else
+                {
+                    var s = tmp.Where(a => a.Key == x.Id).Single();
+                    x.Added = s.AddedCount;
+                    x.Left = s.LeftCount;
+                    if (s.LeftCount == 0)
+                        x.Level = 0;
+                    else if (s.LeftCount <= Convert.ToInt32(Config["Settings:Threshold:Customer:Yellow"]))
+                        x.Level = 1;
+                    else
+                        x.Level = 2;
+                    if (x.Level == 0 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:Customer:Cyan"]))
+                        x.Level = 5;
+                    if (x.Level == 1 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:Customer:Cyan"]))
+                        x.Level = 4;
+                }
+            }
+            return Json(bhs);
         }
     }
 }

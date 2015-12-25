@@ -17,6 +17,8 @@ namespace ChinaTelecom.Grid.Models
 
         public DbSet<Series> Serieses { get; set; }
 
+        public DbSet<BusinessHall> BusinessHalls { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -68,6 +70,14 @@ namespace ChinaTelecom.Grid.Models
                 e.HasIndex(x => x.Status);
                 e.HasIndex(x => x.Set);
                 e.HasIndex(x => x.Phone);
+                e.HasIndex(x => x.BusinessHallId);
+            });
+
+            builder.Entity<BusinessHall>(e =>
+            {
+                e.HasIndex(x => x.Lon);
+                e.HasIndex(x => x.Lat);
+                e.HasIndex(x => x.Title);
             });
         }
     }

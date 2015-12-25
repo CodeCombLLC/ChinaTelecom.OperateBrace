@@ -62,6 +62,12 @@ namespace ChinaTelecom.Grid.Models
         [MaxLength(32)]
         public string Phone { get; set; }
 
+        [MaxLength(32)]
+        public string BusinessHallName { get; set; }
+
+        [MaxLength(64)]
+        public string BusinessHallId { get; set; }
+
         public bool IsFuse { get; set; }
 
         public virtual Series Series { get; set; }

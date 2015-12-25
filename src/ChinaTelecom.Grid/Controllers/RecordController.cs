@@ -168,7 +168,9 @@ namespace ChinaTelecom.Grid.Controllers
                                                 Phone = reader["联系电话"].ToString(),
                                                 IsFuse = reader["是否家庭融合宽带"].ToString() == "是",
                                                 ImportedTime = series.Time,
-                                                SeriesId = series.Id
+                                                SeriesId = series.Id,
+                                                BusinessHallId = reader["营业厅编号"].ToString(),
+                                                BusinessHallName = reader["营业厅名称"].ToString()
                                             };
                                             #region Try parse
                                             try
@@ -232,6 +234,31 @@ namespace ChinaTelecom.Grid.Controllers
                                             #endregion
                                             db.Records.Add(record);
                                             db.SaveChanges();
+                                            #region Creating Business Hall
+                                            var bh = db.BusinessHalls
+                                                .Where(x => x.Id == record.BusinessHallId)
+                                                .SingleOrDefault();
+                                            if (bh == null)
+                                            {
+                                                bh = new BusinessHall
+                                                {
+                                                    Id = record.BusinessHallId,
+                                                    Title = Lib.AddressAnalyser.FilterBrackets(record.BusinessHallName)
+                                                };
+                                                var title = bh.Title;
+                                                if (bh.Title.IndexOf("中国电信") < 0)
+                                                    title = "中国电信" + bh.Title;
+                                                if (bh.Title.IndexOf("营业厅") < 0)
+                                                    title = bh.Title + "营业厅";
+                                                var bmapJson = Lib.HttpHelper.Get($"http://api.map.baidu.com/geocoder/v2/?city={Config["BMap:City"]}&address={title}&output=json&ak={Config["BMap:ApplicationKey"]}");
+                                                dynamic bmap = JsonConvert.DeserializeObject<dynamic>(bmapJson);
+                                                bh.Lon = bmap.result.location.lng;
+                                                bh.Lat = bmap.result.location.lat;
+                                                db.BusinessHalls.Add(bh);
+                                                db.SaveChanges();
+                                            }
+
+                                            #endregion
                                             #region Mapping to house
                                             try
                                             {
@@ -298,6 +325,7 @@ namespace ChinaTelecom.Grid.Controllers
                                                                     house.ServiceStatus = record.Status;
                                                                     house.LastUpdate = DateTime.Now;
                                                                     house.HouseStatus = HouseStatus.中国电信;
+                                                                    house.BusinessHallId = bh.Id;
                                                                 }
                                                             }
                                                         }
@@ -348,6 +376,7 @@ namespace ChinaTelecom.Grid.Controllers
                                                                     house.ServiceStatus = record.Status;
                                                                     house.LastUpdate = DateTime.Now;
                                                                     house.HouseStatus = HouseStatus.中国电信;
+                                                                    house.BusinessHallId = bh.Id;
                                                                     db.Houses.Add(house);
                                                                 }
                                                             }
@@ -383,6 +412,7 @@ namespace ChinaTelecom.Grid.Controllers
                                                                 house.ServiceStatus = record.Status;
                                                                 house.LastUpdate = DateTime.Now;
                                                                 house.HouseStatus = HouseStatus.中国电信;
+                                                                house.BusinessHallId = bh.Id;
                                                                 db.Houses.Add(house);
                                                             }
                                                         }
@@ -445,6 +475,7 @@ namespace ChinaTelecom.Grid.Controllers
                                                                     house.ServiceStatus = record.Status;
                                                                     house.LastUpdate = DateTime.Now;
                                                                     house.HouseStatus = HouseStatus.中国电信;
+                                                                    house.BusinessHallId = bh.Id;
                                                                     db.Houses.Add(house);
                                                                 }
                                                             }
