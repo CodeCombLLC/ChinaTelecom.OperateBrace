@@ -1311,5 +1311,16 @@ namespace ChinaTelecom.Grid.Controllers
                 .ToList();
             return Json(estate);
         }
+
+        [HttpPost]
+        public string ModifyBH(string id, double lon, double lat)
+        {
+            var bh = DB.BusinessHalls
+                .Single(x => x.Id == id);
+            bh.Lat = lat;
+            bh.Lon = lon;
+            DB.SaveChanges();
+            return "ok";
+        }
     }
 }
