@@ -501,7 +501,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     display: inline-block;
     float: left;
 }
-#button-bg {
+#button-bg1 {
     background: url("../img/small-bg5.jpg") repeat scroll 0 0 / cover rgba(0, 0, 0, 0);
     border: 4px solid #FFFFFF;
     border-radius: 50%;
@@ -525,7 +525,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     width: 25px;
     cursor: pointer;
 }
-#button-bg5 {
+#button-bg4 {
     background: url("../img/giftly.png") repeat scroll 0 0 / cover rgba(0, 0, 0, 0);
     border: 4px solid #FFFFFF;
     border-radius: 50%;
@@ -533,7 +533,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     width: 25px;
     cursor: pointer;
 }
-#button-bg6 {
+#button-bg5 {
     background: none repeat scroll 0 0 #2C3E50;
     border: 4px solid #FFFFFF;
     border-radius: 50%;
@@ -541,15 +541,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     width: 25px;
     cursor: pointer;
 }
-#button-bg4 {
-    background: #252d3b;
-    border: 4px solid #FFFFFF;
-    border-radius: 50%;
-    height: 25px;
-    width: 25px;
-    cursor: pointer;
-}
-#button-bg7 {
+#button-bg6 {
     background: url("../img/bg3.png") repeat scroll 0 0 / cover rgba(0, 0, 0, 0);
     border: 4px solid #FFFFFF;
     border-radius: 50%;
@@ -557,7 +549,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     width: 25px;
     cursor: pointer;
 }
-#button-bg8 {
+#button-bg7 {
     background: url("../img/small-bg8.jpg") repeat scroll 0 0 / cover rgba(0, 0, 0, 0);
     border: 4px solid #FFFFFF;
     border-radius: 50%;
@@ -565,7 +557,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     width: 25px;
     cursor: pointer;
 }
-#button-bg9 {
+#button-bg8 {
     background: url("../img/small-bg9.jpg") repeat scroll 0 0 / cover rgba(0, 0, 0, 0);
     border: 4px solid #FFFFFF;
     border-radius: 50%;
@@ -573,7 +565,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     width: 25px;
     cursor: pointer;
 }
-#button-bg10 {
+#button-bg9 {
     background: url("../img/small-bg10.jpg") repeat scroll 0 0 / cover rgba(0, 0, 0, 0);
     border: 4px solid #FFFFFF;
     border-radius: 50%;
@@ -581,7 +573,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     width: 25px;
     cursor: pointer;
 }
-#button-bg11 {
+#button-bg10 {
     background: url("../img/small-bg11.jpg") repeat scroll 0 0 / cover rgba(0, 0, 0, 0);
     border: 4px solid #FFFFFF;
     border-radius: 50%;
@@ -589,7 +581,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     width: 25px;
     cursor: pointer;
 }
-#button-bg12 {
+#button-bg11 {
     background: url("../img/small-bg12.jpg") repeat scroll 0 0 / cover rgba(0, 0, 0, 0);
     border: 4px solid #FFFFFF;
     border-radius: 50%;
@@ -597,7 +589,7 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     width: 25px;
     cursor: pointer;
 }
-#button-bg13 {
+#button-bg12 {
     background: url("../img/small-bg13.jpg") repeat scroll 0 0 / cover rgba(0, 0, 0, 0);
     border: 4px solid #FFFFFF;
     border-radius: 50%;
@@ -605,6 +597,65 @@ input:-webkit-autofill, textarea:-webkit-autofill {
     width: 25px;
     cursor: pointer;
 }
+.cover1 {
+    background:url('/assets/img/bg5.jpg') no-repeat center center fixed;
+    -ms-background-size: cover;
+    background-size: cover;
+}
+.cover2 {
+    background: url('/assets/img/bg2.jpg') no-repeat center center fixed;
+    -ms-background-size: cover;
+    background-size: cover;
+}
+.cover3 {
+    background: url('/assets/img/bg.jpg') no-repeat center center fixed;
+    -ms-background-size: cover;
+    background-size: cover;
+}
+.cover4 {
+    background: url('/assets/img/giftly.png') repeat;
+    -ms-background-size: cover;
+    background-size: cover;
+}
+.cover5 {
+    background: #2c3e50;
+}
+.cover6 {
+    background: url('/assets/img/bg3.png') repeat;
+    -ms-background-size: cover;
+    background-size: cover;
+}
+.cover7 {
+    background:url('/assets/img/bg8.jpg') no-repeat center center fixed;
+    -ms-background-size: cover;
+    background-size: cover;
+}
+.cover8 {
+    background:url('/assets/img/bg9.jpg') no-repeat center center fixed;
+    -ms-background-size: cover;
+    background-size: cover;
+}
+.cover9 {
+    background:url('/assets/img/bg10.jpg') no-repeat center center fixed;
+    -ms-background-size: cover;
+    background-size: cover;
+}
+.cover10 {
+    background:url('/assets/img/bg11.jpg') no-repeat center center fixed;
+    -ms-background-size: cover;
+    background-size: cover;
+}
+.cover11 {
+    background:url('/assets/img/bg12.jpg') no-repeat center center fixed;
+    -ms-background-size: cover;
+    background-size: cover;
+}
+.cover12 {
+    background:url('/assets/img/bg13.jpg') repeat;
+    -ms-background-size: cover;
+    background-size: cover;
+}
+
 /**
  * HEADER MENU
  */

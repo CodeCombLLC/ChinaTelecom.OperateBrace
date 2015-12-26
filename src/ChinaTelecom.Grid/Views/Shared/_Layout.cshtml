@@ -17,12 +17,6 @@
         <script src="~/assets/js/html5.js"></script>
         <![endif]-->
     <link rel="shortcut icon" href="~/assets/ico/minus.png">
-    <style>
-        @if (Cookies.ContainsKey("styles"))
-        {
-            @(new HtmlString("body {" + Cookies["styles"] + "}"))
-        }
-    </style>
 </head>
 <body>
     <!-- TOP NAVBAR -->
@@ -111,11 +105,11 @@
                             <span class="icon-gear"></span>&nbsp;&nbsp;皮肤
                         </a>
                         <ul role="menu" class="dropdown-setting dropdown-menu">
-
                             <li class="theme-bg">
-                                <div id="button-bg"></div>
+                                <div id="button-bg1"></div>
                                 <div id="button-bg2"></div>
                                 <div id="button-bg3"></div>
+                                <div id="button-bg4"></div>
                                 <div id="button-bg5"></div>
                                 <div id="button-bg6"></div>
                                 <div id="button-bg7"></div>
@@ -124,7 +118,6 @@
                                 <div id="button-bg10"></div>
                                 <div id="button-bg11"></div>
                                 <div id="button-bg12"></div>
-                                <div id="button-bg13"></div>
                             </li>
                         </ul>
                     </li>
@@ -294,7 +287,14 @@
     <script type="text/javascript" src="~/assets/js/app.js"></script>
     <script type="text/javascript" src="~/assets/js/load.js"></script>
     <script type="text/javascript" src="~/assets/js/main.js"></script>
-
+    @if (Cookies.ContainsKey("styles"))
+    {
+        <script type="text/javascript">
+            $(function () {
+                $(document.body).addClass("@Cookies["styles"]");
+            });
+        </script>
+    }
     <!-- /MAIN EFFECT -->
     <!-- GAGE -->
     <script type="text/javascript" src="~/assets/js/calendar/underscore/underscore-min.js"></script>
