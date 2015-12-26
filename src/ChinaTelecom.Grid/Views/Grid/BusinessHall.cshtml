@@ -26,7 +26,7 @@
     }
 
     #options {
-        width: 160px;
+        width: 170px;
         position: absolute;
         bottom: 60px;
         right: 20px;
@@ -35,21 +35,26 @@
         padding: 10px;
         z-index: 10;
     }
+
+    #btnBackToBH {
+        display:none;
+    }
 </style>
 <div id="options">
     <p>
-        <label>
+        <label class="options">
             <input type="checkbox" id="chkMoveBusinessHall" />
             允许拖拽营业厅
         </label>
-        <label>
+        <label class="options">
             <input type="checkbox" id="chkLostBusinessHall" checked />
             显示流失用户的营业厅
         </label>
-        <label>
+        <label class="options">
             <input type="checkbox" id="chkNormalBusinessHall" checked />
             显示未流失的营业厅
         </label>
+        <input type="button" id="btnBackToBH" class="btn btn-warning" value="返回全部营业厅" />
     </p>
 </div>
 <div id="business-hall">
@@ -73,6 +78,7 @@
 <script>
     // Building map
     var map = new BMap.Map("allmap");
+    var detail = false;
     map.addControl(new BMap.MapTypeControl());
     map.enableScrollWheelZoom(true);
     map.addEventListener("rightclick", function (e) {
@@ -97,6 +103,7 @@
     // Building overlays
     function BuildOverlays()
     {
+        if (detail) return;
         if (lock) return;
         lock = true;
         map.clearOverlays();
@@ -131,10 +138,30 @@
                 marker.Title = data[i].Title;
                 marker.Added = data[i].Added;
                 marker.Left = data[i].Left;
+                marker.Lon = data[i].Lon;
+                marker.Lat = data[i].Lat;
                 if ($('#chkMoveEstate').is(':checked'))
                     marker.enableDragging();
                 marker.addEventListener("click", function (e) {
-                    window.location = '/Grid/Approach/' + e.target.Id
+                    detail = true;
+                    $('#btnBackToBH').show();
+                    $('.options').hide();
+                    $.getJSON('/Grid/Approach/' + e.target.Id, {}, function (data) {
+                        var mkr = e.target;
+                        map.clearOverlays();
+                        map.addOverlay(mkr);
+                        for (var i = 0; i < data.length; i++) {
+                            var pts = [];
+                            pts.push(new BMap.Point(data[i].Lon, data[i].Lat));
+                            pts.push(new BMap.Point(e.target.Lon, e.target.Lat));
+                            var polyline = new BMap.Polyline(pts, {
+                                strokeColor: 'blue',
+                                strokeWeight: 2,
+                                strokeOpacity: 0.5
+                            });
+                            map.addOverlay(polyline);
+                        }
+                    });
                 });
                 marker.addEventListener("dragend", function (e) {
                     $.post('/grid/modifybh', {
@@ -175,5 +202,12 @@
             }
             BuildOverlays();
         }, 1000);
+    });
+
+    $('#btnBackToBH').click(function () {
+        detail = false;
+        BuildOverlays();
+        $('#btnBackToBH').hide();
+        $('.options').show();
     });
 </script>
