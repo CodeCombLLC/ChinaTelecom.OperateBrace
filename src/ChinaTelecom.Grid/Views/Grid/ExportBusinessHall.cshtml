@@ -1,0 +1,23 @@
+﻿@model List<BusinessHall>
+@{ 
+    Layout = null;
+}
+<table>
+    <tr>
+        <td>排名</td>
+        <td>编号</td>
+        <td>营业厅</td>
+        <td>新增</td>
+        <td>流失</td>
+    </tr>
+    @for (var i = 0; i < Model.Count(); i++)
+    {
+        <tr>
+            <td>@(i + 1)</td>
+            <td>@Model[i].Id</td>
+            <td>@Model[i].Title</td>
+            <td>@Model[i].Added</td>
+            <td>@Model[i].Left</td>
+        </tr>
+    }
+</table>

@@ -64,6 +64,7 @@
                         <thead>
                             <tr>
                                 <th>排名</th>
+                                <th>编号</th>
                                 <th>营业厅</th>
                                 <th>新增</th>
                                 <th>流失</th>
@@ -75,6 +76,7 @@
                             {
                                 <tr>
                                     <td>@(i + 1)</td>
+                                    <td>@Model[i].Id</td>
                                     <td>@Model[i].Title</td>
                                     <td>@Model[i].Added</td>
                                     <td>@Model[i].Left</td>

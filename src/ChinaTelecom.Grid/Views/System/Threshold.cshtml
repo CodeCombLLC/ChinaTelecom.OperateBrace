@@ -1,0 +1,72 @@
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@{ 
+    ViewBag.Title = "阈值设定";
+}
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="系统设定">系统设定</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="Threshold" asp-controller="System" title="@ViewBag.Title">@ViewBag.Title</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-12">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        @ViewBag.Title
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#Settings">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="Settings">
+                    <form asp-action="Threshold" asp-controller="System" method="post">
+                        <div class="form-group">
+                            <label>小区流失严重警告值</label>
+                            <input type="text" class="form-control" value="@Config["Settings:Threshold:Customer:Yellow"]" name="cy" />
+                        </div>
+                        <div class="form-group">
+                            <label>小区发展优秀值</label>
+                            <input type="text" class="form-control" value="@Config["Settings:Threshold:Customer:Cyan"]" name="cc" />
+                        </div>
+                        <div class="form-group">
+                            <label>营业厅流失严重警告值</label>
+                            <input type="text" class="form-control" value="@Config["Settings:Threshold:BusinessHall:Yellow"]" name="by" />
+                        </div>
+                        <div class="form-group">
+                            <label>营业厅发展优秀值</label>
+                            <input type="text" class="form-control" value="@Config["Settings:Threshold:BusinessHall:Cyan"]" name="bc" />
+                        </div>
+                        <input type="submit" class="btn btn-primary" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
