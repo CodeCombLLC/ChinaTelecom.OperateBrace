@@ -17,12 +17,12 @@
   },
   "Data": {
     "DefaultConnection": {
-      "Mode": "PostgreSQL",
-      "ConnectionString": "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ctgrid;"
+      "Mode": "SQLite",
+      "ConnectionString": "Data source={appRoot}/ctgrid.db"
     },
     "SQLiteConnection": {
       "Mode": "SQLite",
-      "ConnectionString": "Data source={appRoot}/Database/ctgrid.db"
+      "ConnectionString": "Data source={appRoot}/ctgrid.db"
     },
     "PostgreSQLConnection": {
       "Mode": "PostgreSQL",
