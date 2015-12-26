@@ -1,0 +1,79 @@
+﻿@model BusinessHall
+@{ 
+    ViewBag.Title = "营业厅情况";
+    var Statistics = ViewBag.Statistics as List<BarChartItem>;
+}
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="BusinessHall" asp-controller="Grid" asp-route-lon="@Model.Lon" asp-route-lat="@Model.Lat" title="营业厅地图">营业厅地图</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="BusinessHallDetail" asp-controller="Grid" asp-route-id="@Model.Id" title="@Model.Title">@Model.Title</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-12">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        @Model.Title 套餐统计
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#Statistics">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="Statistics">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>销量排名</th>
+                                <th>套餐名称</th>
+                                <th>受理数量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < Statistics.Count; i++)
+                            {
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td>@Statistics[i].Key</td>
+                                    <td>@Statistics[i].Count</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

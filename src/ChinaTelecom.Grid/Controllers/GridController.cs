@@ -1322,5 +1322,30 @@ namespace ChinaTelecom.Grid.Controllers
             DB.SaveChanges();
             return "ok";
         }
+
+        [HttpGet]
+        public IActionResult BusinessHallDetail(string id)
+        {
+            var bh = DB.BusinessHalls
+               .Single(x => x.Id == id);
+            var series = DB.Serieses.LastOrDefault();
+            if (series != null)
+            {
+                var statistics = DB.Records
+                    .Where(x => x.SeriesId == series.Id)
+                    .Where(x => x.Status == ServiceStatus.在用)
+                    .Where(x => x.BusinessHallId == id)
+                    .GroupBy(x => x.Set)
+                    .Select(x => new BarChartItem
+                    {
+                        Key = x.Key,
+                        Count = x.Count()
+                    })
+                    .OrderByDescending(x => x.Count)
+                    .ToList();
+                ViewBag.Statistics = statistics;
+            }
+            return View(bh);
+        }
     }
 }
