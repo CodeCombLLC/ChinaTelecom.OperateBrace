@@ -36,8 +36,9 @@
         z-index: 10;
     }
 
-    #btnBackToBH {
-        display:none;
+    .buttons {
+        display: none;
+        width: 150px;
     }
 </style>
 <div id="options">
@@ -54,7 +55,8 @@
             <input type="checkbox" id="chkNormalBusinessHall" checked />
             显示未流失的营业厅
         </label>
-        <input type="button" id="btnBackToBH" class="btn btn-warning" value="返回全部营业厅" />
+        <input type="button" id="btnBHDetail" class="btn btn-info buttons" value="营业厅详情" />
+        <input type="button" id="btnBackToBH" class="btn btn-warning buttons" value="返回全部营业厅" />
     </p>
 </div>
 <div id="business-hall">
@@ -79,6 +81,7 @@
     // Building map
     var map = new BMap.Map("allmap");
     var detail = false;
+    var current;
     map.addControl(new BMap.MapTypeControl());
     map.enableScrollWheelZoom(true);
     map.addEventListener("rightclick", function (e) {
@@ -144,7 +147,8 @@
                     marker.enableDragging();
                 marker.addEventListener("click", function (e) {
                     detail = true;
-                    $('#btnBackToBH').show();
+                    current = e.target.Id;
+                    $('.buttons').show();
                     $('.options').hide();
                     $.getJSON('/Grid/Approach/' + e.target.Id, {}, function (data) {
                         var mkr = e.target;
@@ -207,7 +211,11 @@
     $('#btnBackToBH').click(function () {
         detail = false;
         BuildOverlays();
-        $('#btnBackToBH').hide();
+        $('.buttons').hide();
         $('.options').show();
+    });
+
+    $('#btnBHDetail').click(function () {
+        window.location = '/grid/businesshalldetail/' + current;
     });
 </script>
