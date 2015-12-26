@@ -168,6 +168,8 @@
                     });
                 });
                 marker.addEventListener("dragend", function (e) {
+                    e.target.Lon = e.point.lng;
+                    e.target.Lat = e.point.lat;
                     $.post('/grid/modifybh', {
                         lon: e.point.lng,
                         lat: e.point.lat,
@@ -217,5 +219,17 @@
 
     $('#btnBHDetail').click(function () {
         window.location = '/grid/businesshalldetail/' + current;
+    });
+
+    $('#chkMoveBusinessHall').click(function () {
+        BuildOverlays();
+    });
+
+    $('#chkLostBusinessHall').click(function () {
+        BuildOverlays();
+    });
+
+    $('#chkNormalBusinessHall').click(function () {
+        BuildOverlays();
     });
 </script>
