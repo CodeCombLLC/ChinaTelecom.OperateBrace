@@ -1,0 +1,93 @@
+﻿@model List<BusinessHall>
+@{ 
+    ViewBag.Title = "营业厅列表";
+}
+
+<div class="row">
+    <div id="paper-top">
+        <div class="col-sm-3">
+            <h2 class="tittle-content-header">
+                <i class="icon-folder"></i>
+                <span>
+                    @ViewBag.Title
+                </span>
+            </h2>
+        </div>
+    </div>
+</div>
+<ul id="breadcrumb">
+    <li>
+        <span class="entypo-home"></span>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a href="#" title="网格管理">网格管理</a>
+    </li>
+    <li>
+        <i class="fa fa-lg fa-angle-right"></i>
+    </li>
+    <li>
+        <a asp-action="BusinessHallList" asp-controller="Grid" title="营业厅管理">营业厅管理</a>
+    </li>
+</ul>
+<div class="row">
+    <div class="content-wrap">
+        <div class="col-sm-12">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        营业厅列表
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#Statistics">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="body-nest" id="Statistics">
+                    <form class="row">
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" placeholder="营业厅编号" name="number" value="@Context.Request.Query["number"]" />
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" placeholder="营业厅名称" name="title" value="@Context.Request.Query["title"]" />
+                        </div>
+                        <div class="col-sm-4">
+                            <a href="?raw=true" class="btn btn-info float-right">导出</a>
+                            <input type="submit" value="检索" class="float-right btn btn-primary" />
+                        </div>
+                    </form>
+                    <hr />
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>营业厅</th>
+                                <th>新增</th>
+                                <th>流失</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < Model.Count(); i++)
+                            {
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td>@Model[i].Title</td>
+                                    <td>@Model[i].Added</td>
+                                    <td>@Model[i].Left</td>
+                                    <td>
+                                        <a asp-controller="Grid" asp-action="BusinessHall" asp-route-lon="@Model[i].Lon" asp-route-lat="@Model[i].Lat">查看地图</a>
+                                        <a asp-controller="Grid" asp-action="BusinessHallDetail" asp-route-id="@Model[i].Id">查看详情</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

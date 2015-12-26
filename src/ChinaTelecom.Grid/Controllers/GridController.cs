@@ -1347,5 +1347,49 @@ namespace ChinaTelecom.Grid.Controllers
             }
             return View(bh);
         }
+
+        [HttpGet]
+        public IActionResult BusinessHallList(bool? xls, string number, string title)
+        {
+            IEnumerable<BusinessHall> bhs = DB.BusinessHalls;
+            if (!string.IsNullOrEmpty(title))
+                bhs = bhs.Where(x => x.Title.Contains(title));
+            if (!string.IsNullOrEmpty(number))
+                bhs = bhs.Where(x => x.Id == number);
+            bhs = bhs.ToList();
+            var id = bhs
+                .Select(x => x.Id)
+                .ToList();
+            var tmp = DB.Houses
+                .GroupBy(x => x.BusinessHallId)
+                .Select(x => new
+                {
+                    Key = x.Key,
+                    LeftCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && y.ServiceStatus != ServiceStatus.在用).Count(),
+                    AddedCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && y.ServiceStatus == ServiceStatus.在用).Count()
+                })
+                .ToList();
+            foreach (var x in bhs)
+            {
+                if (!tmp.Any(a => a.Key == x.Id))
+                {
+                    x.Added = 0;
+                    x.Left = 0;
+                }
+                else
+                {
+                    var s = tmp.Where(a => a.Key == x.Id).Single();
+                    x.Added = s.AddedCount;
+                    x.Left = s.LeftCount;
+                }
+            }
+            bhs = bhs.OrderByDescending(x => x.Added)
+                .ThenBy(x => x.Left)
+                .ToList();
+            if (xls.HasValue && xls.Value)
+                return XlsView(bhs, "businesshall.xls", "ExportBusinessHall");
+            else
+                return View(bhs);
+        }
     }
 }
