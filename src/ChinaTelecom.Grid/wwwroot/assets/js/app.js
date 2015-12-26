@@ -2,70 +2,70 @@
 //BACKGROUND CHANGER
 
 $(function () {
-    $("#button-bg").click(function () {
-        $.post('/Home/Skin', { style: "background:url('/assets/img/bg5.jpg')no-repeat center center fixed" }, function () {
+    $("#button-bg1").click(function () {
+        $.post('/Home/Skin', { style: "cover1" }, function () {
             location.reload();
         });
     });
     $("#button-bg2").click(function () {
-        $.post('/Home/Skin', { style: "background:url('/assets/img/bg2.jpg')no-repeat center center fixed" }, function () {
+        $.post('/Home/Skin', { style: "cover2" }, function () {
             location.reload();
         });
     });
 
 
     $("#button-bg3").click(function () {
-        $.post('/Home/Skin', { style: "background:url('/assets/img/bg.jpg')no-repeat center center fixed" }, function () {
+        $.post('/Home/Skin', { style: "cover3" }, function () {
+            location.reload();
+        });
+    });
+
+    $("#button-bg4").click(function () {
+        $.post('/Home/Skin', { style: "cover4" }, function () {
             location.reload();
         });
     });
 
     $("#button-bg5").click(function () {
-        $.post('/Home/Skin', { style: "background:url('/assets/img/giftly.png')repeat" }, function () {
+        $.post('/Home/Skin', { style: "cover5" }, function () {
             location.reload();
         });
     });
 
     $("#button-bg6").click(function () {
-        $.post('/Home/Skin', { style: "background:#2c3e50" }, function () {
+        $.post('/Home/Skin', { style: "cover6" }, function () {
             location.reload();
         });
     });
-
     $("#button-bg7").click(function () {
-        $.post('/Home/Skin', { style: "background:url('/assets/img/bg3.png')repeat" }, function () {
+        $.post('/Home/Skin', { style: "cover7" }, function () {
             location.reload();
         });
     });
     $("#button-bg8").click(function () {
-        $.post('/Home/Skin', { style: "background:url('/assets/img/bg8.jpg')no-repeat center center fixed" }, function () {
-            location.reload();
-        });
-    });
-    $("#button-bg9").click(function () {
-        $.post('/Home/Skin', { style: "background:url('/assets/img/bg9.jpg')no-repeat center center fixed" }, function () {
+        $.post('/Home/Skin', { style: "cover8" }, function () {
             location.reload();
         });
     });
 
+    $("#button-bg9").click(function () {
+        $.post('/Home/Skin', { style: "cover9" }, function () {
+            location.reload();
+        });
+    });
     $("#button-bg10").click(function () {
-        $.post('/Home/Skin', { style: "background:url('/assets/img/bg10.jpg')no-repeat center center fixed" }, function () {
+        $.post('/Home/Skin', { style: "cover10" }, function () {
             location.reload();
         });
     });
     $("#button-bg11").click(function () {
-        $.post('/Home/Skin', { style: "background:url('/assets/img/bg11.jpg')no-repeat center center fixed" }, function () {
-            location.reload();
-        });
-    });
-    $("#button-bg12").click(function () {
-        $.post('/Home/Skin', { style: "background:url('/assets/img/bg12.jpg')no-repeat center center fixed" }, function () {
+        $.post('/Home/Skin', { style: "cover11" }, function () {
             location.reload();
         });
     });
 
-    $("#button-bg13").click(function () {
-        $.post('/Home/Skin', { style: "background:url('/assets/img/bg13.jpg')repeat" }, function () {
+    $("#button-bg12").click(function () {
+        $.post('/Home/Skin', { style: "cover12" }, function () {
             location.reload();
         });
     });
