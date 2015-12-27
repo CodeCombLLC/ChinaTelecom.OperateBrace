@@ -15,22 +15,22 @@
       }
     }
   },
-  "Data": {
-    "DefaultConnection": {
-      "Mode": "SQLite",
-      "ConnectionString": "Data source={appRoot}/ctgrid.db"
-    },
-    "SQLiteConnection": {
-      "Mode": "SQLite",
-      "ConnectionString": "Data source={appRoot}/ctgrid.db"
-    },
-    "PostgreSQLConnection": {
-      "Mode": "PostgreSQL",
-      "ConnectionString": "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=ctgrid;"
-    }
-  },
   "BMap": {
     "ApplicationKey": "NXEnERYLgAVs3WYl3jd0NCKR",
     "City": "哈尔滨市"
+  },
+  "Data": {
+    "DefaultConnection": {
+      "Mode": "SQLite",
+      "ConnectionString": "Data source={appRoot}/chinatelecom.db"
+    },
+    "SQLiteConnection": {
+      "Mode": "SQLite",
+      "ConnectionString": "Data source={appRoot}/chinatelecom.db"
+    },
+    "PostgreSQLConnection": {
+      "Mode": "PostgreSQL",
+      "ConnectionString": "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=chinatelecom;"
+    }
   }
 }
