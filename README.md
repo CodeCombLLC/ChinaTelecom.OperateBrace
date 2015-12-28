@@ -1,4 +1,4 @@
-# 中国电信网格管理系统
+# 中国电信经营支撑系统
 
 ![image](https://cloud.githubusercontent.com/assets/2216750/11888274/a197a08c-a576-11e5-8acb-ea680f635240.png)
 
