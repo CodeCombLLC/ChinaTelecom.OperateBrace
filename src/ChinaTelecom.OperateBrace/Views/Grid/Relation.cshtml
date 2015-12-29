@@ -135,6 +135,10 @@
                                             {
                                                 <span class="badge badge-warning">@x.Status</span>
                                             }
+                                            else if (x.Status == ServiceStatus.用户拆机 || x.Status == ServiceStatus.欠费拆机)
+                                            {
+                                                <span class="badge badge-gray">@x.Status</span>
+                                            }
                                             else
                                             {
                                                 <span class="badge badge-error">@x.Status</span>
