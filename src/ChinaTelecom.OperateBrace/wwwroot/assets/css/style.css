@@ -3198,6 +3198,10 @@ textarea {
     font-weight: lighter;
 }
 
+.badge-gray {
+    background-color: #999!important;
+}
+
 .badge-success {
     background-color: #159818!important;
 }

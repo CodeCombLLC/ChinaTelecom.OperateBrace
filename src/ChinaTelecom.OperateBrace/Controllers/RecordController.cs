@@ -47,7 +47,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
             if (!string.IsNullOrEmpty(Phone))
                 ret = ret.Where(x => x.Phone.Contains(Phone));
             if (!string.IsNullOrEmpty(Account))
-                ret = ret.Where(x => x.Account == Account);
+                ret = ret.Where(x => x.FuseIdentifier == Account);
             if (SeriesId.HasValue)
                 ret = ret.Where(x => x.SeriesId == SeriesId.Value);
             if (BeginTime.HasValue)

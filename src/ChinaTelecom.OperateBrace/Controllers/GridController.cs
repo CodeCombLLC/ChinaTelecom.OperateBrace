@@ -24,14 +24,15 @@ namespace ChinaTelecom.OperateBrace.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateEstate(string title, double lon, double lat, string rules, string area)
+        public IActionResult CreateEstate(string title, double lon, double lat, string rules, string area, bool NeedImplement)
         {
             var estate = new Estate
             {
                 Area = area,
                 Lat = lat,
                 Lon = lon,
-                Title = title
+                Title = title,
+                NeedImplement = NeedImplement
             };
             DB.Estates.Add(estate);
             if (!string.IsNullOrEmpty(rules))
@@ -127,21 +128,26 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 .ToList();
             foreach (var x in estates)
             {
-                if (!tmp.Any(a => a.Key == x.Id))
-                    x.Level = 3;
+                if (x.NeedImplement)
+                    x.Level = 6;
                 else
                 {
-                    var s = tmp.Where(a => a.Key == x.Id).Single();
-                    if (s.LeftCount == 0)
-                        x.Level = 0;
-                    else if (s.LeftCount <= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Yellow"]))
-                        x.Level = 1;
+                    if (!tmp.Any(a => a.Key == x.Id))
+                        x.Level = 3;
                     else
-                        x.Level = 2;
-                    if (x.Level == 0 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Cyan"]))
-                        x.Level = 5;
-                    if (x.Level == 1 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Cyan"]))
-                        x.Level = 4;
+                    {
+                        var s = tmp.Where(a => a.Key == x.Id).Single();
+                        if (s.LeftCount == 0)
+                            x.Level = 0;
+                        else if (s.LeftCount <= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Yellow"]))
+                            x.Level = 1;
+                        else
+                            x.Level = 2;
+                        if (x.Level == 0 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Cyan"]))
+                            x.Level = 5;
+                        if (x.Level == 1 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Cyan"]))
+                            x.Level = 4;
+                    }
                 }
             }
             return Json(estates);

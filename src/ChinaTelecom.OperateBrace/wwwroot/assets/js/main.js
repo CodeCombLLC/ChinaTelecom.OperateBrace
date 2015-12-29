@@ -315,6 +315,8 @@ head.js("/assets/js/gage/raphael.2.1.0.min.js", "assets/js/gage/justgage.js", fu
 
 $(document).ready(function () {
     $('.table tbody tr').click(function () {
+        if ($(this).parents('form').length > 0)
+            return;
         if ($(this).hasClass('row-active')) {
             $(this).removeClass('row-active');
         } else {

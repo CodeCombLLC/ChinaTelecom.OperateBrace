@@ -18,6 +18,8 @@ namespace ChinaTelecom.OperateBrace.Models
 
         public double Lat { get; set; }
 
+        public bool NeedImplement { get; set; }
+
         [NotMapped]
         public int Level { get; set; }
 

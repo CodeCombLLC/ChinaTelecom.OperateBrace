@@ -27,6 +27,7 @@ namespace ChinaTelecom.OperateBrace.Models
             {
                 e.HasIndex(x => x.Lon);
                 e.HasIndex(x => x.Lat);
+                e.HasIndex(x => x.NeedImplement);
             });
 
             builder.Entity<EstateRule>(e =>

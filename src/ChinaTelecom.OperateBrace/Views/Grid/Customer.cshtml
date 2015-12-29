@@ -145,6 +145,10 @@
                                             {
                                                 <span class="badge badge-warning">@x.HardlinkStatus</span>
                                             }
+                                            else if (x.HardlinkStatus == ServiceStatus.用户拆机 || x.HardlinkStatus == ServiceStatus.欠费拆机)
+                                            {
+                                                <span class="badge badge-gray">@x.HardlinkStatus</span>
+                                            }
                                             else
                                             {
                                                 <span class="badge badge-error">@x.HardlinkStatus</span>
@@ -160,6 +164,10 @@
                                                 else if (x.MobileStatus == ServiceStatus.未知)
                                                 {
                                                     <span class="badge badge-warning">@x.MobileStatus</span>
+                                                }
+                                                else if (x.MobileStatus == ServiceStatus.用户拆机 || x.MobileStatus == ServiceStatus.欠费拆机)
+                                                {
+                                                    <span class="badge badge-gray">@x.MobileStatus</span>
                                                 }
                                                 else
                                                 {

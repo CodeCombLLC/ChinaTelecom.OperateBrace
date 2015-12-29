@@ -107,9 +107,9 @@
                                                         {
                                                             @if (house.HouseStatus == HouseStatus.中国电信)
                                                             {
-                                                            <div ondragstart="drag(event)" class="house-item @(house.ServiceStatus == ServiceStatus.在用 ? "status-using" : "")" draggable="true" data-account="@house.Account">
+                                                            <div ondragstart="drag(event)" class="house-item @(house.ServiceStatus == ServiceStatus.在用 ? "status-using" : "")" draggable="true" data-account="@house.FuseIdentifier">
                                                                 <img class="icon-provider" src="~/assets/img/ct.png" draggable="false" />
-                                                                <a draggable="false" asp-action="Index" asp-controller="Record" asp-route-account="@house.Account" target="_blank">@house.FullName (@house.Phone)</a>
+                                                                <a draggable="false" asp-action="Index" asp-controller="Record" asp-route-account="@house.FuseIdentifier" target="_blank">@house.FullName (@house.Phone)</a>
                                                             </div>
                                                             }
                                                             else
@@ -163,9 +163,9 @@
                     <div class="pending-addresses" ondrop="drop(event)" ondragover="allowDrop(event)">
                         @foreach (Record x in ViewBag.PendingAddresses)
                         {
-                            <div class="pending-address @(x.Status == ServiceStatus.在用 ? "status-using" : "")" draggable="true" ondragstart="drag(event)" data-account="@x.Account">
+                            <div class="pending-address @(x.Status == ServiceStatus.在用 ? "status-using" : "")" draggable="true" ondragstart="drag(event)" data-account="@x.FuseIdentifier">
                                 <img class="icon-provider" src="~/assets/img/ct.png" draggable="false" />
-                                <a asp-action="Index" asp-controller="Record" asp-route-account="@x.Account" draggable="false" target="_blank">@x.ImplementAddress</a>
+                                <a asp-action="Index" asp-controller="Record" asp-route-account="@x.FuseIdentifier" draggable="false" target="_blank">@x.ImplementAddress</a>
                             </div>
                         }
                     </div>

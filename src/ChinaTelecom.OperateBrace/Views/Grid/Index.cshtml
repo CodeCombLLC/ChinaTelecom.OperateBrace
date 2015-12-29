@@ -58,6 +58,10 @@
             <input type="checkbox" id="chkNormalEstate" checked />
             显示未流失的小区
         </label>
+        <label>
+            <input type="checkbox" id="chkPendingEstate" checked />
+            显示待施工工程小区
+        </label>
         <input type="button" value="圈定范围" class="btn btn-warning" id="btnCircle" />
         <input type="button" value="取消圈定范围" class="btn" style="display:none" id="btnCancelCircle" />
     </p>
@@ -97,6 +101,12 @@
                                 </td>
                             </tr>
                         }
+                        <tr>
+                            <td>无电信工程</td>
+                            <td>
+                                <input type="checkbox" value="true" name="NeedImplement" />
+                            </td>
+                        </tr>
                         <tr>
                             <td>经度</td>
                             <td><input type="text" class="form-control" name="lon" id="txtLon" /></td>
@@ -208,6 +218,7 @@
     var icon3 = new BMap.Icon("/assets/img/estate-error.png", new BMap.Size(25, 52));
     var icon4 = new BMap.Icon("/assets/img/estate-inverse.png", new BMap.Size(25, 52));
     var icon5 = new BMap.Icon("/assets/img/estate-good.png", new BMap.Size(25, 52));
+    var icon6 = new BMap.Icon("/assets/img/estate-pending.png", new BMap.Size(25, 52));
     var lock = false;
 
     // Building overlays
@@ -243,11 +254,15 @@
                     ico = icon4;
                 else if (data[i].Level == 4 || data[i].Level == 5)
                     ico = icon5;
+                else if (data[i].Level == 6)
+                    ico = icon6;
                 if (!$('#chkNoCustomerEstate').is(':checked') && data[i].Level == 3)
                     continue;
                 if (!$('#chkNormalEstate').is(':checked') && (data[i].Level == 0 || data[i].Level == 5))
                     continue;
                 if (!$('#chkLostEstate').is(':checked') && (data[i].Level == 1 || data[i].Level == 2 || data[i].Level == 4))
+                    continue;
+                if (!$('#chkPendingEstate').is(':checked') && data[i].Level == 6)
                     continue;
                 var marker = new BMap.Marker(pt, { icon: ico });
                 marker.Id = data[i].Id;
@@ -327,6 +342,9 @@
         BuildOverlays();
     });
     $('#chkMoveEstate').change(function () {
+        BuildOverlays();
+    });
+    $('#chkPendingEstate').change(function () {
         BuildOverlays();
     });
 
