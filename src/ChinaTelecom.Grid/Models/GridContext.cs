@@ -53,6 +53,7 @@ namespace ChinaTelecom.Grid.Models
                 e.HasIndex(x => x.Phone);
                 e.HasIndex(x => x.FullName);
                 e.HasIndex(x => x.FuseIdentifier);
+                e.Ignore(x => x.ServiceStatus);
             });
 
             builder.Entity<Series>(e =>

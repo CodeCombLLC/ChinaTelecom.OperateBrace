@@ -25,7 +25,7 @@ namespace ChinaTelecom.Grid.Models
         public ServiceStatus MobileStatus { get; set; }
 
         [NotMapped]
-        public ServiceStatus ServiceStatus
+        public virtual ServiceStatus ServiceStatus
         {
             get
             {

@@ -21,8 +21,8 @@
   },
   "Data": {
     "DefaultConnection": {
-      "Mode": "SQLite",
-      "ConnectionString": "Data source={appRoot}/chinatelecom.db"
+      "Mode": "PostgreSQL",
+      "ConnectionString": "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=chinatelecom;"
     },
     "SQLiteConnection": {
       "Mode": "SQLite",
