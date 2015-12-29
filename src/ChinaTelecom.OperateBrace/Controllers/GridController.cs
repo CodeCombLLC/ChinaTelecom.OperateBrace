@@ -208,7 +208,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Estate(string Area, string Title, string Circle, bool? raw)
+        public async Task<IActionResult> Estate(string Area, string Title, string Circle, bool? NeedImplement, bool? raw)
         {
             IEnumerable<Estate> ret = DB.Estates
                 .Include(x => x.Buildings)
@@ -216,13 +216,22 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 .Include(x => x.Rules);
             if (!User.IsInRole("系统管理员"))
             {
-                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区")
+                    .Select(x => x.Value)
+                    .ToList();
                 ret = ret.Where(x => areas.Contains(x.Area));
             }
             if (!string.IsNullOrEmpty(Area))
                 ret = ret.Where(x => x.Area == Area);
             if (!string.IsNullOrEmpty(Title))
                 ret = ret.Where(x => x.Title.Contains(Title));
+            if (NeedImplement.HasValue)
+            {
+                if (NeedImplement.Value)
+                    ret = ret.Where(x => x.NeedImplement);
+                else
+                    ret = ret.Where(x => !x.NeedImplement);
+            }
             if (!string.IsNullOrEmpty(Circle))
             {
                 var points = Lib.Circle.StringToPoints(Circle);
@@ -882,7 +891,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, string rules, string title, double lon, double lat, string area)
+        public async Task<IActionResult> Edit(Guid id, string rules, string title, double lon, double lat, string area, bool NeedImplement)
         {
             if (area == null)
                 area = "";
@@ -906,6 +915,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
             estate.Lon = lon;
             estate.Lat = lat;
             estate.Area = area;
+            estate.NeedImplement = NeedImplement;
             foreach (var x in estate.Rules)
                 DB.EstateRules.Remove(x);
             foreach (var x in rules.TrimEnd(' ').TrimEnd(',').Split(','))
@@ -1096,7 +1106,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
         }
 
         [HttpGet]
-        public IActionResult Relation(string address, bool? raw)
+        public IActionResult Relation(string address, ServiceStatus? status, bool? raw)
         {
             var houses = DB.Houses
                 .Select(x => x.Account)
@@ -1108,6 +1118,8 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 ret = ret.Where(x => x.ImplementAddress.Contains(address) || x.StandardAddress.Contains(address));
             if (User.IsInRole("网格经理"))
                 ret = ret.Where(x => x.ServiceStaff == User.Current.FullName || x.ContractorName == User.Current.FullName);
+            if (status.HasValue)
+                ret = ret.Where(x => x.Status == status.Value);
             ret = ret.OrderByDescending(x => x.Account)
                 .DistinctBy(x => x.Account);
             if (raw.HasValue && raw.Value)

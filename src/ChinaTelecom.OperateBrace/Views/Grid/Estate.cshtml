@@ -56,6 +56,11 @@
                             <input type="text" class="form-control" name="area" placeholder="片区编号" value="@Context.Request.Query["area"]" />
                         </div>
                         <div class="col-sm-4">
+                            <select class="form-control" name="NeedImplement">
+                                <option value="">小区状态</option>
+                                <!option value="false" @(Context.Request.Query["needimplement"] == "false" ? "selected" : "")>正常小区</!option>
+                                <!option value="true" @(Context.Request.Query["needimplement"] == "true" ? "selected" : "")>无电信工程小区</!option>
+                            </select>
                         </div>
                         <div class="col-sm-4">
                             <input type="submit" class="btn btn-primary float-right" value="检索" />
@@ -91,7 +96,13 @@
                                                 <span class="badge badge-success">@x.Area</span>
                                             }
                                         </td>
-                                        <td>@x.Title</td>
+                                        <td>
+                                            @if (x.NeedImplement)
+                                            {
+                                                <span class="badge badge-error">无工程</span>
+                                            }
+                                            @x.Title
+                                        </td>
                                         <td>@x.Buildings.Count</td>
                                         <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信).Count())</td>
                                         <td>@x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.ServiceStatus == ServiceStatus.在用).Count())</td>

@@ -70,6 +70,11 @@
                             <input type="text" name="area" value="@Model.Area" class="form-control" />
                         </div>
                         <div class="form-group">
+                            <label>无电信工程</label>
+                            <br />
+                            <input type="checkbox" name="needimplement" value="true" @(Model.NeedImplement ? "checked" : "") />
+                        </div>
+                        <div class="form-group">
                             <label>经度</label>
                             <input type="text" name="lon" value="@Model.Lon" class="form-control" />
                         </div>
