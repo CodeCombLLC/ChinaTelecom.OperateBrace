@@ -333,6 +333,7 @@ namespace ChinaTelecom.Grid.Controllers
                                                                         house.FullName = record.CustomerName;
                                                                         house.IsStatusChanged = record.Status != house.ServiceStatus;
                                                                         house.HardlinkStatus = record.Status;
+                                                                        house.FuseIdentifier = record.FuseIdentifier;
                                                                         house.IsFuse = record.IsFuse;
                                                                         house.LastUpdate = DateTime.Now;
                                                                         house.HouseStatus = HouseStatus.中国电信;
@@ -385,6 +386,7 @@ namespace ChinaTelecom.Grid.Controllers
                                                                         house.FullName = record.CustomerName;
                                                                         house.IsStatusChanged = true;
                                                                         house.HardlinkStatus = record.Status;
+                                                                        house.FuseIdentifier = record.FuseIdentifier;
                                                                         house.IsFuse = record.IsFuse;
                                                                         house.LastUpdate = DateTime.Now;
                                                                         house.HouseStatus = HouseStatus.中国电信;
@@ -423,6 +425,7 @@ namespace ChinaTelecom.Grid.Controllers
                                                                     house.IsStatusChanged = true;
                                                                     house.HardlinkStatus = record.Status;
                                                                     house.IsFuse = record.IsFuse;
+                                                                    house.FuseIdentifier = record.FuseIdentifier;
                                                                     house.LastUpdate = DateTime.Now;
                                                                     house.HouseStatus = HouseStatus.中国电信;
                                                                     house.BusinessHallId = bh.Id;
@@ -486,6 +489,7 @@ namespace ChinaTelecom.Grid.Controllers
                                                                         house.FullName = record.CustomerName;
                                                                         house.IsStatusChanged = true;
                                                                         house.HardlinkStatus = record.Status;
+                                                                        house.FuseIdentifier = record.FuseIdentifier;
                                                                         house.LastUpdate = DateTime.Now;
                                                                         house.HouseStatus = HouseStatus.中国电信;
                                                                         house.BusinessHallId = bh.Id;
@@ -507,7 +511,19 @@ namespace ChinaTelecom.Grid.Controllers
                                             }
                                             else // 否则只能根据用户标识来查询楼宇
                                             {
-
+                                                var house = db.Houses
+                                                    .Where(x => x.FuseIdentifier == record.FuseIdentifier)
+                                                    .FirstOrDefault();
+                                                if (house != null)
+                                                {
+                                                    // 如果找到了用户标识对应的house，则更新移动网状态
+                                                    house.MobileStatus = record.Status;
+                                                    house.IsStatusChanged = record.Status != house.ServiceStatus;
+                                                    house.IsFuse = true;
+                                                    house.LastUpdate = DateTime.Now;
+                                                    db.Update(house);
+                                                    db.SaveChanges();
+                                                }
                                             }
                                         }
                                         catch (Exception ex)
