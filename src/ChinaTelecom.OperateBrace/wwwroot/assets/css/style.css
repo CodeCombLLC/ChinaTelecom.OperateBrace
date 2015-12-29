@@ -3250,3 +3250,12 @@ div.valueLabel {
     float: right;
     margin-top: 25px;
 }
+
+.table tbody tr {
+    cursor: pointer;
+    transition: background 0.2s linear;
+}
+
+.row-active {
+    background-color: rgb(255,248,223);
+}
