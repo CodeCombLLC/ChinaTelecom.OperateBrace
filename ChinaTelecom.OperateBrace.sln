@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{016B6402-C0C6-4E99-83AA-C6194F37EAC1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{51BFCDB1-6DC5-4A3F-8B8A-A1B6FCCF4607}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{C20D865A-0197-46A0-8366-9EB16CFF8740}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ChinaTelecom.OperateBrace", "src\ChinaTelecom.OperateBrace\ChinaTelecom.OperateBrace.xproj", "{D7043F99-25F1-4126-9F2D-91D296F2FE55}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "ChinaTelecom.OperateBrace.Tests", "test\ChinaTelecom.OperateBrace.Tests\ChinaTelecom.OperateBrace.Tests.xproj", "{8DF9A460-8E24-4122-99CF-EA5C250CFB2E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D7043F99-25F1-4126-9F2D-91D296F2FE55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7043F99-25F1-4126-9F2D-91D296F2FE55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7043F99-25F1-4126-9F2D-91D296F2FE55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7043F99-25F1-4126-9F2D-91D296F2FE55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DF9A460-8E24-4122-99CF-EA5C250CFB2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DF9A460-8E24-4122-99CF-EA5C250CFB2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DF9A460-8E24-4122-99CF-EA5C250CFB2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DF9A460-8E24-4122-99CF-EA5C250CFB2E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D7043F99-25F1-4126-9F2D-91D296F2FE55} = {016B6402-C0C6-4E99-83AA-C6194F37EAC1}
+		{8DF9A460-8E24-4122-99CF-EA5C250CFB2E} = {C20D865A-0197-46A0-8366-9EB16CFF8740}
+	EndGlobalSection
+EndGlobal
