@@ -72,7 +72,7 @@ namespace ChinaTelecom.Grid.Controllers
                         .AsNoTracking()
                         .Include(y => y.Building)
                         .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信)
-                        .Where(y => y.ServiceStatus == ServiceStatus.在用)
+                        .Where(y => y.HardlinkStatus == ServiceStatus.在用 || y.MobileStatus == ServiceStatus.在用)
                         .Count(),
                 TotalNonCTUsers = DB.Houses
                         .AsNoTracking()
@@ -82,11 +82,11 @@ namespace ChinaTelecom.Grid.Controllers
                 AddedUsers = DB.Houses
                         .AsNoTracking()
                         .Include(y => y.Building)
-                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.ServiceStatus == ServiceStatus.在用 && y.IsStatusChanged)
+                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && (y.HardlinkStatus == Models.ServiceStatus.在用 || y.MobileStatus == Models.ServiceStatus.在用) && y.IsStatusChanged)
                         .Count(),
                 LeftUsers = DB.Houses
                         .Include(y => y.Building)
-                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.ServiceStatus != ServiceStatus.在用 && y.IsStatusChanged)
+                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && (y.HardlinkStatus != Models.ServiceStatus.在用 || y.MobileStatus != Models.ServiceStatus.在用) && y.IsStatusChanged)
                         .Count()
             };
             if (ret.TotalCTUsers == 0)
@@ -187,10 +187,10 @@ namespace ChinaTelecom.Grid.Controllers
                     Id = x.Key,
                     Count = x.Count(),
                     CTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信).Count())),
-                    CTInUsingUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用).Count())),
+                    CTInUsingUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && (a.HardlinkStatus == Models.ServiceStatus.在用 || a.MobileStatus == Models.ServiceStatus.在用)).Count())),
                     NonCTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信 && a.HouseStatus != HouseStatus.未装机).Count())),
-                    AddedUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && a.ServiceStatus == ServiceStatus.在用).Count())),
-                    LeftUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && a.ServiceStatus != ServiceStatus.在用).Count())),
+                    AddedUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && (a.HardlinkStatus == Models.ServiceStatus.在用 || a.MobileStatus == Models.ServiceStatus.在用)).Count())),
+                    LeftUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && (a.HardlinkStatus != Models.ServiceStatus.在用 || a.MobileStatus != Models.ServiceStatus.在用)).Count())),
                     Lon = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lon,
                     Lat = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lat
                 });
@@ -384,7 +384,7 @@ namespace ChinaTelecom.Grid.Controllers
                             DB.Houses.Add(new House
                             {
                                 Account = x.Account,
-                                ServiceStatus = x.Status,
+                                HardlinkStatus = x.Status,
                                 HouseStatus = HouseStatus.中国电信,
                                 Unit = unit.Value,
                                 Layer = layer.Value,
@@ -456,7 +456,11 @@ namespace ChinaTelecom.Grid.Controllers
                     }
                 }
 
-                var record = DB.Records.Where(x => x.Account == Account).LastOrDefault();
+                var record = DB.Records.Where(x => x.Account == Account && x.IsHardLink).LastOrDefault();
+                var status = record.Status;
+                var record2 = DB.Records.Where(x => x.Account == Account && !x.IsHardLink && x.SeriesId == record.SeriesId).LastOrDefault();
+                if (record2 != null)
+                    status = (ServiceStatus)Math.Max((int)status, (int)record2.Status);
                 var houses = DB.Houses.Where(x => x.Account == Account).SingleOrDefault();
 
                 if (record != null && !User.IsInRole("系统管理员") && record.ServiceStaff != User.Current.FullName && record.ContractorName != User.Current.FullName)
@@ -480,7 +484,7 @@ namespace ChinaTelecom.Grid.Controllers
                         IsStatusChanged = true,
                         Phone = record.Phone,
                         LastUpdate = DateTime.Now,
-                        ServiceStatus = record.Status
+                        HardlinkStatus = status
                     });
                 }
                 else
@@ -518,7 +522,9 @@ namespace ChinaTelecom.Grid.Controllers
 
             if (provider == HouseStatus.中国电信)
             {
-                var record = DB.Records.Where(x => x.Account == account).LastOrDefault();
+                var record = DB.Records
+                    .Where(x => x.Account == account && x.IsFuse)
+                    .LastOrDefault();
                 if (record == null)
                     return Prompt(x =>
                     {
@@ -526,6 +532,10 @@ namespace ChinaTelecom.Grid.Controllers
                         x.Details = "没有找到该接入号对应的用户！";
                         x.StatusCode = 404;
                     });
+                var status = record.Status;
+                var record2 = DB.Records.Where(x => x.Account == account && !x.IsHardLink && x.SeriesId == record.SeriesId).LastOrDefault();
+                if (record2 != null)
+                    status = (ServiceStatus)Math.Max((int)status, (int)record2.Status);
 
                 if (!User.IsInRole("系统管理员") && record.ServiceStaff != User.Current.FullName && record.ContractorName != User.Current.FullName)
                     return Prompt(x =>
@@ -545,7 +555,9 @@ namespace ChinaTelecom.Grid.Controllers
                     LastUpdate = DateTime.Now,
                     IsStatusChanged = true,
                     Phone = record.Phone,
-                    ServiceStatus = record.Status,
+                    HardlinkStatus = status,
+                    IsFuse = record.IsFuse,
+                    MobileStatus = record2 != null ? record2.Status : ServiceStatus.未知,
                     FullName = record.CustomerName
                 });
             }
@@ -562,7 +574,9 @@ namespace ChinaTelecom.Grid.Controllers
                     LastUpdate = DateTime.Now,
                     IsStatusChanged = true,
                     Phone = phone,
-                    ServiceStatus = ServiceStatus.未知,
+                    HardlinkStatus = ServiceStatus.未知,
+                    MobileStatus = ServiceStatus.未知,
+                    IsFuse = false,
                     FullName = fullname
                 });
             }
@@ -629,7 +643,9 @@ namespace ChinaTelecom.Grid.Controllers
                     house = new House
                     {
                         Id = id,
-                        ServiceStatus = ServiceStatus.未知,
+                        HardlinkStatus = ServiceStatus.未知,
+                        MobileStatus = ServiceStatus.未知,
+                        IsFuse = false,
                         HouseStatus = Provider.Value,
                         LastUpdate = DateTime.Now,
                         IsStatusChanged = true,
@@ -648,17 +664,6 @@ namespace ChinaTelecom.Grid.Controllers
                 {
                     if (DB.Houses.Where(x => x.BuildingId == BuildingId.Value && x.Unit == Unit.Value && x.Layer == Layer.Value && x.Door == Door.Value).Count() > 0)
                         return Content("failed");
-                    house.ServiceStatus = ServiceStatus.未知;
-                    house.HouseStatus = Provider.Value;
-                    house.LastUpdate = DateTime.Now;
-                    house.IsStatusChanged = true;
-                    house.BuildingId = BuildingId.Value;
-                    house.Phone = Phone;
-                    house.FullName = FullName;
-                    house.Door = Door.Value;
-                    house.Layer = Layer.Value;
-                    house.Unit = Unit.Value;
-                    DB.SaveChanges();
                 }
             }
             return Content("ok");
@@ -822,7 +827,7 @@ namespace ChinaTelecom.Grid.Controllers
                 {
                     Key = x,
                     Count = houses
-                        .Where(a => a.Building.Estate.Area == x && a.HouseStatus == Models.HouseStatus.中国电信 && a.ServiceStatus == Models.ServiceStatus.在用)
+                        .Where(a => a.Building.Estate.Area == x && a.HouseStatus == Models.HouseStatus.中国电信 && (a.HardlinkStatus == Models.ServiceStatus.在用 || a.MobileStatus == Models.ServiceStatus.在用))
                         .Count()
                 });
             }
@@ -974,7 +979,7 @@ namespace ChinaTelecom.Grid.Controllers
             if (!string.IsNullOrEmpty(fullname))
                 ret = ret.Where(x => x.FullName == fullname);
             if (status.HasValue)
-                ret = ret.Where(x => x.ServiceStatus == status.Value);
+                ret = ret.Where(x => x.HardlinkStatus == status.Value || x.MobileStatus == status.Value);
             if (change)
                 ret = ret.Where(x => x.IsStatusChanged);
             if (!string.IsNullOrEmpty(area))
@@ -1161,8 +1166,14 @@ namespace ChinaTelecom.Grid.Controllers
             }
 
             var record = DB.Records
-                .Where(x => x.Account == account)
+                .Where(x => x.Account == account && x.IsHardLink)
                 .Last();
+
+            var status = record.Status;
+            var record2 = DB.Records.Where(x => x.Account == account && !x.IsHardLink && x.SeriesId == record.SeriesId).LastOrDefault();
+            if (record2 != null)
+                status = (ServiceStatus)Math.Max((int)status, (int)record2.Status);
+
 
             if (User.IsInRole("网格经理") && record.ServiceStaff != User.Current.FullName && record.ContractorName != User.Current.FullName)
             {
@@ -1184,7 +1195,9 @@ namespace ChinaTelecom.Grid.Controllers
                 LastUpdate = DateTime.Now,
                 IsStatusChanged = true,
                 Phone = record.Phone,
-                ServiceStatus = record.Status,
+                HardlinkStatus = record.Status,
+                MobileStatus = record2 != null ? record2.Status : ServiceStatus.未知,
+                IsFuse = record.IsFuse,
                 FullName = record.CustomerName
             });
             DB.SaveChanges();
@@ -1268,8 +1281,8 @@ namespace ChinaTelecom.Grid.Controllers
                 .Select(x => new
                 {
                     Key = x.Key,
-                    LeftCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && y.ServiceStatus != ServiceStatus.在用).Count(),
-                    AddedCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && y.ServiceStatus == ServiceStatus.在用).Count()
+                    LeftCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && (y.HardlinkStatus != Models.ServiceStatus.在用 || y.MobileStatus != Models.ServiceStatus.在用)).Count(),
+                    AddedCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && (y.HardlinkStatus == Models.ServiceStatus.在用 || y.MobileStatus == Models.ServiceStatus.在用)).Count()
                 })
                 .ToList();
             foreach (var x in bhs)
@@ -1365,8 +1378,8 @@ namespace ChinaTelecom.Grid.Controllers
                 .Select(x => new
                 {
                     Key = x.Key,
-                    LeftCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && y.ServiceStatus != ServiceStatus.在用).Count(),
-                    AddedCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && y.ServiceStatus == ServiceStatus.在用).Count()
+                    LeftCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && (y.HardlinkStatus != Models.ServiceStatus.在用 || y.MobileStatus != Models.ServiceStatus.在用)).Count(),
+                    AddedCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && (y.HardlinkStatus == Models.ServiceStatus.在用 || y.MobileStatus == Models.ServiceStatus.在用)).Count()
                 })
                 .ToList();
             foreach (var x in bhs)

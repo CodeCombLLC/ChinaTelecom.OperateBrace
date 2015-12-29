@@ -20,7 +20,21 @@ namespace ChinaTelecom.Grid.Models
 
         public HouseStatus HouseStatus { get; set; }
 
-        public ServiceStatus ServiceStatus { get; set; }
+        public ServiceStatus HardlinkStatus { get; set; }
+
+        public ServiceStatus MobileStatus { get; set; }
+
+        [NotMapped]
+        public ServiceStatus ServiceStatus
+        {
+            get
+            {
+                if (IsFuse && MobileStatus != ServiceStatus.未知)
+                    return (ServiceStatus)Math.Max((int)HardlinkStatus, (int)MobileStatus);
+                else
+                    return HardlinkStatus;
+            }
+        }
 
         [MaxLength(32)]
         public string FullName { get; set; }
@@ -30,6 +44,11 @@ namespace ChinaTelecom.Grid.Models
 
         [MaxLength(64)]
         public string Account { get; set; }
+
+        public bool IsFuse { get; set; }
+
+        [MaxLength(32)]
+        public string FuseIdentifier { get; set; }
 
         public DateTime LastUpdate { get; set; }
 

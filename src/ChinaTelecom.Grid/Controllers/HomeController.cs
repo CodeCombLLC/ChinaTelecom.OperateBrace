@@ -43,7 +43,7 @@ namespace ChinaTelecom.Grid.Controllers
                     Count = DB.Houses
                         .Include(a => a.Building)
                         .ThenInclude(a => a.Estate)
-                        .Where(a => a.Building.Estate.Area == x && a.HouseStatus == Models.HouseStatus.中国电信 && a.ServiceStatus == Models.ServiceStatus.在用)
+                        .Where(a => a.Building.Estate.Area == x && a.HouseStatus == Models.HouseStatus.中国电信 && (a.HardlinkStatus == Models.ServiceStatus.在用 || a.MobileStatus == Models.ServiceStatus.在用))
                         .Count()
                 });
             }

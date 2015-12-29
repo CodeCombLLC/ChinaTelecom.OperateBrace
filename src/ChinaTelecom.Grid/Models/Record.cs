@@ -11,6 +11,9 @@ namespace ChinaTelecom.Grid.Models
     {
         public Guid Id { get; set; }
 
+        [MaxLength(32)]
+        public string FuseIdentifier { get; set; }
+
         public DateTime ImportedTime { get; set; }
 
         [MaxLength(32)]
@@ -71,5 +74,7 @@ namespace ChinaTelecom.Grid.Models
         public bool IsFuse { get; set; }
 
         public virtual Series Series { get; set; }
+
+        public bool IsHardLink { get; set; }
     }
 }

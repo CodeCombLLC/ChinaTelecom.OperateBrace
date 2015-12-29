@@ -170,7 +170,9 @@ namespace ChinaTelecom.Grid.Controllers
                                                 ImportedTime = series.Time,
                                                 SeriesId = series.Id,
                                                 BusinessHallId = reader["营业厅编号"].ToString(),
-                                                BusinessHallName = reader["营业厅名称"].ToString()
+                                                BusinessHallName = reader["营业厅名称"].ToString(),
+                                                FuseIdentifier = reader["用户标识"].ToString(),
+                                                IsHardLink = reader["用户类型"].ToString() != "CDMA"
                                             };
                                             #region Try parse
                                             try
@@ -234,216 +236,163 @@ namespace ChinaTelecom.Grid.Controllers
                                             #endregion
                                             db.Records.Add(record);
                                             db.SaveChanges();
-                                            #region Creating Business Hall
-                                            var bh = db.BusinessHalls
-                                                .Where(x => x.Id == record.BusinessHallId)
-                                                .SingleOrDefault();
-                                            if (bh == null)
+                                            // 如果记录是固网的，才有可能进行营业厅和具体楼宇的对应
+                                            if (record.IsHardLink)
                                             {
-                                                bh = new BusinessHall
-                                                {
-                                                    Id = record.BusinessHallId,
-                                                    Title = Lib.AddressAnalyser.FilterBrackets(record.BusinessHallName)
-                                                };
-                                                var title = bh.Title;
-                                                if (bh.Title.IndexOf("中国电信") < 0)
-                                                    title = "中国电信" + bh.Title;
-                                                if (bh.Title.IndexOf("营业厅") < 0)
-                                                    title = bh.Title + "营业厅";
-                                                var bmapJson = Lib.HttpHelper.Get($"http://api.map.baidu.com/geocoder/v2/?city={Config["BMap:City"]}&address={title}&output=json&ak={Config["BMap:ApplicationKey"]}");
-                                                dynamic bmap = JsonConvert.DeserializeObject<dynamic>(bmapJson);
-                                                bh.Lon = bmap.result.location.lng;
-                                                bh.Lat = bmap.result.location.lat;
-                                                db.BusinessHalls.Add(bh);
-                                                db.SaveChanges();
-                                            }
-
-                                            #endregion
-                                            #region Mapping to house
-                                            try
-                                            {
-                                                // 查找是否有对应到楼宇的记录
-                                                var house = db.Houses
-                                                    .Include(x => x.Building)
-                                                    .ThenInclude(x => x.Estate)
-                                                    .ThenInclude(x => x.Rules)
-                                                    .Where(x => x.Account == record.Account)
+                                                #region Creating business hall
+                                                var bh = db.BusinessHalls
+                                                    .Where(x => x.Id == record.BusinessHallId)
                                                     .SingleOrDefault();
-                                                if (house != null)
+                                                try
                                                 {
-                                                    // 检查地址变更
-                                                    var rules = house.Building.Estate.Rules
-                                                        .Select(x => x.Rule)
-                                                        .ToList();
-                                                    var flag = false;
-                                                    foreach (var x in rules)
+                                                    if (bh == null)
                                                     {
-                                                        if (record.ImplementAddress.Contains(x) || record.StandardAddress.Contains(x))
+                                                        bh = new BusinessHall
                                                         {
-                                                            flag = true;
-                                                            break;
+                                                            Id = record.BusinessHallId,
+                                                            Title = Lib.AddressAnalyser.FilterBrackets(record.BusinessHallName)
+                                                        };
+                                                        var title = bh.Title;
+                                                        if (bh.Title.IndexOf("中国电信") < 0)
+                                                            title = "中国电信" + bh.Title;
+                                                        if (bh.Title.IndexOf("营业厅") < 0)
+                                                            title = bh.Title + "营业厅";
+                                                        var bmapJson = Lib.HttpHelper.Get($"http://api.map.baidu.com/geocoder/v2/?city={Config["BMap:City"]}&address={title}&output=json&ak={Config["BMap:ApplicationKey"]}");
+                                                        dynamic bmap = JsonConvert.DeserializeObject<dynamic>(bmapJson);
+                                                        bh.Lon = bmap.result.location.lng;
+                                                        bh.Lat = bmap.result.location.lat;
+                                                        db.BusinessHalls.Add(bh);
+                                                        db.SaveChanges();
+                                                    }
+                                                }
+                                                catch
+                                                {
+                                                }
+                                                #endregion
+                                                #region Mapping to house
+                                                try
+                                                {
+                                                    // 查找是否有对应到楼宇的记录
+                                                    var house = db.Houses
+                                                        .Include(x => x.Building)
+                                                        .ThenInclude(x => x.Estate)
+                                                        .ThenInclude(x => x.Rules)
+                                                        .Where(x => x.Account == record.Account)
+                                                        .SingleOrDefault();
+                                                    if (house != null)
+                                                    {
+                                                        // 检查地址变更
+                                                        var rules = house.Building.Estate.Rules
+                                                            .Select(x => x.Rule)
+                                                            .ToList();
+                                                        var flag = false;
+                                                        foreach (var x in rules)
+                                                        {
+                                                            if (record.ImplementAddress.Contains(x) || record.StandardAddress.Contains(x))
+                                                            {
+                                                                flag = true;
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        // 如果地址变更则更新地址信息
+                                                        if (!flag)
+                                                        {
+                                                            var estate = db.EstateRules
+                                                                .Include(x => x.Estate)
+                                                                .ThenInclude(x => x.Buildings)
+                                                                .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
+                                                                .Select(x => x.Estate)
+                                                                .FirstOrDefault();
+                                                            if (estate != null)
+                                                            {
+                                                                var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
+                                                                var _building = estate.Buildings
+                                                                    .Where(a => a.Title == building)
+                                                                    .SingleOrDefault();
+                                                                var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
+                                                                var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
+                                                                var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
+                                                                if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue && _building != null)
+                                                                {
+                                                                    if (db.Houses.Where(x => x.BuildingId == _building.Id && x.Unit == unit.Value && x.Layer == layer.Value && x.Door == door.Value).Count() == 0)
+                                                                    {
+                                                                        if (unit.Value > _building.Units)
+                                                                            _building.Units = unit.Value;
+                                                                        if (layer.Value < _building.BottomLayers)
+                                                                            _building.BottomLayers = layer.Value;
+                                                                        if (layer.Value > _building.TopLayers)
+                                                                            _building.TopLayers = layer.Value;
+                                                                        if (door > _building.Doors)
+                                                                            _building.Doors = door.Value;
+                                                                        house.BuildingId = _building.Id;
+                                                                        house.Unit = unit.Value;
+                                                                        house.Layer = layer.Value;
+                                                                        house.Door = door.Value;
+                                                                        house.Phone = record.Phone;
+                                                                        house.FullName = record.CustomerName;
+                                                                        house.IsStatusChanged = record.Status != house.ServiceStatus;
+                                                                        house.HardlinkStatus = record.Status;
+                                                                        house.IsFuse = record.IsFuse;
+                                                                        house.LastUpdate = DateTime.Now;
+                                                                        house.HouseStatus = HouseStatus.中国电信;
+                                                                        house.BusinessHallId = bh.Id;
+                                                                    }
+                                                                }
+                                                            }
                                                         }
                                                     }
-
-                                                    // 如果地址变更则更新地址信息
-                                                    if (!flag)
+                                                    else
                                                     {
                                                         var estate = db.EstateRules
-                                                            .Include(x => x.Estate)
-                                                            .ThenInclude(x => x.Buildings)
-                                                            .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
-                                                            .Select(x => x.Estate)
-                                                            .FirstOrDefault();
+                                                                 .Include(x => x.Estate)
+                                                                 .ThenInclude(x => x.Buildings)
+                                                                 .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
+                                                                 .Select(x => x.Estate)
+                                                                 .FirstOrDefault();
                                                         if (estate != null)
                                                         {
                                                             var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
-                                                            var _building = estate.Buildings
-                                                                .Where(a => a.Title == building)
+                                                            var _building = db.Buildings
+                                                                .Where(a => a.EstateId == estate.Id && a.Title == building)
                                                                 .SingleOrDefault();
                                                             var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
                                                             var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
                                                             var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
-                                                            if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue && _building != null)
+                                                            if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue)
                                                             {
-                                                                if (db.Houses.Where(x => x.BuildingId == _building.Id && x.Unit == unit.Value && x.Layer == layer.Value && x.Door == door.Value).Count() == 0)
+                                                                if (_building != null)
                                                                 {
-                                                                    if (unit.Value > _building.Units)
-                                                                        _building.Units = unit.Value;
-                                                                    if (layer.Value < _building.BottomLayers)
-                                                                        _building.BottomLayers = layer.Value;
-                                                                    if (layer.Value > _building.TopLayers)
-                                                                        _building.TopLayers = layer.Value;
-                                                                    if (door > _building.Doors)
-                                                                        _building.Doors = door.Value;
-                                                                    house.BuildingId = _building.Id;
-                                                                    house.Unit = unit.Value;
-                                                                    house.Layer = layer.Value;
-                                                                    house.Door = door.Value;
-                                                                    house.Phone = record.Phone;
-                                                                    house.FullName = record.CustomerName;
-                                                                    house.IsStatusChanged = record.Status == house.ServiceStatus;
-                                                                    house.ServiceStatus = record.Status;
-                                                                    house.LastUpdate = DateTime.Now;
-                                                                    house.HouseStatus = HouseStatus.中国电信;
-                                                                    house.BusinessHallId = bh.Id;
+                                                                    if (db.Houses.Where(x => x.BuildingId == _building.Id && x.Unit == unit.Value && x.Layer == layer.Value && x.Door == door.Value).Count() == 0)
+                                                                    {
+                                                                        if (unit.Value > _building.Units)
+                                                                            _building.Units = unit.Value;
+                                                                        if (layer.Value < _building.BottomLayers)
+                                                                            _building.BottomLayers = layer.Value;
+                                                                        if (layer.Value > _building.TopLayers)
+                                                                            _building.TopLayers = layer.Value;
+                                                                        if (door > _building.Doors)
+                                                                            _building.Doors = door.Value;
+                                                                        db.Update(_building);
+                                                                        db.SaveChanges();
+                                                                        house = new House();
+                                                                        house.Account = record.Account;
+                                                                        house.BuildingId = _building.Id;
+                                                                        house.Unit = unit.Value;
+                                                                        house.Layer = layer.Value;
+                                                                        house.Door = door.Value;
+                                                                        house.Phone = record.Phone;
+                                                                        house.FullName = record.CustomerName;
+                                                                        house.IsStatusChanged = true;
+                                                                        house.HardlinkStatus = record.Status;
+                                                                        house.IsFuse = record.IsFuse;
+                                                                        house.LastUpdate = DateTime.Now;
+                                                                        house.HouseStatus = HouseStatus.中国电信;
+                                                                        house.BusinessHallId = bh.Id;
+                                                                        db.Houses.Add(house);
+                                                                    }
                                                                 }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    var estate = db.EstateRules
-                                                             .Include(x => x.Estate)
-                                                             .ThenInclude(x => x.Buildings)
-                                                             .Where(x => record.StandardAddress.Contains(x.Rule) || record.ImplementAddress.Contains(x.Rule))
-                                                             .Select(x => x.Estate)
-                                                             .FirstOrDefault();
-                                                    if (estate != null)
-                                                    {
-                                                        var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
-                                                        var _building = db.Buildings
-                                                            .Where(a => a.EstateId == estate.Id && a.Title == building)
-                                                            .SingleOrDefault();
-                                                        var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
-                                                        var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
-                                                        var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
-                                                        if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue)
-                                                        {
-                                                            if (_building != null)
-                                                            {
-                                                                if (db.Houses.Where(x => x.BuildingId == _building.Id && x.Unit == unit.Value && x.Layer == layer.Value && x.Door == door.Value).Count() == 0)
-                                                                {
-                                                                    if (unit.Value > _building.Units)
-                                                                        _building.Units = unit.Value;
-                                                                    if (layer.Value < _building.BottomLayers)
-                                                                        _building.BottomLayers = layer.Value;
-                                                                    if (layer.Value > _building.TopLayers)
-                                                                        _building.TopLayers = layer.Value;
-                                                                    if (door > _building.Doors)
-                                                                        _building.Doors = door.Value;
-                                                                    db.Update(_building);
-                                                                    db.SaveChanges();
-                                                                    house = new House();
-                                                                    house.Account = record.Account;
-                                                                    house.BuildingId = _building.Id;
-                                                                    house.Unit = unit.Value;
-                                                                    house.Layer = layer.Value;
-                                                                    house.Door = door.Value;
-                                                                    house.Phone = record.Phone;
-                                                                    house.FullName = record.CustomerName;
-                                                                    house.IsStatusChanged = true;
-                                                                    house.ServiceStatus = record.Status;
-                                                                    house.LastUpdate = DateTime.Now;
-                                                                    house.HouseStatus = HouseStatus.中国电信;
-                                                                    house.BusinessHallId = bh.Id;
-                                                                    db.Houses.Add(house);
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                                if (door < 2)
-                                                                    door = 2;
-                                                                int bottom = 1;
-                                                                int top = 1;
-                                                                if (layer < 0)
-                                                                    bottom = layer.Value;
-                                                                if (layer > 0)
-                                                                    top = layer.Value;
-                                                                _building = new Building
-                                                                {
-                                                                    Title = building,
-                                                                    EstateId = estate.Id,
-                                                                    BottomLayers = bottom,
-                                                                    TopLayers = top,
-                                                                    Units = unit.Value,
-                                                                    Doors = door.Value
-                                                                };
-                                                                db.Buildings.Add(_building);
-                                                                house = new House();
-                                                                house.Account = record.Account;
-                                                                house.BuildingId = _building.Id;
-                                                                house.Unit = unit.Value;
-                                                                house.Layer = layer.Value;
-                                                                house.Door = door.Value;
-                                                                house.Phone = record.Phone;
-                                                                house.FullName = record.CustomerName;
-                                                                house.IsStatusChanged = true;
-                                                                house.ServiceStatus = record.Status;
-                                                                house.LastUpdate = DateTime.Now;
-                                                                house.HouseStatus = HouseStatus.中国电信;
-                                                                house.BusinessHallId = bh.Id;
-                                                                db.Houses.Add(house);
-                                                            }
-                                                        }
-                                                    }
-                                                    else // 不存在则尝试创建
-                                                    {
-                                                        var estateTitle = Lib.AddressAnalyser.GetEstate(record.ImplementAddress);
-                                                        if (!string.IsNullOrEmpty(estateTitle))
-                                                        {
-                                                            var bmapJson = Lib.HttpHelper.Get($"http://api.map.baidu.com/geocoder/v2/?city={Config["BMap:City"]}&address={record.ImplementAddress}&output=json&ak={Config["BMap:ApplicationKey"]}");
-                                                            dynamic bmap = JsonConvert.DeserializeObject<dynamic>(bmapJson);
-                                                            if (bmap.status == 0)
-                                                            {
-                                                                var es = new Estate
-                                                                {
-                                                                    Title = estateTitle,
-                                                                    Lon = bmap.result.location.lng,
-                                                                    Lat = bmap.result.location.lat,
-                                                                    Area = ""
-                                                                };
-                                                                db.Estates.Add(es);
-                                                                db.EstateRules.Add(new EstateRule
-                                                                {
-                                                                    EstateId = es.Id,
-                                                                    Rule = estateTitle
-                                                                });
-                                                                var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
-                                                                var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
-                                                                var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
-                                                                var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
-                                                                if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue)
+                                                                else
                                                                 {
                                                                     if (door < 2)
                                                                         door = 2;
@@ -453,10 +402,10 @@ namespace ChinaTelecom.Grid.Controllers
                                                                         bottom = layer.Value;
                                                                     if (layer > 0)
                                                                         top = layer.Value;
-                                                                    var _building = new Building
+                                                                    _building = new Building
                                                                     {
                                                                         Title = building,
-                                                                        EstateId = es.Id,
+                                                                        EstateId = estate.Id,
                                                                         BottomLayers = bottom,
                                                                         TopLayers = top,
                                                                         Units = unit.Value,
@@ -472,7 +421,8 @@ namespace ChinaTelecom.Grid.Controllers
                                                                     house.Phone = record.Phone;
                                                                     house.FullName = record.CustomerName;
                                                                     house.IsStatusChanged = true;
-                                                                    house.ServiceStatus = record.Status;
+                                                                    house.HardlinkStatus = record.Status;
+                                                                    house.IsFuse = record.IsFuse;
                                                                     house.LastUpdate = DateTime.Now;
                                                                     house.HouseStatus = HouseStatus.中国电信;
                                                                     house.BusinessHallId = bh.Id;
@@ -480,17 +430,85 @@ namespace ChinaTelecom.Grid.Controllers
                                                                 }
                                                             }
                                                         }
+                                                        else // 不存在则尝试创建
+                                                        {
+                                                            var estateTitle = Lib.AddressAnalyser.GetEstate(record.ImplementAddress);
+                                                            if (!string.IsNullOrEmpty(estateTitle))
+                                                            {
+                                                                var bmapJson = Lib.HttpHelper.Get($"http://api.map.baidu.com/geocoder/v2/?city={Config["BMap:City"]}&address={record.ImplementAddress}&output=json&ak={Config["BMap:ApplicationKey"]}");
+                                                                dynamic bmap = JsonConvert.DeserializeObject<dynamic>(bmapJson);
+                                                                if (bmap.status == 0)
+                                                                {
+                                                                    var es = new Estate
+                                                                    {
+                                                                        Title = estateTitle,
+                                                                        Lon = bmap.result.location.lng,
+                                                                        Lat = bmap.result.location.lat,
+                                                                        Area = ""
+                                                                    };
+                                                                    db.Estates.Add(es);
+                                                                    db.EstateRules.Add(new EstateRule
+                                                                    {
+                                                                        EstateId = es.Id,
+                                                                        Rule = estateTitle
+                                                                    });
+                                                                    var building = Lib.AddressAnalyser.GetBuildingNumber(record.ImplementAddress);
+                                                                    var unit = Lib.AddressAnalyser.GetUnit(record.ImplementAddress);
+                                                                    var layer = Lib.AddressAnalyser.GetLayer(record.ImplementAddress);
+                                                                    var door = Lib.AddressAnalyser.GetDoor(record.ImplementAddress);
+                                                                    if (!string.IsNullOrEmpty(building) && unit.HasValue && layer.HasValue && door.HasValue)
+                                                                    {
+                                                                        if (door < 2)
+                                                                            door = 2;
+                                                                        int bottom = 1;
+                                                                        int top = 1;
+                                                                        if (layer < 0)
+                                                                            bottom = layer.Value;
+                                                                        if (layer > 0)
+                                                                            top = layer.Value;
+                                                                        var _building = new Building
+                                                                        {
+                                                                            Title = building,
+                                                                            EstateId = es.Id,
+                                                                            BottomLayers = bottom,
+                                                                            TopLayers = top,
+                                                                            Units = unit.Value,
+                                                                            Doors = door.Value
+                                                                        };
+                                                                        db.Buildings.Add(_building);
+                                                                        house = new House();
+                                                                        house.Account = record.Account;
+                                                                        house.BuildingId = _building.Id;
+                                                                        house.Unit = unit.Value;
+                                                                        house.Layer = layer.Value;
+                                                                        house.Door = door.Value;
+                                                                        house.Phone = record.Phone;
+                                                                        house.FullName = record.CustomerName;
+                                                                        house.IsStatusChanged = true;
+                                                                        house.HardlinkStatus = record.Status;
+                                                                        house.LastUpdate = DateTime.Now;
+                                                                        house.HouseStatus = HouseStatus.中国电信;
+                                                                        house.BusinessHallId = bh.Id;
+                                                                        db.Houses.Add(house);
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
+                                                    db.ChangeTracker.DetectChanges();
+                                                    db.SaveChanges();
                                                 }
-                                                db.ChangeTracker.DetectChanges();
-                                                db.SaveChanges();
+                                                catch (Exception ex)
+                                                {
+                                                    Console.WriteLine(ex.ToString());
+                                                }
+                                                GC.Collect();
+                                                #endregion
                                             }
-                                            catch (Exception ex)
+                                            else // 否则只能根据用户标识来查询楼宇
                                             {
-                                                Console.WriteLine(ex.ToString());
+
                                             }
-                                            GC.Collect();
-                                            #endregion
                                         }
                                         catch (Exception ex)
                                         {

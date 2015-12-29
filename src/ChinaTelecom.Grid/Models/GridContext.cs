@@ -52,6 +52,7 @@ namespace ChinaTelecom.Grid.Models
                 e.HasIndex(x => x.Door);
                 e.HasIndex(x => x.Phone);
                 e.HasIndex(x => x.FullName);
+                e.HasIndex(x => x.FuseIdentifier);
             });
 
             builder.Entity<Series>(e =>
@@ -71,6 +72,7 @@ namespace ChinaTelecom.Grid.Models
                 e.HasIndex(x => x.Set);
                 e.HasIndex(x => x.Phone);
                 e.HasIndex(x => x.BusinessHallId);
+                e.HasIndex(x => x.FuseIdentifier);
             });
 
             builder.Entity<BusinessHall>(e =>

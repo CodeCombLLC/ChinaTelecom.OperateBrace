@@ -115,7 +115,8 @@
                                     <th>更新时间</th>
                                     <th>状态变更</th>
                                     <th>接入号</th>
-                                    <th>用户状态</th>
+                                    <th>固网状态</th>
+                                    <th>移动网状态</th>
                                     <th>用户姓名</th>
                                     <th>联系电话</th>
                                     <th>运营商</th>
@@ -136,17 +137,34 @@
                                         <td>@(x.IsStatusChanged ? "是" : "否")</td>
                                         <td>@x.Account</td>
                                         <td>
-                                            @if (x.ServiceStatus == ServiceStatus.在用)
+                                            @if (x.HardlinkStatus == ServiceStatus.在用)
                                             {
-                                                <span class="badge badge-success">@x.ServiceStatus</span>
+                                                <span class="badge badge-success">@x.HardlinkStatus</span>
                                             }
-                                            else if (x.ServiceStatus == ServiceStatus.未知)
+                                            else if (x.HardlinkStatus == ServiceStatus.未知)
                                             {
-                                                <span class="badge badge-warning">@x.ServiceStatus</span>
+                                                <span class="badge badge-warning">@x.HardlinkStatus</span>
                                             }
                                             else
                                             {
-                                                <span class="badge badge-error">@x.ServiceStatus</span>
+                                                <span class="badge badge-error">@x.HardlinkStatus</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (x.IsFuse)
+                                            {
+                                                @if (x.MobileStatus == ServiceStatus.在用)
+                                                {
+                                                    <span class="badge badge-success">@x.MobileStatus</span>
+                                                }
+                                                else if (x.MobileStatus == ServiceStatus.未知)
+                                                {
+                                                    <span class="badge badge-warning">@x.MobileStatus</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-error">@x.MobileStatus</span>
+                                                }
                                             }
                                         </td>
                                         <td>@x.FullName</td>
