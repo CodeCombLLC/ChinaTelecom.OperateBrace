@@ -131,12 +131,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
             var id = estates
                 .Select(x => x.Id)
                 .ToList();
-            foreach (var x in estates)
-            {
-                #region 发展模式
-                if (mode == "develop")
-                {
-                    var tmp = DB.Buildings
+            var tmp = DB.Buildings
                         .Include(a => a.Houses)
                         .Include(a => a.Estate)
                         .AsNoTracking()
@@ -155,6 +150,11 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                 && z.ServiceStatus == ServiceStatus.在用).Count())
                         })
                         .ToList();
+            foreach (var x in estates)
+            {
+                #region 发展模式
+                if (mode == "develop")
+                {
                     if (x.NeedImplement)
                         x.Level = 6;
                     else

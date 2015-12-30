@@ -64,12 +64,20 @@
                             <input type="text" class="form-control" value="@Config["Settings:Threshold:BusinessHall:Cyan"]" name="bc" />
                         </div>
                         <div class="form-group">
+                            <label>渗透率良好较差界限(0~1之间小数)</label>
+                            <input type="text" class="form-control" value="@Config["Settings:Threshold:Penetrance:Red"]" name="pr" />
+                        </div>
+                        <div class="form-group">
                             <label>渗透率优秀良好界限(0~1之间小数)</label>
                             <input type="text" class="form-control" value="@Config["Settings:Threshold:Penetrance:Green"]" name="pg" />
                         </div>
                         <div class="form-group">
-                            <label>渗透率良好较差界限(0~1之间小数)</label>
-                            <input type="text" class="form-control" value="@Config["Settings:Threshold:Penetrance:Red"]" name="pr" />
+                            <label>端口紧缺界限(0~1之间小数)</label>
+                            <input type="text" class="form-control" value="@Config["Settings:Threshold:Port:Red"]" name="por" />
+                        </div>
+                        <div class="form-group">
+                            <label>端口充足界限(0~1之间小数)</label>
+                            <input type="text" class="form-control" value="@Config["Settings:Threshold:Port:Green"]" name="pog" />
                         </div>
                         <input type="submit" class="btn btn-primary" />
                     </form>
