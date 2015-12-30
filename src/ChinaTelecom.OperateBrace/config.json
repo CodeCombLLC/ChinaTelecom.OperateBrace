@@ -3,7 +3,7 @@
     "DefaultLon": 126.617628,
     "DefaultLat": 45.77498,
     "DefaultZoom": 15,
-    "Authorization": "道里",
+    "Authorization": "演示",
     "Threshold": {
       "Customer": {
         "Yellow": 10,
