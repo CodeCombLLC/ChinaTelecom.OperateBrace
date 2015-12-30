@@ -122,7 +122,16 @@
                                         <td class="building-units">@x.Units</td>
                                         <td class="building-top-layers">@x.TopLayers</td>
                                         <td class="building-bottom-layers">@x.BottomLayers</td>
-                                        <td class="building-doors">@x.Doors</td>
+                                        <td class="building-doors">
+                                            @if (x.DoorCount.Min(y => y.Value) == x.DoorCount.Min(y => y.Value))
+                                            {
+                                                @x.DoorCount.Min(y => y.Value);
+                                            }
+                                            else
+                                            {
+                                                @x.DoorCount.Min(y => y.Value) @('~') @x.DoorCount.Max(y => y.Value);
+                                            }
+                                        </td>
                                         <td>
                                             <a asp-action="Building" asp-controller="Grid" asp-route-id="@x.Id">管理</a>
                                             <a href="javascript: Modify('@x.Id')">修改</a>

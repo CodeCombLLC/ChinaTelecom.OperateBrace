@@ -143,6 +143,43 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="nest">
+                <div class="title-alt">
+                    <h6>
+                        编辑户数
+                    </h6>
+                    <div class="titleToggle">
+                        <a class="nav-toggle-alt" href="#EditDoor">
+                            <span class="entypo-up-open"></span>
+                        </a>
+                    </div>
+                </div>
+                <div id="EditDoor">
+                    <form asp-action="EditDoor" asp-controller="Grid" asp-route-id="@Model.Id">
+                        <table>
+                            @for(var i = 1; i <= Model.Units; i++)
+                            { 
+                                <tr>
+                                    <td>@(i)单元</td>
+                                    <td>
+                                        @if (Model.DoorCount.ContainsKey(i))
+                                        {
+                                            <input type="text" name="door" value="@Model.DoorCount[i]" class="form-control" />
+                                        }
+                                        else
+                                        {
+                                            <input type="text" name="door" value="2" class="form-control" />
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                        <input type="submit" class="btn btn-primary" value="保存" />
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="col-sm-4">

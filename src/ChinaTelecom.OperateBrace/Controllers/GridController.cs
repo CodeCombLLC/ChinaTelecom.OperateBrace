@@ -941,7 +941,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditBuilding(Guid id, string title, int units, int toplayers, int bottomlayers, int[] doors, [FromHeader] string Referer)
+        public async Task<IActionResult> EditBuilding(Guid id, string title, int units, int toplayers, int bottomlayers, [FromHeader] string Referer)
         {
             var building = DB.Buildings
                 .Include(x => x.Estate)
@@ -964,19 +964,16 @@ namespace ChinaTelecom.OperateBrace.Controllers
             building.Units = units;
             building.TopLayers = toplayers;
             building.BottomLayers = bottomlayers;
-            building.SetDoors(Lib.ArrayToDictionary.Parse(doors));
             DB.SaveChanges();
-
-            // 如果范围缩小了，则需要将范围以外的住户移出楼宇，这里需要对每个单元单独判断
-            foreach(var i in building.DoorCount)
+            foreach (var i in building.DoorCount)
             {
+                var maxd = building.DoorCount[i.Key];
                 var missed = building.Houses
-                    .Where(x => x.Unit > units || x.Layer < bottomlayers || x.Layer > toplayers || x.Door > building.DoorCount[i.Key])
+                    .Where(x => x.Unit > units || x.Layer < bottomlayers || x.Layer > toplayers || x.Door > maxd)
                     .ToList();
                 foreach (var x in missed)
                     DB.Houses.Remove(x);
             }
-            DB.SaveChanges();
             return Redirect(Referer);
         }
 
@@ -1436,6 +1433,26 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 return XlsView(bhs, "businesshall.xls", "ExportBusinessHall");
             else
                 return View(bhs);
+        }
+
+        public IActionResult EditDoor(Guid id, int[] door, [FromHeader] string Referer)
+        {
+            var building = DB.Buildings
+                .SingleOrDefault(x => x.Id == id);
+            building.SetDoors(Lib.ArrayToDictionary.Parse(door));
+            DB.SaveChanges();
+            // 如果范围缩小了，则需要将范围以外的住户移出楼宇，这里需要对每个单元单独判断
+            foreach (var i in building.DoorCount)
+            {
+                var maxd = building.DoorCount[i.Key];
+                var missed = building.Houses
+                    .Where(x => x.Unit == i.Key && x.Door > maxd)
+                    .ToList();
+                foreach (var x in missed)
+                    DB.Houses.Remove(x);
+            }
+            DB.SaveChanges();
+            return Redirect(Referer);
         }
     }
 }
