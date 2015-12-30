@@ -119,7 +119,7 @@
                                         <td class="building-top-layers">@x.TopLayers</td>
                                         <td class="building-bottom-layers">@x.BottomLayers</td>
                                         <td class="building-doors">
-                                            @if (x.DoorCount.Min(y => y.Value) == x.DoorCount.Min(y => y.Value))
+                                            @if (x.DoorCount.Min(y => y.Value) == x.DoorCount.Max(y => y.Value))
                                             {
                                                 @x.DoorCount.Min(y => y.Value);
                                             }
