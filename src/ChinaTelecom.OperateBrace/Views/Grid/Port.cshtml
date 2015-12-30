@@ -72,10 +72,6 @@
             允许拖拽移动小区
         </label>
         <label>
-            <input type="checkbox" id="chkNoCustomerEstate" />
-            没有用户的小区
-        </label>
-        <label>
             <input type="checkbox" id="chkGoodEstate" checked />
             端口紧缺的小区
         </label>
@@ -329,13 +325,11 @@
                 var pt = new BMap.Point(data[i].Lon, data[i].Lat);
                 var ico = icon;
                 if (data[i].Level == 1)
-                    ico = icon2;
-                else if (data[i].Level == 2)
                     ico = icon3;
+                else if (data[i].Level == 2)
+                    ico = icon2;
                 else if (data[i].Level == 3)
-                    ico = icon4;
-                else if (data[i].Level == 4 || data[i].Level == 5)
-                    ico = icon5;
+                    ico = icon;
                 else if (data[i].Level == 6)
                     ico = icon6;
                 if (!$('#chkBadEstate').is(':checked') && data[i].Level == 3)

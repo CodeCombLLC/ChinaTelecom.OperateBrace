@@ -325,11 +325,11 @@
                 var pt = new BMap.Point(data[i].Lon, data[i].Lat);
                 var ico = icon;
                 if (data[i].Level == 1)
-                    ico = icon3;
+                    ico = icon;
                 else if (data[i].Level == 2)
                     ico = icon2;
                 else if (data[i].Level == 3)
-                    ico = icon1;
+                    ico = icon3;
                 else if (data[i].Level == 6)
                     ico = icon6;
                 if (!$('#chkGoodEstate').is(':checked') && data[i].Level == 1)
