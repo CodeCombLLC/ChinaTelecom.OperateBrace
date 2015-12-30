@@ -1506,23 +1506,30 @@ namespace ChinaTelecom.OperateBrace.Controllers
         public IActionResult BusinessHallList(bool? xls, string number, string title)
         {
             IEnumerable<BusinessHall> bhs = DB.BusinessHalls;
+            if (!string.IsNullOrEmpty(title))
+                bhs = bhs.Where(x => x.Title.Contains(title));
+            if (!string.IsNullOrEmpty(number))
+                bhs = bhs.Where(x => x.Id == number);
+            bhs = bhs.ToList();
             int added, left;
             var series = DB.Serieses.Last();
             foreach (var bh in bhs)
             {
                 var id = bh.Id;
-                var tmp = DB.Records
+                added = DB.Records
                     .Where(x => x.BusinessHallId == id && x.Type == RecordType.移动 && x.SeriesId == series.Id)
                     .OrderByDescending(x => x.ImportedTime)
                     .DistinctBy(x => x.Account)
-                    .Where(x => DB.Records.Where(y => y.Account == x.Account && x.Status != y.Status).Count() > 0 || DB.Records.Where(y => y.Account == x.Account).Count() == 0);
-                added = tmp.Where(x => x.Status == ServiceStatus.在用).Count();
-                left = tmp.Where(x => x.Status != ServiceStatus.在用).Count();
+                    .Where(x => x.Status == ServiceStatus.在用 && (DB.Records.Where(y => y.Account == x.Account && x.Status != y.Status).Count() > 0 || DB.Records.Where(y => y.Account == x.Account).Count() == 0))
+                    .Count();
+                left = DB.Records
+                    .Where(x => x.BusinessHallId == id && x.Type == RecordType.移动 && x.SeriesId == series.Id)
+                    .OrderByDescending(x => x.ImportedTime)
+                    .ToList()
+                    .DistinctBy(x => x.Account)
+                    .Where(x => DB.Records.Where(y => y.Account == x.Account && x.Status != y.Status).Count() > 0 || DB.Records.Where(y => y.Account == x.Account).Count() == 0).Where(x => x.Status != ServiceStatus.在用).Count();
                 bh.LanTotal = DB.Records
-                    .Where(
-                        x =>
-                            x.Status != ServiceStatus.欠费拆机 && x.Status != ServiceStatus.用户拆机 && x.Type == RecordType.宽带 &&
-                            x.BusinessHallId == id)
+                    .Where(x => x.Status != ServiceStatus.欠费拆机 && x.Status != ServiceStatus.用户拆机 && x.Type == RecordType.宽带 && x.BusinessHallId == id)
                     .OrderByDescending(x => x.ImportedTime)
                     .DistinctBy(x => x.Account)
                     .Count();
@@ -1620,13 +1627,18 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 .Single(x => x.Id == id);
             long added, left;
             var series = DB.Serieses.Last();
-            var tmp = DB.Records
+            added = DB.Records
                 .Where(x => x.BusinessHallId == id && x.Type == RecordType.移动 && x.SeriesId == series.Id)
                 .OrderByDescending(x => x.ImportedTime)
                 .DistinctBy(x => x.Account)
-                .Where(x => DB.Records.Where(y => y.Account == x.Account && x.Status != y.Status).Count() > 0 || DB.Records.Where(y => y.Account == x.Account).Count() == 0);
-            added = tmp.Where(x => x.Status == ServiceStatus.在用).Count();
-            left = tmp.Where(x => x.Status != ServiceStatus.在用).Count();
+                    .ToList()
+                .Where(x => DB.Records.Where(y => y.Account == x.Account && x.Status != y.Status).Count() > 0 || DB.Records.Where(y => y.Account == x.Account).Count() == 0).Where(x => x.Status == ServiceStatus.在用).Count();
+            left = DB.Records
+                .Where(x => x.BusinessHallId == id && x.Type == RecordType.移动 && x.SeriesId == series.Id)
+                .OrderByDescending(x => x.ImportedTime)
+                .DistinctBy(x => x.Account)
+                    .ToList()
+                .Where(x => DB.Records.Where(y => y.Account == x.Account && x.Status != y.Status).Count() > 0 || DB.Records.Where(y => y.Account == x.Account).Count() == 0).Where(x => x.Status != ServiceStatus.在用).Count();
             var ret = new
             {
                 LanTotal = DB.Records
