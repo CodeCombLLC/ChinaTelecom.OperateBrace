@@ -22,6 +22,22 @@ namespace ChinaTelecom.OperateBrace.Controllers
             return View();
         }
 
+        public async Task<IActionResult> Penetrance()
+        {
+            ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).
+                Where(x => x.Type == "管辖片区")
+                .Select(x => x.Value).ToList();
+            return View();
+        }
+
+        public async Task<IActionResult> Port()
+        {
+            ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).
+                Where(x => x.Type == "管辖片区")
+                .Select(x => x.Value).ToList();
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CreateEstate(string title, double lon, double lat, string rules, string area, bool NeedImplement, DateTime? opentime, string hint, int port)
@@ -105,57 +121,105 @@ namespace ChinaTelecom.OperateBrace.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetEstates(double left, double right, double top, double bottom, [FromServices] IConfiguration Config)
+        public IActionResult GetEstates(double left, double right, double top, double bottom, [FromServices] IConfiguration Config, string mode = "develop")
         {
             var estates = DB.Estates
                 .AsNoTracking()
+                .Include(x => x.Buildings)
                 .Where(x => x.Lon >= left && x.Lon <= right && x.Lat <= top && x.Lat >= bottom)
                 .ToList();
             var id = estates
                 .Select(x => x.Id)
                 .ToList();
-            var tmp = DB.Buildings
-                .Include(x => x.Houses)
-                .Include(x => x.Estate)
-                .AsNoTracking()
-                .GroupBy(x => x.EstateId)
-                .ToList()
-                .Select(x => new
-                {
-                    Key = x.Key,
-                    LeftCount = x.Sum(y => y.Houses.Where(z => id.Contains(z.Building.EstateId)
-                        && z.IsStatusChanged == true
-                        && z.HouseStatus == HouseStatus.中国电信
-                        && z.ServiceStatus != ServiceStatus.在用).Count()),
-                    AddedCount = x.Sum(y => y.Houses.Where(z => id.Contains(z.Building.EstateId)
-                        && z.IsStatusChanged == true
-                        && z.HouseStatus == HouseStatus.中国电信
-                        && z.ServiceStatus == ServiceStatus.在用).Count())
-                })
-                .ToList();
             foreach (var x in estates)
             {
-                if (x.NeedImplement)
-                    x.Level = 6;
-                else
+                #region 发展模式
+                if (mode == "develop")
                 {
-                    if (!tmp.Any(a => a.Key == x.Id))
-                        x.Level = 3;
+                    var tmp = DB.Buildings
+                        .Include(a => a.Houses)
+                        .Include(a => a.Estate)
+                        .AsNoTracking()
+                        .GroupBy(a => a.EstateId)
+                        .ToList()
+                        .Select(a => new
+                        {
+                            Key = a.Key,
+                            LeftCount = a.Sum(y => y.Houses.Where(z => id.Contains(z.Building.EstateId)
+                                && z.IsStatusChanged == true
+                                && z.HouseStatus == HouseStatus.中国电信
+                                && z.ServiceStatus != ServiceStatus.在用).Count()),
+                            AddedCount = a.Sum(y => y.Houses.Where(z => id.Contains(z.Building.EstateId)
+                                && z.IsStatusChanged == true
+                                && z.HouseStatus == HouseStatus.中国电信
+                                && z.ServiceStatus == ServiceStatus.在用).Count())
+                        })
+                        .ToList();
+                    if (x.NeedImplement)
+                        x.Level = 6;
                     else
                     {
-                        var s = tmp.Where(a => a.Key == x.Id).Single();
-                        if (s.LeftCount == 0)
-                            x.Level = 0;
-                        else if (s.LeftCount <= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Yellow"]))
-                            x.Level = 1;
+                        if (!tmp.Any(a => a.Key == x.Id))
+                            x.Level = 3;
                         else
-                            x.Level = 2;
-                        if (x.Level == 0 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Cyan"]))
-                            x.Level = 5;
-                        if (x.Level == 1 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Cyan"]))
-                            x.Level = 4;
+                        {
+                            var s = tmp.Where(a => a.Key == x.Id).Single();
+                            if (s.LeftCount == 0)
+                                x.Level = 0;
+                            else if (s.LeftCount <= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Yellow"]))
+                                x.Level = 1;
+                            else
+                                x.Level = 2;
+                            if (x.Level == 0 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Cyan"]))
+                                x.Level = 5;
+                            if (x.Level == 1 && s.AddedCount >= Convert.ToInt32(Config["Settings:Threshold:BusinessHall:Cyan"]))
+                                x.Level = 4;
+                        }
                     }
                 }
+                #endregion
+                #region 端口模式
+                else if (mode == "port")
+                {
+                    var ports = x.Port;
+                    var occupy = DB.Houses
+                        .Where(a => a.Building.EstateId == x.Id)
+                        .Where(a => a.HouseStatus == HouseStatus.中国电信)
+                        .Where(a => a.TelStatus != ServiceStatus.未知 && a.TelStatus != ServiceStatus.用户拆机 && a.TelStatus != ServiceStatus.欠费拆机)
+                        .Where(a => a.LanStatus != ServiceStatus.未知 && a.LanStatus != ServiceStatus.用户拆机 && a.LanStatus != ServiceStatus.欠费拆机)
+                        .Count();
+                    var ratio = ports == 0 ? 1 : occupy * 1d / ports;
+                    if (ratio >= Convert.ToDouble(Config["Settings:Threshold:Port:Red"]))
+                        x.Level = 1;
+                    else if (ratio <= Convert.ToDouble(Config["Settings:Threshold:Port:Green"]))
+                        x.Level = 3;
+                    else
+                        x.Level = 2;
+                    if (x.NeedImplement)
+                        x.Level = 6;
+                }
+                #endregion
+                #region 渗透模式
+                else
+                {
+                    var allhouse = x.Buildings.Sum(a => Lib.HouseCounter.Caculate(a.DoorCount, a.TopLayers, a.BottomLayers));
+                    var inusing = DB.Houses
+                        .Where(a => a.Building.EstateId == x.Id)
+                        .Where(a => a.HouseStatus == HouseStatus.中国电信)
+                        .Where(a => a.TelStatus != ServiceStatus.未知 && a.TelStatus != ServiceStatus.用户拆机 && a.TelStatus != ServiceStatus.欠费拆机)
+                        .Where(a => a.LanStatus != ServiceStatus.未知 && a.LanStatus != ServiceStatus.用户拆机 && a.LanStatus != ServiceStatus.欠费拆机)
+                        .Count();
+                    var ratio = allhouse == 0 ? 0 : inusing * 1d / allhouse;
+                    if (ratio >= Convert.ToDouble(Config["Settings:Threshold:Penetrance:Green"]))
+                        x.Level = 1;
+                    else if (ratio <= Convert.ToDouble(Config["Settings:Threshold:Penetrance:Red"]))
+                        x.Level = 3;
+                    else
+                        x.Level = 2;
+                    if (x.NeedImplement)
+                        x.Level = 6;
+                }
+                #endregion
             }
             return Json(estates);
         }

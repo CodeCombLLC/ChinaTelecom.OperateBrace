@@ -16,6 +16,10 @@
       "Penetrance": {
         "Green": 0.7,
         "Red": 0.3
+      },
+      "Port": {
+        "Green": 0.3,
+        "Red": 0.7
       }
     }
   },
