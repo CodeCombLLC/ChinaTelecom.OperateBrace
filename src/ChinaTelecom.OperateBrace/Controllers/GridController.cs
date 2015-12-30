@@ -1525,7 +1525,6 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 left = DB.Records
                     .Where(x => x.BusinessHallId == id && x.Type == RecordType.移动 && x.SeriesId == series.Id)
                     .OrderByDescending(x => x.ImportedTime)
-                    .ToList()
                     .DistinctBy(x => x.Account)
                     .Where(x => DB.Records.Where(y => y.Account == x.Account && x.Status != y.Status).Count() > 0 || DB.Records.Where(y => y.Account == x.Account).Count() == 0).Where(x => x.Status != ServiceStatus.在用).Count();
                 bh.LanTotal = DB.Records
@@ -1631,13 +1630,11 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 .Where(x => x.BusinessHallId == id && x.Type == RecordType.移动 && x.SeriesId == series.Id)
                 .OrderByDescending(x => x.ImportedTime)
                 .DistinctBy(x => x.Account)
-                    .ToList()
                 .Where(x => DB.Records.Where(y => y.Account == x.Account && x.Status != y.Status).Count() > 0 || DB.Records.Where(y => y.Account == x.Account).Count() == 0).Where(x => x.Status == ServiceStatus.在用).Count();
             left = DB.Records
                 .Where(x => x.BusinessHallId == id && x.Type == RecordType.移动 && x.SeriesId == series.Id)
                 .OrderByDescending(x => x.ImportedTime)
                 .DistinctBy(x => x.Account)
-                    .ToList()
                 .Where(x => DB.Records.Where(y => y.Account == x.Account && x.Status != y.Status).Count() > 0 || DB.Records.Where(y => y.Account == x.Account).Count() == 0).Where(x => x.Status != ServiceStatus.在用).Count();
             var ret = new
             {
