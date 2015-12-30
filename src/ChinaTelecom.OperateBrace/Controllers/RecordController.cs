@@ -323,8 +323,11 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                             _building.BottomLayers = layer.Value;
                                                                         if (layer.Value > _building.TopLayers)
                                                                             _building.TopLayers = layer.Value;
-                                                                        if (door > _building.Doors)
-                                                                            _building.Doors = door.Value;
+                                                                        if (door.Value > _building.DoorCount[unit.Value])
+                                                                        {
+                                                                            _building.DoorCount[unit.Value] = door.Value;
+                                                                            _building.SetDoors(_building.DoorCount);
+                                                                        }
                                                                         house.BuildingId = _building.Id;
                                                                         house.Unit = unit.Value;
                                                                         house.Layer = layer.Value;
@@ -372,8 +375,11 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                             _building.BottomLayers = layer.Value;
                                                                         if (layer.Value > _building.TopLayers)
                                                                             _building.TopLayers = layer.Value;
-                                                                        if (door > _building.Doors)
-                                                                            _building.Doors = door.Value;
+                                                                        if (door.Value > _building.DoorCount[unit.Value])
+                                                                        {
+                                                                            _building.DoorCount[unit.Value] = door.Value;
+                                                                            _building.SetDoors(_building.DoorCount);
+                                                                        }
                                                                         db.Update(_building);
                                                                         db.SaveChanges();
                                                                         house = new House();
@@ -404,6 +410,14 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                         bottom = layer.Value;
                                                                     if (layer > 0)
                                                                         top = layer.Value;
+                                                                    var lstDoor = new List<int>();
+                                                                    for(var j = 1; i <= unit.Value; j ++)
+                                                                    {
+                                                                        if (j == unit.Value)
+                                                                            lstDoor.Add(door.Value);
+                                                                        else
+                                                                            lstDoor.Add(2);
+                                                                    }
                                                                     _building = new Building
                                                                     {
                                                                         Title = building,
@@ -411,7 +425,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                         BottomLayers = bottom,
                                                                         TopLayers = top,
                                                                         Units = unit.Value,
-                                                                        Doors = door.Value
+                                                                        Doors = JsonConvert.SerializeObject(Lib.ArrayToDictionary.Parse(lstDoor.ToArray()))
                                                                     };
                                                                     db.Buildings.Add(_building);
                                                                     house = new House();
@@ -469,6 +483,14 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                             bottom = layer.Value;
                                                                         if (layer > 0)
                                                                             top = layer.Value;
+                                                                        var lstDoor = new List<int>();
+                                                                        for (var j = 1; i <= unit.Value; j++)
+                                                                        {
+                                                                            if (j == unit.Value)
+                                                                                lstDoor.Add(door.Value);
+                                                                            else
+                                                                                lstDoor.Add(2);
+                                                                        }
                                                                         var _building = new Building
                                                                         {
                                                                             Title = building,
@@ -476,7 +498,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                             BottomLayers = bottom,
                                                                             TopLayers = top,
                                                                             Units = unit.Value,
-                                                                            Doors = door.Value
+                                                                            Doors = JsonConvert.SerializeObject(Lib.ArrayToDictionary.Parse(lstDoor.ToArray()))
                                                                         };
                                                                         db.Buildings.Add(_building);
                                                                         house = new House();

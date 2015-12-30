@@ -387,7 +387,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
                     if (ret.Title == building)
                     {
                         var _building = ret;
-                        if (unit > 0 && unit < _building.Units && layer >= _building.BottomLayers && layer <= _building.TopLayers && door > 0 && door < _building.Doors)
+                        if (unit > 0 && unit < _building.Units && layer >= _building.BottomLayers && layer <= _building.TopLayers && door > 0 && door < _building.DoorCount[unit.Value])
                         {
                             var prev = DB.Records
                                 .Where(a => a.Account == x.Account)
@@ -941,7 +941,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditBuilding(Guid id, string title, int units, int toplayers, int bottomlayers, int doors, [FromHeader] string Referer)
+        public async Task<IActionResult> EditBuilding(Guid id, string title, int units, int toplayers, int bottomlayers, int[] doors, [FromHeader] string Referer)
         {
             var building = DB.Buildings
                 .Include(x => x.Estate)
@@ -964,13 +964,18 @@ namespace ChinaTelecom.OperateBrace.Controllers
             building.Units = units;
             building.TopLayers = toplayers;
             building.BottomLayers = bottomlayers;
-            building.Doors = doors;
+            building.SetDoors(Lib.ArrayToDictionary.Parse(doors));
             DB.SaveChanges();
-            var missed = building.Houses
-                .Where(x => x.Unit > units || x.Layer < bottomlayers || x.Layer > toplayers || x.Door > doors)
-                .ToList();
-            foreach (var x in missed)
-                DB.Houses.Remove(x);
+
+            // 如果范围缩小了，则需要将范围以外的住户移出楼宇，这里需要对每个单元单独判断
+            foreach(var i in building.DoorCount)
+            {
+                var missed = building.Houses
+                    .Where(x => x.Unit > units || x.Layer < bottomlayers || x.Layer > toplayers || x.Door > building.DoorCount[i.Key])
+                    .ToList();
+                foreach (var x in missed)
+                    DB.Houses.Remove(x);
+            }
             DB.SaveChanges();
             return Redirect(Referer);
         }

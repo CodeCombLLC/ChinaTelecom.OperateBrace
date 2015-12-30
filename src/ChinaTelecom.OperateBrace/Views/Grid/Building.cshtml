@@ -73,7 +73,7 @@
                                     <thead>
                                         <tr>
                                             <th>楼层</th>
-                                            @for (var i = 1; i <= Model.Doors; i++)
+                                            @for (var i = 1; i <= Model.DoorCount[x]; i++)
                                             {
                                                 <th>@i 门</th>
                                             }
@@ -97,7 +97,7 @@
                                                         <span class="badge badge-warning">B@(-i) 层</span>
                                                     }
                                                 </td>
-                                                @for (var j = 1; j <= Model.Doors; j++)
+                                                @for (var j = 1; j <= Model.DoorCount[x]; j++)
                                                 {
                                                     <td class="dragable" ondrop="drop(event)" ondragover="allowDrop(event)" data-unit="@x" data-layer="@i" data-door="@j">
                                                         @{
@@ -209,7 +209,7 @@
                         <div class="form-group">
                             <label>门</label>
                             <select name="door" class="form-control">
-                                @for (var i = 1; i <= Model.Doors; i++)
+                                @for (var i = 1; i <= Model.DoorCount.Max(x => x.Value); i++)
                                 {
                                     <option>@i</option>
                                 }

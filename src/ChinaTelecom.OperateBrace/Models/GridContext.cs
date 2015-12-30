@@ -40,6 +40,7 @@ namespace ChinaTelecom.OperateBrace.Models
                 e.HasIndex(x => x.Units);
                 e.HasIndex(x => x.TopLayers);
                 e.HasIndex(x => x.BottomLayers);
+                e.Ignore(x => x.DoorCount);
             });
 
             builder.Entity<House>(e =>
