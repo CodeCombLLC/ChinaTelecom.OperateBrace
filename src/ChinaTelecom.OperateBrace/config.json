@@ -12,6 +12,10 @@
       "BusinessHall": {
         "Yellow": 10,
         "Cyan": 30
+      },
+      "Penetrance": {
+        "Green": 0.7,
+        "Red": 0.3
       }
     }
   },

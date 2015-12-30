@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Estate>
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@model IEnumerable<Estate>
 @{ 
     ViewBag.Title = "小区管理";
 }
@@ -79,6 +80,8 @@
                                 <tr>
                                     <th>片区编号</th>
                                     <th>小区名称</th>
+                                    <th>住户数</th>
+                                    <th>渗透率</th>
                                     <th>放号日期</th>
                                     <th>端口数</th>
                                     <th>端口占用率</th>
@@ -113,12 +116,38 @@
                                             }
                                             @x.Title
                                         </td>
+                                        <td>@x.Buildings.Sum(z => z.DoorCount.Sum(y => y.Value))</td>
+                                        <td>
+                                            @{
+                                                var total = x.Buildings.Sum(z => z.DoorCount.Sum(y => y.Value));
+                                                @if (total == 0)
+                                                { 
+                                                    <span style="color:red">0%</span>
+                                                }
+                                                else
+                                                {
+                                                    var ratio = (x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && !((z.HardlinkStatus == ServiceStatus.欠费拆机 || z.HardlinkStatus == ServiceStatus.用户拆机) && (z.MobileStatus == ServiceStatus.用户拆机 || z.MobileStatus == ServiceStatus.欠费拆机))).Count()) * 1d / total);
+                                                    @if (ratio >= Convert.ToDouble(Config["Settings:Threshold:Penetrance:Green"]))
+                                                    {
+                                                        <span style="color:green">@((ratio * 100d).ToString("0.00"))%</span>
+                                                    }
+                                                    else if (ratio >= Convert.ToDouble(Config["Settings:Threshold:Penetrance:Red"]))
+                                                    {
+                                                        <span style="color:orange">@((ratio * 100d).ToString("0.00"))%</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span style="color:red">@((ratio * 100d).ToString("0.00"))%</span>
+                                                    }
+                                                }
+                                            }
+                                        </td>
                                         <td>@(x.OpenTime.HasValue?x.OpenTime.Value.ToLongDateString() : "")</td>
                                         <td>@x.Port</td>
                                         <td>
                                             @if (x.Port > 0)
                                             {
-                                                @(x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.HardlinkStatus != ServiceStatus.欠费拆机 && z.HardlinkStatus != ServiceStatus.用户拆机).Count()) * 100d / x.Port)@("%")
+                                                @((x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.HardlinkStatus != ServiceStatus.欠费拆机 && z.HardlinkStatus != ServiceStatus.用户拆机).Count()) * 100d / x.Port).ToString("0.00"))@("%")
                                             }
                                         </td>
                                         <td>@x.Buildings.Count</td>

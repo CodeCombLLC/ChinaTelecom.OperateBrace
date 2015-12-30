@@ -70,77 +70,77 @@
                             @for (var x = 1; x <= Model.Units; x++)
                             {
                                 <h2>@x</h2>
-                                    <section>
-                                        <table class="table building">
-                                            <thead>
-                                                <tr>
-                                                    <th>楼层</th>
-                                                    @for (var i = 1; i <= Model.DoorCount[x]; i++)
-                                                    {
-                                                        <th>@i 门</th>
-                                                    }
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @for (var i = Model.TopLayers; i >= Model.BottomLayers; i--)
+                                <section>
+                                    <table class="table building">
+                                        <thead>
+                                            <tr>
+                                                <th>楼层</th>
+                                                @for (var i = 1; i <= Model.DoorCount[x]; i++)
                                                 {
-                                                    if (i == 0)
+                                                    <th>@i 门</th>
+                                                }
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (var i = Model.TopLayers; i >= Model.BottomLayers; i--)
+                                            {
+                                                if (i == 0)
+                                                {
+                                                    continue;
+                                                }
+                                                <tr>
+                                                    <td>
+                                                        @if (i > 0)
+                                                        {
+                                                            <span class="badge badge-warning">@i 层</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge badge-warning">B@(-i) 层</span>
+                                                        }
+                                                    </td>
+                                                    @for (var j = 1; j <= Model.DoorCount[x]; j++)
                                                     {
-                                                        continue;
-                                                    }
-                                                    <tr>
-                                                        <td>
-                                                            @if (i > 0)
-                                                            {
-                                                                <span class="badge badge-warning">@i 层</span>
+                                                        <td class="dragable" ondrop="drop(event)" ondragover="allowDrop(event)" data-unit="@x" data-layer="@i" data-door="@j">
+                                                            @{
+                                                                var house = Model.Houses.Where(a => a.Unit == x && a.Layer == i && a.Door == j).SingleOrDefault();
                                                             }
-                                                            else
+                                                            @if (house != null)
                                                             {
-                                                                <span class="badge badge-warning">B@(-i) 层</span>
+                                                                @if (house.HouseStatus == HouseStatus.中国电信)
+                                                                {
+                                                                    <div ondragstart="drag(event)" class="house-item @(house.ServiceStatus == ServiceStatus.在用 ? "status-using" : "")" draggable="true" data-account="@house.FuseIdentifier">
+                                                                        <img class="icon-provider" src="~/assets/img/ct.png" draggable="false" />
+                                                                        <a draggable="false" asp-action="Index" asp-controller="Record" asp-route-account="@house.FuseIdentifier" target="_blank">@house.FullName (@house.Phone)</a>
+                                                                    </div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div ondragstart="drag(event)" class="house-item non-ct-user status-unknown" draggable="true" data-id="@house.Id" data-full-name="@house.FullName" data-phone="@house.Phone" data-provider="@house.HouseStatus">
+                                                                        @if (house.HouseStatus == HouseStatus.中国移动)
+                                                                        {
+                                                                            <img class="icon-provider" src="~/assets/img/cm.png" draggable="false" />
+                                                                        }
+                                                                        else if (house.HouseStatus == HouseStatus.中国联通)
+                                                                        {
+                                                                            <img class="icon-provider" src="~/assets/img/cu.png" draggable="false" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <img class="icon-provider" src="~/assets/img/unknown.png" draggable="false" />
+                                                                        }
+                                                                        <span>@house.FullName (@house.Phone)</span>
+                                                                    </div>
+                                                                }
                                                             }
                                                         </td>
-                                                        @for (var j = 1; j <= Model.DoorCount[x]; j++)
-                                                        {
-                                                            <td class="dragable" ondrop="drop(event)" ondragover="allowDrop(event)" data-unit="@x" data-layer="@i" data-door="@j">
-                                                                @{
-                                                                    var house = Model.Houses.Where(a => a.Unit == x && a.Layer == i && a.Door == j).SingleOrDefault();
                                                                 }
-                                                                @if (house != null)
-                                                                {
-                                                                    @if (house.HouseStatus == HouseStatus.中国电信)
-                                                                    {
-                                                                        <div ondragstart="drag(event)" class="house-item @(house.ServiceStatus == ServiceStatus.在用 ? "status-using" : "")" draggable="true" data-account="@house.FuseIdentifier">
-                                                                            <img class="icon-provider" src="~/assets/img/ct.png" draggable="false" />
-                                                                            <a draggable="false" asp-action="Index" asp-controller="Record" asp-route-account="@house.FuseIdentifier" target="_blank">@house.FullName (@house.Phone)</a>
-                                                                        </div>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <div ondragstart="drag(event)" class="house-item non-ct-user status-unknown" draggable="true" data-id="@house.Id" data-full-name="@house.FullName" data-phone="@house.Phone" data-provider="@house.HouseStatus">
-                                                                            @if (house.HouseStatus == HouseStatus.中国移动)
-                                                                            {
-                                                                                <img class="icon-provider" src="~/assets/img/cm.png" draggable="false" />
-                                                                            }
-                                                                            else if (house.HouseStatus == HouseStatus.中国联通)
-                                                                            {
-                                                                                <img class="icon-provider" src="~/assets/img/cu.png" draggable="false" />
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <img class="icon-provider" src="~/assets/img/unknown.png" draggable="false" />
-                                                                            }
-                                                                            <span>@house.FullName (@house.Phone)</span>
-                                                                        </div>
-                                                                    }
+                                                </tr>
                                                                 }
-                                                            </td>
-                                                                    }
-                                                    </tr>
-                                                                    }
-                                            </tbody>
-                                        </table>
-                                    </section>
-                                                                    }
+                                        </tbody>
+                                    </table>
+                                </section>
+                                                                }
                         </div>
                     </div>
                 </div>
