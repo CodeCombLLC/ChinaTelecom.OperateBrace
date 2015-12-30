@@ -339,6 +339,10 @@ namespace ChinaTelecom.OperateBrace.Controllers
                     });
                 }
             }
+            var tmp = new List<int>();
+            for (var i = 1; i <= Model.Units; i++)
+                tmp.Add(2);
+            Model.SetDoors(Lib.ArrayToDictionary.Parse(tmp.ToArray()));
             Model.Id = Guid.NewGuid();
             Model.EstateId = id;
             DB.Buildings.Add(Model);
