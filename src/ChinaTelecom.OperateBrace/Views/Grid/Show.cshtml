@@ -93,9 +93,10 @@
                             <thead>
                                 <tr>
                                     <th>楼座</th>
-                                    <th>电信总用户数</th>
-                                    <th>电信在网用户数</th>
-                                    <th>非电信用户数</th>
+                                    <th>渗透率</th>
+                                    <th>电信总用户</th>
+                                    <th>非电信用户</th>
+                                    <th>电信在网</th>
                                     <th>新增</th>
                                     <th>离网</th>
                                     <th>单元数</th>
@@ -110,9 +111,32 @@
                                 {
                                     <tr data-id="@x.Id">
                                         <td class="building-title"><span class="badge badge-warning">@x.Title</span></td>
-                                        <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信).Count()</td>
+                                        <td>
+                                            @{
+                                                var allhouses = HouseCounter.Caculate(x.DoorCount, x.TopLayers, x.BottomLayers);
+                                                var ctusers = x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.LanStatus != ServiceStatus.欠费拆机 && a.LanStatus != ServiceStatus.用户拆机 && a.TelStatus != ServiceStatus.欠费拆机 && a.TelStatus != ServiceStatus.用户拆机 && a.MobileStatus != ServiceStatus.欠费拆机 && a.MobileStatus != ServiceStatus.用户拆机).Count();
+                                                var ratio = ctusers * 1d / allhouses;
+                                                @if (ratio >= Convert.ToDouble(Config["Settings:Threshold:Penetrance:Green"]))
+                                                {
+                                                    <span style="color:green">@((ratio * 100d).ToString("0.00"))%</span>
+                                                }
+                                                else if (ratio >= Convert.ToDouble(Config["Settings:Threshold:Penetrance:Red"]))
+                                                {
+                                                    <span style="color:orange">@((ratio * 100d).ToString("0.00"))%</span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="color:red">@((ratio * 100d).ToString("0.00"))%</span>
+                                                }
+                                            }
+                                        </td>
+                                        <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.LanStatus != ServiceStatus.欠费拆机 && a.LanStatus != ServiceStatus.用户拆机 && a.TelStatus != ServiceStatus.欠费拆机 && a.TelStatus != ServiceStatus.用户拆机 && a.MobileStatus != ServiceStatus.欠费拆机 && a.MobileStatus != ServiceStatus.用户拆机).Count()</td>
+                                        <td>
+                                            @{
+                                                @(allhouses - ctusers)
+                                            }
+                                        </td>
                                         <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用).Count()</td>
-                                        <td>@x.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信 && a.HouseStatus != HouseStatus.未装机).Count()</td>
                                         <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus == ServiceStatus.在用 && a.IsStatusChanged).Count()</td>
                                         <td>@x.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.ServiceStatus != ServiceStatus.在用 && a.IsStatusChanged).Count()</td>
                                         <td class="building-units">@x.Units</td>
