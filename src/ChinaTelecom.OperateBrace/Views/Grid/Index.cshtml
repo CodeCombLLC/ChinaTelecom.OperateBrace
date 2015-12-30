@@ -46,12 +46,23 @@
 
     #management {
         width: 100px;
-        height: 175px;position: fixed;
-        background-color: #fff;
+        position: fixed;
+        background-color: rgba(255,255,255,0.95);
         border: 1px solid #ccc;
-        padding: 10px;
+        padding: 0px;
         display: none;
         z-index: 100;
+    }
+
+    .menu-item {
+        padding: 10px;
+        color: #1d76c7;
+        transition: all 0.2s linear;
+        text-decoration:none;
+    }
+
+    .menu-item:hover {
+        background: rgb(255,248,223);
     }
 </style>
 <div id="options">
@@ -81,10 +92,26 @@
     </div>
 </div>
 <div id="management">
-    <p><input type="button" value="小区管理" class="btn btn-warning" id="btnManage" /></p>
-    <p><input type="button" value="编辑小区" class="btn btn-warning" id="btnEdit" /></p>
-    <p><input type="button" value="查看客户" class="btn btn-warning" id="btnCustomDetail" /></p>
-    <p><input type="button" value="关闭" class="btn btn-warning" id="btnClose" /></p>
+    <a id="btnManage" href="javascript:;">
+        <div class="menu-item">
+            小区管理
+        </div>
+    </a>
+    <a id="btnEdit" href="javascript:;">
+        <div class="menu-item">
+            编辑小区
+        </div>
+    </a>
+    <a id="btnCustomDetail" href="javascript:;">
+        <div class="menu-item">
+            查看客户
+        </div>
+    </a>
+    <a id="btnClose" href="javascript:;">
+        <div class="menu-item">
+            关闭
+        </div>
+    </a>
     <input type="hidden" id="buildId" />
 </div>
 <div class="modal fade" id="modalCreateEstate" tabindex="-1" role="dialog" aria-labelledby="modalCreateEstate">
