@@ -36,6 +36,10 @@ namespace ChinaTelecom.OperateBrace.Models
 
         public void SetDoors(Dictionary<int, int> doors)
         {
+            var max = doors.Max(x => x.Key);
+            for (var i = 1; i <= max; i++)
+                if (!doors.ContainsKey(i))
+                    doors[i] = 2;
             Doors = JsonConvert.SerializeObject(doors);
         }
 
