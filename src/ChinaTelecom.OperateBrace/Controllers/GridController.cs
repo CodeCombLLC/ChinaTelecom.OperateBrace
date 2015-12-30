@@ -94,7 +94,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
                         .Count(),
                 LeftUsers = DB.Houses
                         .Include(y => y.Building)
-                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信 && (y.LanStatus != Models.ServiceStatus.在用 || y.TelStatus != Models.ServiceStatus.在用 || y.MobileStatus != Models.ServiceStatus.在用) && y.IsStatusChanged)
+                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信 && (y.LanStatus != Models.ServiceStatus.在用 && y.LanStatus != ServiceStatus.未知 || y.TelStatus != Models.ServiceStatus.在用 && y.TelStatus != ServiceStatus.未知 || y.MobileStatus != Models.ServiceStatus.在用 && y.MobileStatus != ServiceStatus.未知) && y.IsStatusChanged)
                         .Count()
             };
             if (ret.TotalCTUsers == 0)
