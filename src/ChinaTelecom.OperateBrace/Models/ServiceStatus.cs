@@ -7,6 +7,7 @@ namespace ChinaTelecom.OperateBrace.Models
 {
     public enum ServiceStatus
     {
+        未知,
         在用,
         单向欠停,
         双向欠停,
@@ -15,7 +16,6 @@ namespace ChinaTelecom.OperateBrace.Models
         用户拆机,
         装机未竣工退单,
         违章停机,
-        预拆机,
-        未知
+        预拆机
     }
 }

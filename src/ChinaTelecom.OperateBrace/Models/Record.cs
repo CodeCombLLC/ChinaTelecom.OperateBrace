@@ -71,10 +71,15 @@ namespace ChinaTelecom.OperateBrace.Models
         [MaxLength(64)]
         public string BusinessHallId { get; set; }
 
-        public bool IsFuse { get; set; }
-
         public virtual Series Series { get; set; }
 
-        public bool IsHardLink { get; set; }
+        public RecordType Type { get; set; }
+    }
+
+    public enum RecordType
+    {
+        固话,
+        宽带,
+        移动
     }
 }

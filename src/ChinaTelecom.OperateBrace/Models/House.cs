@@ -20,7 +20,9 @@ namespace ChinaTelecom.OperateBrace.Models
 
         public HouseStatus HouseStatus { get; set; }
 
-        public ServiceStatus HardlinkStatus { get; set; }
+        public ServiceStatus TelStatus { get; set; }
+
+        public ServiceStatus LanStatus { get; set; }
 
         public ServiceStatus MobileStatus { get; set; }
 
@@ -29,10 +31,7 @@ namespace ChinaTelecom.OperateBrace.Models
         {
             get
             {
-                if (IsFuse && MobileStatus != ServiceStatus.未知)
-                    return (ServiceStatus)Math.Max((int)HardlinkStatus, (int)MobileStatus);
-                else
-                    return HardlinkStatus;
+                return (ServiceStatus)(Math.Max(Math.Max((int)LanStatus, (int)MobileStatus), (int)TelStatus));
             }
         }
 
@@ -44,8 +43,6 @@ namespace ChinaTelecom.OperateBrace.Models
 
         [MaxLength(64)]
         public string Account { get; set; }
-
-        public bool IsFuse { get; set; }
 
         [MaxLength(32)]
         public string FuseIdentifier { get; set; }

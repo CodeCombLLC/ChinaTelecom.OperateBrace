@@ -166,15 +166,26 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                 Set = reader["套餐"].ToString(),
                                                 SalesProduction = reader["融合促销包"].ToString(),
                                                 Phone = reader["联系电话"].ToString(),
-                                                IsFuse = reader["是否家庭融合宽带"].ToString() == "是",
                                                 ImportedTime = series.Time,
                                                 SeriesId = series.Id,
                                                 BusinessHallId = reader["营业厅编号"].ToString(),
                                                 BusinessHallName = reader["营业厅名称"].ToString(),
-                                                FuseIdentifier = reader["用户标识"].ToString(),
-                                                IsHardLink = reader["用户类型"].ToString() != "CDMA"
+                                                FuseIdentifier = reader["用户标识"].ToString()
                                             };
                                             #region Try parse
+                                            try
+                                            {
+                                                if (reader["用户类型"].ToString() == "CDMA")
+                                                    record.Type = RecordType.移动;
+                                                else if (reader["用户类型"].ToString() == "ADSL")
+                                                    record.Type = RecordType.宽带;
+                                                else
+                                                    record.Type = RecordType.固话;
+                                            }
+                                            catch
+                                            {
+                                            }
+
                                             try
                                             {
                                                 record.CurrentMonthBill = Convert.ToDouble(reader["当月出帐"].ToString());
@@ -237,7 +248,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                             db.Records.Add(record);
                                             db.SaveChanges();
                                             // 如果记录是固网的，才有可能进行营业厅和具体楼宇的对应
-                                            if (record.IsHardLink)
+                                            if (record.Type != RecordType.移动)
                                             {
                                                 #region Creating business hall
                                                 var bh = db.BusinessHalls
@@ -340,9 +351,13 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                         house.Phone = record.Phone;
                                                                         house.FullName = record.CustomerName;
                                                                         house.IsStatusChanged = record.Status != house.ServiceStatus;
-                                                                        house.HardlinkStatus = record.Status;
+                                                                        if (record.Type == RecordType.固话)
+                                                                            house.TelStatus = record.Status;
+                                                                        else if (record.Type == RecordType.宽带)
+                                                                            house.LanStatus = record.Status;
+                                                                        else
+                                                                            house.MobileStatus = record.Status;
                                                                         house.FuseIdentifier = record.FuseIdentifier;
-                                                                        house.IsFuse = record.IsFuse;
                                                                         house.LastUpdate = DateTime.Now;
                                                                         house.HouseStatus = HouseStatus.中国电信;
                                                                         house.BusinessHallId = bh.Id;
@@ -401,9 +416,13 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                         house.Phone = record.Phone;
                                                                         house.FullName = record.CustomerName;
                                                                         house.IsStatusChanged = true;
-                                                                        house.HardlinkStatus = record.Status;
+                                                                        if (record.Type == RecordType.固话)
+                                                                            house.TelStatus = record.Status;
+                                                                        else if (record.Type == RecordType.宽带)
+                                                                            house.LanStatus = record.Status;
+                                                                        else
+                                                                            house.MobileStatus = record.Status;
                                                                         house.FuseIdentifier = record.FuseIdentifier;
-                                                                        house.IsFuse = record.IsFuse;
                                                                         house.LastUpdate = DateTime.Now;
                                                                         house.HouseStatus = HouseStatus.中国电信;
                                                                         house.BusinessHallId = bh.Id;
@@ -447,8 +466,12 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                     house.Phone = record.Phone;
                                                                     house.FullName = record.CustomerName;
                                                                     house.IsStatusChanged = true;
-                                                                    house.HardlinkStatus = record.Status;
-                                                                    house.IsFuse = record.IsFuse;
+                                                                    if (record.Type == RecordType.固话)
+                                                                        house.TelStatus = record.Status;
+                                                                    else if (record.Type == RecordType.宽带)
+                                                                        house.LanStatus = record.Status;
+                                                                    else
+                                                                        house.MobileStatus = record.Status;
                                                                     house.FuseIdentifier = record.FuseIdentifier;
                                                                     house.LastUpdate = DateTime.Now;
                                                                     house.HouseStatus = HouseStatus.中国电信;
@@ -520,7 +543,12 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                         house.Phone = record.Phone;
                                                                         house.FullName = record.CustomerName;
                                                                         house.IsStatusChanged = true;
-                                                                        house.HardlinkStatus = record.Status;
+                                                                        if (record.Type == RecordType.固话)
+                                                                            house.TelStatus = record.Status;
+                                                                        else if (record.Type == RecordType.宽带)
+                                                                            house.LanStatus = record.Status;
+                                                                        else
+                                                                            house.MobileStatus = record.Status;
                                                                         house.FuseIdentifier = record.FuseIdentifier;
                                                                         house.LastUpdate = DateTime.Now;
                                                                         house.HouseStatus = HouseStatus.中国电信;
@@ -551,7 +579,6 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                     // 如果找到了用户标识对应的house，则更新移动网状态
                                                     house.MobileStatus = record.Status;
                                                     house.IsStatusChanged = record.Status != house.ServiceStatus;
-                                                    house.IsFuse = true;
                                                     house.LastUpdate = DateTime.Now;
                                                     db.Update(house);
                                                     db.SaveChanges();

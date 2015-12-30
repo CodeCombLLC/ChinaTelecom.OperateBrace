@@ -21,10 +21,10 @@ namespace ChinaTelecom.OperateBrace.Lib
             return new UserStatistics
             {
                 CTUsers = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信).Count(),
-                CTUsingUsers = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信 && (x.HardlinkStatus == Models.ServiceStatus.在用 || x.MobileStatus == Models.ServiceStatus.在用)).Count(),
+                CTUsingUsers = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信 && (x.LanStatus == Models.ServiceStatus.在用 || x.TelStatus == Models.ServiceStatus.在用 || x.MobileStatus == Models.ServiceStatus.在用)).Count(),
                 NonCTUsers = src2.Where(x => x.HouseStatus != Models.HouseStatus.中国电信 && x.HouseStatus != Models.HouseStatus.未装机).Count(),
-                Added = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信 && (x.HardlinkStatus == Models.ServiceStatus.在用 || x.MobileStatus == Models.ServiceStatus.在用) && x.IsStatusChanged).Count(),
-                Left = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信 && (x.HardlinkStatus != Models.ServiceStatus.在用 || x.MobileStatus != Models.ServiceStatus.在用) && x.IsStatusChanged).Count(),
+                Added = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信 && (x.LanStatus == Models.ServiceStatus.在用 || x.TelStatus == Models.ServiceStatus.在用 || x.MobileStatus == Models.ServiceStatus.在用) && x.IsStatusChanged).Count(),
+                Left = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信 && (x.LanStatus != Models.ServiceStatus.在用 || x.TelStatus != Models.ServiceStatus.在用 || x.MobileStatus != Models.ServiceStatus.在用) && x.IsStatusChanged).Count(),
                 NoRelation = cnt
             };
         }
@@ -41,10 +41,10 @@ namespace ChinaTelecom.OperateBrace.Lib
             return new UserStatistics
             {
                 CTUsers = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信).Count(),
-                CTUsingUsers = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信 && (x.HardlinkStatus == Models.ServiceStatus.在用 || x.MobileStatus == Models.ServiceStatus.在用)).Count(),
+                CTUsingUsers = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信 && (x.LanStatus == Models.ServiceStatus.在用 || x.TelStatus == Models.ServiceStatus.在用 || x.MobileStatus == Models.ServiceStatus.在用)).Count(),
                 NonCTUsers = src2.Where(x => x.HouseStatus != Models.HouseStatus.中国电信 && x.HouseStatus != Models.HouseStatus.未装机).Count(),
-                Added = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信 && (x.HardlinkStatus == Models.ServiceStatus.在用 || x.MobileStatus == Models.ServiceStatus.在用) && x.IsStatusChanged).Count(),
-                Left = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信 && (x.HardlinkStatus != Models.ServiceStatus.在用 || x.MobileStatus != Models.ServiceStatus.在用) && x.IsStatusChanged).Count(),
+                Added = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信 && (x.LanStatus == Models.ServiceStatus.在用 || x.TelStatus == Models.ServiceStatus.在用 || x.MobileStatus == Models.ServiceStatus.在用) && x.IsStatusChanged).Count(),
+                Left = src2.Where(x => x.HouseStatus == Models.HouseStatus.中国电信 && (x.LanStatus == Models.ServiceStatus.在用 || x.TelStatus == Models.ServiceStatus.在用 || x.MobileStatus != Models.ServiceStatus.在用) && x.IsStatusChanged).Count(),
                 NoRelation = cnt
             };
         }

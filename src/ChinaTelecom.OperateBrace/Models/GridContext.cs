@@ -76,6 +76,7 @@ namespace ChinaTelecom.OperateBrace.Models
                 e.HasIndex(x => x.Phone);
                 e.HasIndex(x => x.BusinessHallId);
                 e.HasIndex(x => x.FuseIdentifier);
+                e.HasIndex(x => x.Type);
             });
 
             builder.Entity<BusinessHall>(e =>

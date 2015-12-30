@@ -8,7 +8,8 @@
         <td>更新时间</td>
         <td>状态变更</td>
         <td>接入号</td>
-        <td>固网状态</td>
+        <td>固话状态</td>
+        <td>宽带状态</td>
         <td>移动网状态</td>
         <td>用户姓名</td>
         <td>联系电话</td>
@@ -26,9 +27,20 @@
             <td>@x.LastUpdate.ToString("yyyy-MM-dd")</td>
             <td>@(x.IsStatusChanged ? "是" : "否")</td>
             <td>@x.Account</td>
-            <td>@x.HardlinkStatus</td>
             <td>
-                @if (x.IsFuse)
+                @if (x.TelStatus != ServiceStatus.未知)
+                {
+                    @x.TelStatus
+                }
+            </td>
+            <td>
+                @if (x.LanStatus != ServiceStatus.未知)
+                {
+                    @x.LanStatus
+                }
+            </td>
+            <td>
+                @if (x.MobileStatus != ServiceStatus.未知)
                 {
                     @x.MobileStatus
                 }

@@ -115,7 +115,8 @@
                                     <th>更新时间</th>
                                     <th>状态变更</th>
                                     <th>接入号</th>
-                                    <th>固网状态</th>
+                                    <th>固话状态</th>
+                                    <th>宽带状态</th>
                                     <th>移动网状态</th>
                                     <th>用户姓名</th>
                                     <th>联系电话</th>
@@ -137,33 +138,45 @@
                                         <td>@(x.IsStatusChanged ? "是" : "否")</td>
                                         <td>@x.Account</td>
                                         <td>
-                                            @if (x.HardlinkStatus == ServiceStatus.在用)
+                                            @if (x.TelStatus != ServiceStatus.未知)
                                             {
-                                                <span class="badge badge-success">@x.HardlinkStatus</span>
-                                            }
-                                            else if (x.HardlinkStatus == ServiceStatus.未知)
-                                            {
-                                                <span class="badge badge-warning">@x.HardlinkStatus</span>
-                                            }
-                                            else if (x.HardlinkStatus == ServiceStatus.用户拆机 || x.HardlinkStatus == ServiceStatus.欠费拆机)
-                                            {
-                                                <span class="badge badge-gray">@x.HardlinkStatus</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge badge-error">@x.HardlinkStatus</span>
+                                                @if (x.TelStatus == ServiceStatus.在用)
+                                                {
+                                                    <span class="badge badge-success">@x.TelStatus</span>
+                                                }
+                                                else if (x.TelStatus == ServiceStatus.用户拆机 || x.TelStatus == ServiceStatus.欠费拆机)
+                                                {
+                                                    <span class="badge badge-gray">@x.TelStatus</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-error">@x.TelStatus</span>
+                                                }
                                             }
                                         </td>
                                         <td>
-                                            @if (x.IsFuse)
+                                            @if (x.LanStatus != ServiceStatus.未知)
+                                            {
+                                                @if (x.LanStatus == ServiceStatus.在用)
+                                                {
+                                                    <span class="badge badge-success">@x.LanStatus</span>
+                                                }
+                                                else if (x.LanStatus == ServiceStatus.用户拆机 || x.LanStatus == ServiceStatus.欠费拆机)
+                                                {
+                                                    <span class="badge badge-gray">@x.LanStatus</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-error">@x.LanStatus</span>
+                                                }
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (x.MobileStatus != ServiceStatus.未知)
                                             {
                                                 @if (x.MobileStatus == ServiceStatus.在用)
                                                 {
                                                     <span class="badge badge-success">@x.MobileStatus</span>
-                                                }
-                                                else if (x.MobileStatus == ServiceStatus.未知)
-                                                {
-                                                    <span class="badge badge-warning">@x.MobileStatus</span>
                                                 }
                                                 else if (x.MobileStatus == ServiceStatus.用户拆机 || x.MobileStatus == ServiceStatus.欠费拆机)
                                                 {
