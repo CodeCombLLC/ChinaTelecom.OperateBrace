@@ -47,11 +47,7 @@
                 <td>@(x.OpenTime.HasValue ? x.OpenTime.Value.ToLongDateString() : "")</td>
                 <td>@x.Port</td>
                 <td>
-                    @if (x.Port == 0)
-                    {
-                        @("0%")
-                    }
-                    else
+                    @if (x.Port > 0)
                     {
                         @(x.Buildings.Sum(y => y.Houses.Where(z => z.HouseStatus == HouseStatus.中国电信 && z.HardlinkStatus != ServiceStatus.欠费拆机 && z.HardlinkStatus != ServiceStatus.用户拆机).Count()) * 100d / x.Port)@("%")
                     }
