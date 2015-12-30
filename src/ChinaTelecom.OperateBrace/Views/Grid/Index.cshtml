@@ -43,6 +43,16 @@
     .td-gray {
         font-weight:bold;
     }
+
+    #management {
+        width: 100px;
+        height: 175px;position: fixed;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 10px;
+        display: none;
+        z-index: 100;
+    }
 </style>
 <div id="options">
     <div id="choice">
@@ -69,13 +79,13 @@
         <input type="button" value="圈定范围" class="btn btn-warning" id="btnCircle"/>
         <input type="button" value="取消圈定范围" class="btn" style="display: none" id="btnCancelCircle"/>
     </div>
-    <div id="management">
-        <p><input type="button" value="小区管理" class="btn btn-warning" id="btnManage" /></p>
-        <p><input type="button" value="编辑小区" class="btn btn-warning" id="btnEdit" /></p>
-        <p><input type="button" value="查看客户" class="btn btn-warning" id="btnCustomDetail" /></p>
-        <p><input type="button" value="返回" class="btn btn-warning" id="btnReturn"/></p>
-        <input type="hidden" id="buildId"/>
-    </div>
+</div>
+<div id="management">
+    <p><input type="button" value="小区管理" class="btn btn-warning" id="btnManage" /></p>
+    <p><input type="button" value="编辑小区" class="btn btn-warning" id="btnEdit" /></p>
+    <p><input type="button" value="查看客户" class="btn btn-warning" id="btnCustomDetail" /></p>
+    <p><input type="button" value="关闭" class="btn btn-warning" id="btnClose" /></p>
+    <input type="hidden" id="buildId" />
 </div>
 <div class="modal fade" id="modalCreateEstate" tabindex="-1" role="dialog" aria-labelledby="modalCreateEstate">
     <div class="modal-dialog" role="document">
@@ -310,8 +320,12 @@
                 if ($('#chkMoveEstate').is(':checked'))
                     marker.enableDragging();
                 marker.addEventListener("click", function (e) {
+                    var x = e.clientX;
+                    var y = e.clientY;
+                    $("#management").css("left", x);
+                    $("#management").css("top", y);
+                    $("#estate").hide();
                     $("#management").show();
-                    $("#choice").hide();
                     $("#buildId").val(e.target.Id);
                 });
                 marker.addEventListener("dragend", function (e) {
@@ -351,8 +365,6 @@
 
     // On loaded events
     $(document).ready(function () {
-        $("#management").hide();
-
         setTimeout(function () {
             @if (Context.Request.Query.ContainsKey("lon"))
             {
@@ -476,19 +488,18 @@
     });
 
     $('#btnManage').click(function () {
-        window.location = '/Grid/Show/' + $("#buildId").val();
+        window.open('/Grid/Show/' + $("#buildId").val());
     });
 
     $('#btnEdit').click(function () {
-        location.href = '/Grid/Edit/' + $("#buildId").val();
+        window.open('/Grid/Edit/' + $("#buildId").val());
     });
 
     $('#btnCustomDetail').click(function () {
-        location.href = 'Grid/Customer?estate=' + $("#estate-name").text();
+        window.open('Grid/Customer?estate=' + $("#estate-name").text());
     });
 
-    $('#btnReturn').click(function () {
+    $('#btnClose').click(function () {
         $("#management").hide();
-        $("#choice").show();
     });
 </script>
