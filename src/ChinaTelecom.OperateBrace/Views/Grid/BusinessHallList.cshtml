@@ -66,9 +66,20 @@
                                 <th>排名</th>
                                 <th>编号</th>
                                 <th>营业厅</th>
-                                <th>新增</th>
-                                <th>流失</th>
+                                <th>移动用户</th>
+                                <th>移动新增</th>
+                                <th>移动离网</th>
+                                <th>固话用户</th>
+                                <th>固话新增</th>
+                                <th>固话离网</th>
+                                <th>宽带用户</th>
+                                <th>宽带新增</th>
+                                <th>宽带离网</th>
+                                <th>共计用户</th>
+                                <th>共计新增</th>
+                                <th>共计离网</th>
                                 <th>操作</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -78,8 +89,18 @@
                                     <td>@(i + 1)</td>
                                     <td>@Model[i].Id</td>
                                     <td>@Model[i].Title</td>
-                                    <td>@Model[i].Added</td>
-                                    <td>@Model[i].Left</td>
+                                    <td>@Model[i].MobileTotal</td>
+                                    <td>@Model[i].MobileAdded</td>
+                                    <td>@Model[i].MobileLeft</td>
+                                    <td>@Model[i].TelTotal</td>
+                                    <td>@Model[i].TelAdded</td>
+                                    <td>@Model[i].TelLeft</td>
+                                    <td>@Model[i].LanTotal</td>
+                                    <td>@Model[i].LanAdded</td>
+                                    <td>@Model[i].LanLeft</td>
+                                    <td>@Model[i].TotalCount</td>
+                                    <td>@Model[i].TotalAdded</td>
+                                    <td>@Model[i].TotalLeft</td>
                                     <td>
                                         <a asp-controller="Grid" asp-action="BusinessHall" asp-route-lon="@Model[i].Lon" asp-route-lat="@Model[i].Lat">查看地图</a>
                                         <a asp-controller="Grid" asp-action="BusinessHallDetail" asp-route-id="@Model[i].Id">查看详情</a>

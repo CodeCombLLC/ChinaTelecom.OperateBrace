@@ -1369,8 +1369,8 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 else
                 {
                     var s = tmp.Where(a => a.Key == x.Id).Single();
-                    x.Added = s.AddedCount;
-                    x.Left = s.LeftCount;
+                    x.TotalAdded = s.AddedCount;
+                    x.TotalLeft = s.LeftCount;
                     if (s.LeftCount == 0)
                         x.Level = 0;
                     else if (s.LeftCount <= Convert.ToInt32(Config["Settings:Threshold:Customer:Yellow"]))
@@ -1442,39 +1442,69 @@ namespace ChinaTelecom.OperateBrace.Controllers
         public IActionResult BusinessHallList(bool? xls, string number, string title)
         {
             IEnumerable<BusinessHall> bhs = DB.BusinessHalls;
-            if (!string.IsNullOrEmpty(title))
-                bhs = bhs.Where(x => x.Title.Contains(title));
-            if (!string.IsNullOrEmpty(number))
-                bhs = bhs.Where(x => x.Id == number);
-            bhs = bhs.ToList();
-            var id = bhs
-                .Select(x => x.Id)
-                .ToList();
-            var tmp = DB.Houses
-                .GroupBy(x => x.BusinessHallId)
-                .Select(x => new
-                {
-                    Key = x.Key,
-                    LeftCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && (y.LanStatus != Models.ServiceStatus.在用 || y.TelStatus != Models.ServiceStatus.在用 || y.MobileStatus != Models.ServiceStatus.在用)).Count(),
-                    AddedCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && (y.LanStatus == Models.ServiceStatus.在用 || y.TelStatus == ServiceStatus.在用 || y.MobileStatus == Models.ServiceStatus.在用)).Count()
-                })
-                .ToList();
-            foreach (var x in bhs)
+            int added, left;
+            var series = DB.Serieses.Last();
+            foreach (var bh in bhs)
             {
-                if (!tmp.Any(a => a.Key == x.Id))
-                {
-                    x.Added = 0;
-                    x.Left = 0;
-                }
-                else
-                {
-                    var s = tmp.Where(a => a.Key == x.Id).Single();
-                    x.Added = s.AddedCount;
-                    x.Left = s.LeftCount;
-                }
+                var id = bh.Id;
+                var tmp = DB.Records
+                    .Where(x => x.BusinessHallId == id && x.Type == RecordType.移动 && x.SeriesId == series.Id)
+                    .OrderByDescending(x => x.ImportedTime)
+                    .DistinctBy(x => x.Account)
+                    .Where(x => DB.Records.Where(y => y.Account == x.Account && x.Status != y.Status).Count() > 0 || DB.Records.Where(y => y.Account == x.Account).Count() == 0);
+                added = tmp.Where(x => x.Status == ServiceStatus.在用).Count();
+                left = tmp.Where(x => x.Status != ServiceStatus.在用).Count();
+                bh.LanTotal = DB.Records
+                    .Where(
+                        x =>
+                            x.Status != ServiceStatus.欠费拆机 && x.Status != ServiceStatus.用户拆机 && x.Type == RecordType.宽带 &&
+                            x.BusinessHallId == id)
+                    .OrderByDescending(x => x.ImportedTime)
+                    .DistinctBy(x => x.Account)
+                    .Count();
+                bh.LanAdded = DB.Houses
+                    .Where(x => x.BusinessHallId == id && x.LanStatus == ServiceStatus.在用 && x.IsStatusChanged)
+                    .Count();
+                bh.LanLeft = DB.Houses
+                    .Where(
+                        x =>
+                            x.BusinessHallId == id && x.LanStatus != ServiceStatus.在用 && x.LanStatus != ServiceStatus.未知 &&
+                            x.IsStatusChanged)
+                    .Count();
+                bh.TelTotal = DB.Records
+                    .Where(
+                        x =>
+                            x.Status != ServiceStatus.欠费拆机 && x.Status != ServiceStatus.用户拆机 && x.Type == RecordType.固话 &&
+                            x.BusinessHallId == id)
+                    .OrderByDescending(x => x.ImportedTime)
+                    .DistinctBy(x => x.Account)
+                    .Count();
+                bh.TelAdded = DB.Houses
+                    .Where(x => x.BusinessHallId == id && x.TelStatus == ServiceStatus.在用 && x.IsStatusChanged)
+                    .Count();
+                bh.TelLeft = DB.Houses
+                    .Where(
+                        x =>
+                            x.BusinessHallId == id && x.TelStatus != ServiceStatus.在用 && x.TelStatus != ServiceStatus.未知 &&
+                            x.IsStatusChanged)
+                    .Count();
+                bh.MobileTotal = DB.Records
+                    .Where(
+                        x =>
+                            x.Status != ServiceStatus.欠费拆机 && x.Status != ServiceStatus.用户拆机 && x.Type == RecordType.移动 &&
+                            x.BusinessHallId == id)
+                    .OrderByDescending(x => x.ImportedTime)
+                    .DistinctBy(x => x.Account)
+                    .Count();
+                bh.MobileAdded = added;
+                bh.MobileLeft = left;
+                bh.TotalCount = bh.TelTotal + bh.LanTotal + bh.MobileTotal;
+                bh.TotalAdded = bh.TelAdded + bh.LanAdded + bh.MobileAdded;
+                bh.TotalLeft = bh.TelLeft + bh.LanLeft + bh.MobileLeft;
             }
-            bhs = bhs.OrderByDescending(x => x.Added)
-                .ThenBy(x => x.Left)
+            
+            bhs = bhs.OrderByDescending(x => x.TotalAdded)
+                .ThenBy(x => x.TotalLeft)
                 .ToList();
             if (xls.HasValue && xls.Value)
                 return XlsView(bhs, "businesshall.xls", "ExportBusinessHall");

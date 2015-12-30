@@ -19,9 +19,39 @@ namespace ChinaTelecom.OperateBrace.Models
         public int Level { get; set; }
 
         [NotMapped]
-        public int Added { get; set; }
+        public int MobileTotal { get; set; }
 
         [NotMapped]
-        public int Left { get; set; }
+        public int MobileAdded { get; set; }
+
+        [NotMapped]
+        public int MobileLeft { get; set; }
+
+        [NotMapped]
+        public int TelTotal { get; set; }
+
+        [NotMapped]
+        public int TelAdded { get; set; }
+
+        [NotMapped]
+        public int TelLeft { get; set; }
+
+        [NotMapped]
+        public int LanTotal { get; set; }
+
+        [NotMapped]
+        public int LanAdded { get; set; }
+
+        [NotMapped]
+        public int LanLeft { get; set; }
+
+        [NotMapped]
+        public int TotalCount { get; set; }
+
+        [NotMapped]
+        public int TotalAdded { get; set; }
+
+        [NotMapped]
+        public int TotalLeft { get; set; }
     }
 }
