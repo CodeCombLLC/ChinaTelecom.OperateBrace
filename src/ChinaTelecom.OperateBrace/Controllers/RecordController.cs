@@ -323,10 +323,15 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                             _building.BottomLayers = layer.Value;
                                                                         if (layer.Value > _building.TopLayers)
                                                                             _building.TopLayers = layer.Value;
-                                                                        if (door.Value > _building.DoorCount[unit.Value])
+                                                                        if (!_building.DoorCount.ContainsKey(unit.Value) || door.Value > _building.DoorCount[unit.Value])
                                                                         {
                                                                             _building.DoorCount[unit.Value] = door.Value;
                                                                             _building.SetDoors(_building.DoorCount);
+                                                                        }
+                                                                        for(var a = 1; a <= unit.Value; a ++)
+                                                                        {
+                                                                            if (!_building.DoorCount.ContainsKey(a))
+                                                                                _building.DoorCount[a] = 2;
                                                                         }
                                                                         house.BuildingId = _building.Id;
                                                                         house.Unit = unit.Value;
@@ -375,10 +380,15 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                             _building.BottomLayers = layer.Value;
                                                                         if (layer.Value > _building.TopLayers)
                                                                             _building.TopLayers = layer.Value;
-                                                                        if (door.Value > _building.DoorCount[unit.Value])
+                                                                        if (!_building.DoorCount.ContainsKey(unit.Value) || door.Value > _building.DoorCount[unit.Value])
                                                                         {
                                                                             _building.DoorCount[unit.Value] = door.Value;
                                                                             _building.SetDoors(_building.DoorCount);
+                                                                        }
+                                                                        for (var a = 1; a <= unit.Value; a++)
+                                                                        {
+                                                                            if (!_building.DoorCount.ContainsKey(a))
+                                                                                _building.DoorCount[a] = 2;
                                                                         }
                                                                         db.Update(_building);
                                                                         db.SaveChanges();
@@ -411,7 +421,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                     if (layer > 0)
                                                                         top = layer.Value;
                                                                     var lstDoor = new List<int>();
-                                                                    for(var j = 1; i <= unit.Value; j ++)
+                                                                    for(var j = 1; j <= unit.Value; j ++)
                                                                     {
                                                                         if (j == unit.Value)
                                                                             lstDoor.Add(door.Value);
@@ -484,7 +494,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                                                         if (layer > 0)
                                                                             top = layer.Value;
                                                                         var lstDoor = new List<int>();
-                                                                        for (var j = 1; i <= unit.Value; j++)
+                                                                        for (var j = 1; j <= unit.Value; j++)
                                                                         {
                                                                             if (j == unit.Value)
                                                                                 lstDoor.Add(door.Value);

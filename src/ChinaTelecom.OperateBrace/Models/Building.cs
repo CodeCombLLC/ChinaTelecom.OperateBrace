@@ -21,11 +21,16 @@ namespace ChinaTelecom.OperateBrace.Models
         public string Doors { get; set; }
 
         [NotMapped]
+        private Dictionary<int, int> doorCount;
+
+        [NotMapped]
         public virtual Dictionary<int, int> DoorCount
         {
             get
             {
-                return JsonConvert.DeserializeObject<Dictionary<int, int>>(Doors);
+                if (doorCount == null)
+                    doorCount = JsonConvert.DeserializeObject<Dictionary<int, int>>(Doors);
+                return doorCount;
             }
         }
 

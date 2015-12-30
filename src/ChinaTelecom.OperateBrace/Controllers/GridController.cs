@@ -1435,10 +1435,27 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 return View(bhs);
         }
 
-        public IActionResult EditDoor(Guid id, int[] door, [FromHeader] string Referer)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditDoor(Guid id, int[] door, [FromHeader] string Referer)
         {
             var building = DB.Buildings
+                .Include(x => x.Estate)
                 .SingleOrDefault(x => x.Id == id);
+
+            if (!User.IsInRole("系统管理员"))
+            {
+                var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
+                if (!areas.Contains(building.Estate.Area))
+                {
+                    return Prompt(x =>
+                    {
+                        x.Title = "修改失败";
+                        x.Details = "您无权编辑该楼座";
+                    });
+                }
+            }
+
             building.SetDoors(Lib.ArrayToDictionary.Parse(door));
             DB.SaveChanges();
             // 如果范围缩小了，则需要将范围以外的住户移出楼宇，这里需要对每个单元单独判断
