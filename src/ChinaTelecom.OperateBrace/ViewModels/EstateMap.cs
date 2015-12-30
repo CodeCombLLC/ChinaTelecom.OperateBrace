@@ -22,5 +22,11 @@ namespace ChinaTelecom.OperateBrace.ViewModels
         public long AddedUsers { get; set; }
         
         public long LeftUsers { get; set; }
+
+        public long Port { get; set; }
+
+        public double PortRate { get; set; }
+
+        public double Penetrance { get; set; }
     }
 }

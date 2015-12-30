@@ -63,26 +63,30 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 .AsNoTracking()
                 .Where(a => a.Id == id)
                 .Single();
+            var customers = DB.Houses
+                .Where(a => a.Building.EstateId == x.Id)
+                .Where(a => a.LanStatus != ServiceStatus.欠费拆机 && a.LanStatus != ServiceStatus.用户拆机 && a.TelStatus != ServiceStatus.欠费拆机 && a.TelStatus != ServiceStatus.用户拆机 && a.MobileStatus != ServiceStatus.欠费拆机 && a.MobileStatus != ServiceStatus.用户拆机)
+                .Count();
+            var allhouse = DB.Buildings
+                        .AsNoTracking()
+                        .Where(y => y.EstateId == x.Id)
+                        .ToList()
+                        .Sum(y => Lib.HouseCounter.Caculate(y.DoorCount, y.TopLayers, y.BottomLayers));
             var ret = new EstateMap
             {
                 Title = x.Title,
                 Area = x.Area,
-                TotalCTUsers = DB.Houses
-                        .AsNoTracking()
-                        .Include(y => y.Building)
-                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信)
-                        .Count(),
+                TotalCTUsers = customers,
                 TotalInUsingUsers = DB.Houses
                         .AsNoTracking()
                         .Include(y => y.Building)
                         .Where(y => y.Building.EstateId == x.Id && y.HouseStatus == HouseStatus.中国电信)
                         .Where(y => y.TelStatus == ServiceStatus.在用 || y.LanStatus == ServiceStatus.在用 || y.MobileStatus == ServiceStatus.在用)
                         .Count(),
-                TotalNonCTUsers = DB.Houses
-                        .AsNoTracking()
-                        .Include(y => y.Building)
-                        .Where(y => y.Building.EstateId == x.Id && y.HouseStatus != HouseStatus.中国电信 && y.HouseStatus != HouseStatus.未装机)
-                        .Count(),
+                TotalNonCTUsers = allhouse - customers,
+                Penetrance = customers *1d / allhouse,
+                Port = x.Port,
+                PortRate = x.Port == 0 ? 1 : customers * 1d / x.Port,
                 AddedUsers = DB.Houses
                         .AsNoTracking()
                         .Include(y => y.Building)

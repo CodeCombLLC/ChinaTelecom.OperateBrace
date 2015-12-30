@@ -39,6 +39,10 @@
     #point-list .badge {
         margin: 5px;
     }
+    
+    .td-gray {
+        font-weight:bold;
+    }
 </style>
 <div id="options">
     <p>
@@ -185,28 +189,30 @@
         <tr>
             <td class="td-gray">小区名称</td>
             <td id="estate-name"></td>
-        </tr>
-        <tr>
             <td class="td-gray">所属片区</td>
             <td id="estate-area"></td>
         </tr>
         <tr>
+            <td class="td-gray">在用 / 电信用户</td>
+            <td id="estate-user"></td>
             <td class="td-gray">在用率</td>
             <td id="estate-rate"></td>
         </tr>
         <tr>
-            <td class="td-gray">在用 / 总用户数</td>
-            <td id="estate-user"></td>
-        </tr>
-        <tr>
             <td class="td-gray">非电信用户数</td>
             <td id="estate-user-non-ct"></td>
+            <td class="td-gray">渗透率</td>
+            <td id="estate-penetrance"></td>
+        </tr>
+        <tr>
+            <td class="td-gray">端口</td>
+            <td id="estate-port"></td>
+            <td class="td-gray">端口占用率</td>
+            <td id="estate-port-rate"></td>
         </tr>
         <tr>
             <td class="td-gray">新增</td>
             <td id="estate-user-add"></td>
-        </tr>
-        <tr>
             <td class="td-gray">离网</td>
             <td id="estate-user-left"></td>
         </tr>
@@ -318,6 +324,9 @@
                         $("#estate-user-non-ct").text(data.TotalNonCTUsers);
                         $("#estate-user-add").text(data.AddedUsers);
                         $("#estate-user-left").text(data.LeftUsers);
+                        $("#estate-port").text(data.Port);
+                        $("#estate-port-rate").text((data.PortRate * 100).toFixed(2) + "%");
+                        $("#estate-penetrance").text((data.Penetrance * 100).toFixed(2) + "%");
                         $('#infoEstate').hide();
                         $('#tableEstate').show();
                     });
