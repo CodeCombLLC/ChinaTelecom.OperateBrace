@@ -20,6 +20,12 @@ namespace ChinaTelecom.OperateBrace.Models
 
         public bool NeedImplement { get; set; }
 
+        public DateTime? OpenTime { get; set; }
+
+        public string Hint { get; set; }
+
+        public int Port { get; set; }
+
         [NotMapped]
         public int Level { get; set; }
 

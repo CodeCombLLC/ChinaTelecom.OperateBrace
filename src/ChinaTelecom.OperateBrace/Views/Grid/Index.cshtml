@@ -108,6 +108,24 @@
                             </td>
                         </tr>
                         <tr>
+                            <td>放号日期</td>
+                            <td>
+                                <input type="text" value="" id="txtOpenTime" class="form-control" name="opentime" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>端口数</td>
+                            <td>
+                                <input type="text" value="0" class="form-control" name="port" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>备注</td>
+                            <td>
+                                <textarea style="height:100px" class="form-control" name="hint"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
                             <td>经度</td>
                             <td><input type="text" class="form-control" name="lon" id="txtLon" /></td>
                         </tr>
@@ -196,7 +214,17 @@
 </div>
 <div id="allmap">
 </div>
+<link rel="stylesheet" href="/assets/js/timepicker/bootstrap-timepicker.css">
+<link rel="stylesheet" href="/assets/js/datepicker/datepicker.css">
+<link rel="stylesheet" href="/assets/js/datepicker/clockface.css">
+<link rel="stylesheet" href="/assets/js/datepicker/bootstrap-datetimepicker.css">
+<script type="text/javascript" src="/assets/js/timepicker/bootstrap-timepicker.js"></script>
+<script type="text/javascript" src="/assets/js/datepicker/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="/assets/js/datepicker/clockface.js"></script>
+<script type="text/javascript" src="/assets/js/datepicker/bootstrap-datetimepicker.js"></script>
 <script>
+    $('#txtOpenTime').datepicker();
+
     // Building map
     var map = new BMap.Map("allmap");
     map.addControl(new BMap.MapTypeControl());

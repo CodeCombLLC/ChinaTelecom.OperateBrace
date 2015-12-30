@@ -24,7 +24,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateEstate(string title, double lon, double lat, string rules, string area, bool NeedImplement)
+        public IActionResult CreateEstate(string title, double lon, double lat, string rules, string area, bool NeedImplement, DateTime? opentime, string hint, int port)
         {
             var estate = new Estate
             {
@@ -32,7 +32,10 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 Lat = lat,
                 Lon = lon,
                 Title = title,
-                NeedImplement = NeedImplement
+                NeedImplement = NeedImplement,
+                OpenTime = opentime,
+                Hint = hint,
+                Port = port
             };
             DB.Estates.Add(estate);
             if (!string.IsNullOrEmpty(rules))
@@ -208,7 +211,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Estate(string Area, string Title, string Circle, bool? NeedImplement, bool? raw)
+        public async Task<IActionResult> Estate(string Area, string Title, string Circle, bool? NeedImplement, DateTime? begin, DateTime? end, bool? raw)
         {
             IEnumerable<Estate> ret = DB.Estates
                 .Include(x => x.Buildings)
@@ -225,6 +228,10 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 ret = ret.Where(x => x.Area == Area);
             if (!string.IsNullOrEmpty(Title))
                 ret = ret.Where(x => x.Title.Contains(Title));
+            if (begin.HasValue)
+                ret = ret.Where(x => x.OpenTime >= begin.Value);
+            if (end.HasValue)
+                ret = ret.Where(x => x.OpenTime <= end.Value);
             if (NeedImplement.HasValue)
             {
                 if (NeedImplement.Value)
@@ -891,7 +898,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, string rules, string title, double lon, double lat, string area, bool NeedImplement)
+        public async Task<IActionResult> Edit(Guid id, string rules, string title, double lon, double lat, string area, bool NeedImplement, string hint, int port, DateTime? opentime)
         {
             if (area == null)
                 area = "";
@@ -916,6 +923,9 @@ namespace ChinaTelecom.OperateBrace.Controllers
             estate.Lat = lat;
             estate.Area = area;
             estate.NeedImplement = NeedImplement;
+            estate.OpenTime = opentime;
+            estate.Port = estate.Port;
+            estate.Hint = hint;
             foreach (var x in estate.Rules)
                 DB.EstateRules.Remove(x);
             foreach (var x in rules.TrimEnd(' ').TrimEnd(',').Split(','))

@@ -187,7 +187,7 @@
                                         <td>
                                             <a asp-action="Index" asp-controller="Grid" asp-route-lon="@x.Building.Estate.Lon" asp-route-lat="x.Building.Estate.Lat" target="_blank">地图</a>
                                             <a asp-action="Building" asp-controller="Grid" asp-route-id="@x.BuildingId" asp-route-unit="@x.Unit" target="_blank">楼宇</a>
-                                            <a asp-action="Index" asp-controller="Record" asp-route-account="@x.Account" target="_blank">明细</a>
+                                            <a asp-action="Index" asp-controller="Record" asp-route-account="@x.FuseIdentifier" target="_blank">明细</a>
                                             <a href="javascript:Remove('@x.Id')">删除</a>
                                         </td>
                                     </tr>

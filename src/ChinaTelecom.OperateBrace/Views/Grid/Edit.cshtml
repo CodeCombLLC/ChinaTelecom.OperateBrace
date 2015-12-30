@@ -75,6 +75,18 @@
                             <input type="checkbox" name="needimplement" value="true" @(Model.NeedImplement ? "checked" : "") />
                         </div>
                         <div class="form-group">
+                            <label>放号日期</label>
+                            <input type="text" id="txtOpenTime" name="opentime" value="@(Model.OpenTime.HasValue ? Model.OpenTime.Value.ToLongDateString() : "")" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>端口数</label>
+                            <input type="text" name="port" value="@Model.Port" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>备注</label>
+                            <textarea class="form-control" style="height:100px">@Model.Hint</textarea>
+                        </div>
+                        <div class="form-group">
                             <label>经度</label>
                             <input type="text" name="lon" value="@Model.Lon" class="form-control" />
                         </div>
@@ -95,7 +107,16 @@
         </div>
     </div>
 </div>
+<link rel="stylesheet" href="/assets/js/timepicker/bootstrap-timepicker.css">
+<link rel="stylesheet" href="/assets/js/datepicker/datepicker.css">
+<link rel="stylesheet" href="/assets/js/datepicker/clockface.css">
+<link rel="stylesheet" href="/assets/js/datepicker/bootstrap-datetimepicker.css">
+<script type="text/javascript" src="/assets/js/timepicker/bootstrap-timepicker.js"></script>
+<script type="text/javascript" src="/assets/js/datepicker/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="/assets/js/datepicker/clockface.js"></script>
+<script type="text/javascript" src="/assets/js/datepicker/bootstrap-datetimepicker.js"></script>
 <script>
+    $('#txtOpenTime').datepicker();
     function RebuildHidRules() {
         var tmp = $('#tagsRule_tagsinput').find('.tag span');
         var str = "";
