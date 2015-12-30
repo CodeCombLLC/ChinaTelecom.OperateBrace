@@ -40,6 +40,10 @@
         display: none;
         width: 150px;
     }
+
+    .td-gray{
+        font-weight:bold;
+    }
 </style>
 <div id="options">
     <p>
@@ -63,14 +67,38 @@
     <table>
         <tr>
             <td class="td-gray">名称</td>
-            <td id="bh-name"></td>
+            <td id="bh-name" colspan="5"></td>
         </tr>
         <tr>
-            <td class="td-gray">新增</td>
+            <td class="td-gray">移动用户</td>
+            <td id="bh-mobile-user-total"></td>
+            <td class="td-gray">移动新增</td>
+            <td id="bh-mobile-user-add"></td>
+            <td class="td-gray">移动离网</td>
+            <td id="bh-mobile-user-left"></td>
+        </tr>
+        <tr>
+            <td class="td-gray">固话用户</td>
+            <td id="bh-tel-user-total"></td>
+            <td class="td-gray">固话新增</td>
+            <td id="bh-tel-user-add"></td>
+            <td class="td-gray">固话离网</td>
+            <td id="bh-tel-user-left"></td>
+        </tr>
+        <tr>
+            <td class="td-gray">宽带用户</td>
+            <td id="bh-lan-user-total"></td>
+            <td class="td-gray">宽带新增</td>
+            <td id="bh-lan-user-add"></td>
+            <td class="td-gray">宽带离网</td>
+            <td id="bh-lan-user-left"></td>
+        </tr>
+        <tr>
+            <td class="td-gray">共计用户</td>
+            <td id="bh-user-total"></td>
+            <td class="td-gray">共计新增</td>
             <td id="bh-user-add"></td>
-        </tr>
-        <tr>
-            <td class="td-gray">离网</td>
+            <td class="td-gray">共计离网</td>
             <td id="bh-user-left"></td>
         </tr>
     </table>
@@ -181,10 +209,27 @@
                     var y = e.clientY;
                     $("#business-hall").css("left", x);
                     $("#business-hall").css("top", y);
-                    $("#business-hall").show();
-                    $("#bh-name").text(e.target.Title);
-                    $("#bh-user-add").text(e.target.Added);
-                    $("#bh-user-left").text(e.target.Left);
+                    $.getJSON('/Grid/BusinessHallJson/' + e.target.Id, {}, function (data) {
+                        $("#bh-name").text(e.target.Title);
+
+                        $("#bh-user-total").text(data.LanTotal + data.TelTotal + data.MobileTotal);
+                        $("#bh-user-add").text(data.LanAdded + data.TelAdded + data.MobileAdded);
+                        $("#bh-user-left").text(data.LanLeft + data.TelLeft + data.MobileLeft);
+
+                        $("#bh-mobile-user-total").text(data.MobileTotal);
+                        $("#bh-mobile-user-add").text(data.MobileAdded);
+                        $("#bh-mobile-user-left").text(data.MobileLeft);
+
+                        $("#bh-tel-user-total").text(data.TelTotal);
+                        $("#bh-tel-user-add").text(data.TelAdded);
+                        $("#bh-tel-user-left").text(data.TelLeft);
+
+                        $("#bh-lan-user-total").text(data.LanTotal);
+                        $("#bh-lan-user-add").text(data.LanAdded);
+                        $("#bh-lan-user-left").text(data.LanLeft);
+
+                        $("#business-hall").show();
+                    });
                 });
                 marker.addEventListener("mouseout", function (e) {
                     $("#business-hall").hide();
