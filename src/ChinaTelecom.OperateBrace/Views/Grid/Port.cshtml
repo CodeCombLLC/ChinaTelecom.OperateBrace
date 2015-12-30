@@ -1,4 +1,4 @@
-﻿@{ 
+﻿@{
     ViewBag.Title = "客户分布";
 }
 <link rel="stylesheet" type="text/css" href="~/assets/js/tag/jquery.tagsinput.css">
@@ -20,10 +20,10 @@
         display: none;
         z-index: 10;
     }
-    
-    #estate table td {
-        padding: 5px;
-    }
+
+        #estate table td {
+            padding: 5px;
+        }
 
     #options {
         width: 160px;
@@ -39,9 +39,9 @@
     #point-list .badge {
         margin: 5px;
     }
-    
+
     .td-gray {
-        font-weight:bold;
+        font-weight: bold;
     }
 
     #management {
@@ -58,37 +58,37 @@
         padding: 10px;
         color: #1d76c7;
         transition: all 0.2s linear;
-        text-decoration:none;
+        text-decoration: none;
     }
 
-    .menu-item:hover {
-        background: rgb(255,248,223);
-    }
+        .menu-item:hover {
+            background: rgb(255,248,223);
+        }
 </style>
 <div id="options">
     <div id="choice">
         <label>
-            <input type="checkbox" id="chkMoveEstate"/>
+            <input type="checkbox" id="chkMoveEstate" />
             允许拖拽移动小区
         </label>
         <label>
-            <input type="checkbox" id="chkNoCustomerEstate"/>
-            显示没有用户的小区
+            <input type="checkbox" id="chkGoodEstate" checked />
+            端口紧缺的小区
         </label>
         <label>
-            <input type="checkbox" id="chkLostEstate" checked/>
-            显示流失用户的小区
+            <input type="checkbox" id="chkNormalEstate" checked />
+            端口有剩余的小区
         </label>
         <label>
-            <input type="checkbox" id="chkNormalEstate" checked/>
-            显示未流失的小区
+            <input type="checkbox" id="chkBadEstate" checked />
+            端口剩余较多的小区
         </label>
         <label>
-            <input type="checkbox" id="chkPendingEstate" checked/>
+            <input type="checkbox" id="chkPendingEstate" checked />
             显示待施工工程小区
         </label>
-        <input type="button" value="圈定范围" class="btn btn-warning" id="btnCircle"/>
-        <input type="button" value="取消圈定范围" class="btn" style="display: none" id="btnCancelCircle"/>
+        <input type="button" value="圈定范围" class="btn btn-warning" id="btnCircle" />
+        <input type="button" value="取消圈定范围" class="btn" style="display: none" id="btnCancelCircle" />
     </div>
 </div>
 <div id="management">
@@ -141,7 +141,7 @@
                                 <td>所属片区编号</td>
                                 <td>
                                     <select name="area" class="form-control">
-                                        @foreach(string x in ViewBag.Areas)
+                                        @foreach (string x in ViewBag.Areas)
                                         {
                                             <option>@x</option>
                                         }
@@ -319,26 +319,24 @@
         var top = ne.lat;
         var bottom = sw.lat;
 
-        $.getJSON('/grid/getestates', { left: left, right: right, top: top, bottom: bottom }, function (data) {
+        $.getJSON('/grid/getestates', { left: left, right: right, top: top, bottom: bottom, mode: 'port' }, function (data) {
             for(var i = 0; i < data.length; i++)
             {
                 var pt = new BMap.Point(data[i].Lon, data[i].Lat);
                 var ico = icon;
                 if (data[i].Level == 1)
-                    ico = icon2;
-                else if (data[i].Level == 2)
                     ico = icon3;
+                else if (data[i].Level == 2)
+                    ico = icon2;
                 else if (data[i].Level == 3)
-                    ico = icon4;
-                else if (data[i].Level == 4 || data[i].Level == 5)
-                    ico = icon5;
+                    ico = icon;
                 else if (data[i].Level == 6)
                     ico = icon6;
-                if (!$('#chkNoCustomerEstate').is(':checked') && data[i].Level == 3)
+                if (!$('#chkBadEstate').is(':checked') && data[i].Level == 3)
                     continue;
-                if (!$('#chkNormalEstate').is(':checked') && (data[i].Level == 0 || data[i].Level == 5))
+                if (!$('#chkNormalEstate').is(':checked') && data[i].Level == 2)
                     continue;
-                if (!$('#chkLostEstate').is(':checked') && (data[i].Level == 1 || data[i].Level == 2 || data[i].Level == 4))
+                if (!$('#chkGoodEstate').is(':checked') && data[i].Level == 1)
                     continue;
                 if (!$('#chkPendingEstate').is(':checked') && data[i].Level == 6)
                     continue;
@@ -419,10 +417,10 @@
         }
     });
 
-    $('#chkNoCustomerEstate').change(function () {
+    $('#chkBadEstate').change(function () {
         BuildOverlays();
     });
-    $('#chkLostEstate').change(function () {
+    $('#chkGoodEstate').change(function () {
         BuildOverlays();
     });
     $('#chkNormalEstate').change(function () {
@@ -459,7 +457,7 @@
             var pt1 = new BMap.Point(point.lon, point.lat);
             var pt2 = new BMap.Point(last.lon, last.lat);
             var line = new BMap.Polyline([pt1, pt2] , {
-                strokeColor: "#e35454",//设置颜色 
+                strokeColor: "#e35454",//设置颜色
                 strokeWeight: 8, //宽度
                 strokeOpacity: 1
             });

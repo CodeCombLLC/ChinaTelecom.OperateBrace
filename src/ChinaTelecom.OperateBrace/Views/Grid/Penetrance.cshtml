@@ -72,16 +72,16 @@
             允许拖拽移动小区
         </label>
         <label>
-            <input type="checkbox" id="chkNoCustomerEstate"/>
-            显示没有用户的小区
+            <input type="checkbox" id="chkGoodEstate" checked/>
+            渗透率优秀的小区
         </label>
         <label>
-            <input type="checkbox" id="chkLostEstate" checked/>
-            显示流失用户的小区
+            <input type="checkbox" id="chkNormalEstate" checked />
+            渗透率良好的小区
         </label>
         <label>
-            <input type="checkbox" id="chkNormalEstate" checked/>
-            显示未流失的小区
+            <input type="checkbox" id="chkBadEstate" checked />
+            渗透率较差的小区
         </label>
         <label>
             <input type="checkbox" id="chkPendingEstate" checked/>
@@ -319,26 +319,24 @@
         var top = ne.lat;
         var bottom = sw.lat;
 
-        $.getJSON('/grid/getestates', { left: left, right: right, top: top, bottom: bottom }, function (data) {
+        $.getJSON('/grid/getestates', { left: left, right: right, top: top, bottom: bottom, mode:"penetrance" }, function (data) {
             for(var i = 0; i < data.length; i++)
             {
                 var pt = new BMap.Point(data[i].Lon, data[i].Lat);
                 var ico = icon;
                 if (data[i].Level == 1)
-                    ico = icon2;
+                    ico = icon;
                 else if (data[i].Level == 2)
-                    ico = icon3;
+                    ico = icon2;
                 else if (data[i].Level == 3)
-                    ico = icon4;
-                else if (data[i].Level == 4 || data[i].Level == 5)
-                    ico = icon5;
+                    ico = icon3;
                 else if (data[i].Level == 6)
                     ico = icon6;
-                if (!$('#chkNoCustomerEstate').is(':checked') && data[i].Level == 3)
+                if (!$('#chkGoodEstate').is(':checked') && data[i].Level == 1)
                     continue;
-                if (!$('#chkNormalEstate').is(':checked') && (data[i].Level == 0 || data[i].Level == 5))
+                if (!$('#chkNormalEstate').is(':checked') && data[i].Level == 2)
                     continue;
-                if (!$('#chkLostEstate').is(':checked') && (data[i].Level == 1 || data[i].Level == 2 || data[i].Level == 4))
+                if (!$('#chkBadEstate').is(':checked') && data[i].Level == 3)
                     continue;
                 if (!$('#chkPendingEstate').is(':checked') && data[i].Level == 6)
                     continue;
@@ -422,7 +420,10 @@
     $('#chkNoCustomerEstate').change(function () {
         BuildOverlays();
     });
-    $('#chkLostEstate').change(function () {
+    $('#chkBadEstate').change(function () {
+        BuildOverlays();
+    });
+    $('#chkGoodEstate').change(function () {
         BuildOverlays();
     });
     $('#chkNormalEstate').change(function () {
