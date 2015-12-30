@@ -63,6 +63,14 @@
                             <label>营业厅发展优秀值</label>
                             <input type="text" class="form-control" value="@Config["Settings:Threshold:BusinessHall:Cyan"]" name="bc" />
                         </div>
+                        <div class="form-group">
+                            <label>渗透率优秀良好界限(0~1之间小数)</label>
+                            <input type="text" class="form-control" value="@Config["Settings:Threshold:Penetrance:Green"]" name="pg" />
+                        </div>
+                        <div class="form-group">
+                            <label>渗透率良好较差界限(0~1之间小数)</label>
+                            <input type="text" class="form-control" value="@Config["Settings:Threshold:Penetrance:Red"]" name="pr" />
+                        </div>
                         <input type="submit" class="btn btn-primary" />
                     </form>
                 </div>

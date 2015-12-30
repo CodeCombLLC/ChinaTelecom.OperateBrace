@@ -19,12 +19,14 @@ namespace ChinaTelecom.OperateBrace.Controllers
         [HttpPost]
         [AnyRoles("系统管理员")]
         [ValidateAntiForgeryTokenAttribute]
-        public IActionResult Threshold(int by, int bc, int cy, int cc, [FromServices] IConfiguration Config)
+        public IActionResult Threshold(int by, int bc, int cy, int cc, float pg, float pr, [FromServices] IConfiguration Config)
         {
             Config["Settings:Threshold:Customer:Yellow"] = cy.ToString();
             Config["Settings:Threshold:Customer:Cyan"] = cy.ToString();
             Config["Settings:Threshold:BusinessHall:Yellow"] = cy.ToString();
             Config["Settings:Threshold:BusinessHall:Cyan"] = cy.ToString();
+            Config["Settings:Threshold:Penetrance:Green"] = pg.ToString();
+            Config["Settings:Threshold:Penetrance:Red"] = pr.ToString();
 
             return Prompt(x => 
             {
