@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Area>
+﻿@inject Microsoft.Extensions.Configuration.IConfiguration Config
+@model IEnumerable<Area>
 @{ 
     ViewBag.Title = "片区管理";
 }
@@ -53,9 +54,13 @@
                                 <tr>
                                     <th>片区编号</th>
                                     <th>小区数</th>
-                                    <th>电信总用户数</th>
-                                    <th>电信在网用户数</th>
-                                    <th>非电信用户数</th>
+                                    <th>渗透率</th>
+                                    <th>电信总用户</th>
+                                    <th>非电信用户</th>
+                                    <th>电信在网用户</th>
+                                    <th>在用率</th>
+                                    <th>端口</th>
+                                    <th>端口占用率</th>
                                     <th>新增</th>
                                     <th>离网</th>
                                     <th>操作</th>
@@ -76,9 +81,29 @@
                                             }
                                         </td>
                                         <td>@x.Count</td>
+                                        <td>
+                                            @{
+                                                var ratio = x.Penetrance;
+                                                @if (ratio >= Convert.ToDouble(Config["Settings:Threshold:Penetrance:Green"]))
+                                                {
+                                                    <span style="color:green">@((ratio * 100d).ToString("0.00"))%</span>
+                                                }
+                                                else if (ratio >= Convert.ToDouble(Config["Settings:Threshold:Penetrance:Red"]))
+                                                {
+                                                    <span style="color:orange">@((ratio * 100d).ToString("0.00"))%</span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="color:red">@((ratio * 100d).ToString("0.00"))%</span>
+                                                }
+                                            }
+                                        </td>
                                         <td>@x.CTUsers</td>
-                                        <td>@x.CTInUsingUsers</td>
                                         <td>@x.NonCTUsers</td>
+                                        <td>@x.CTInUsingUsers</td>
+                                        <td>@(x.CTUsers == 0 ? "0" : (x.CTInUsingUsers * 100.0 / x.CTUsers).ToString("0.00"))%</td>
+                                        <td>@x.Port</td>
+                                        <td>@((x.PortRate * 100.0).ToString("0.00"))%</td>
                                         <td>@x.AddedUsers</td>
                                         <td>@x.LeftUsers</td>
                                         <td>

@@ -44,10 +44,10 @@
                         @("(无工程)")
                     }
                 </td>
-                <td>@x.Buildings.Sum(z => z.DoorCount.Sum(y => y.Value))</td>
+                <td>@x.Buildings.Sum(z => HouseCounter.Caculate(z.DoorCount, z.TopLayers, z.BottomLayers))</td>
                 <td>
                     @{
-                        var total = x.Buildings.Sum(z => z.DoorCount.Sum(y => y.Value));
+                        var total = x.Buildings.Sum(z => HouseCounter.Caculate(z.DoorCount, z.TopLayers, z.BottomLayers));
                         @if (total == 0)
                         {
                             <span style="color:red">0%</span>

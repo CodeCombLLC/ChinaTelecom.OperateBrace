@@ -84,7 +84,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
                         .Where(y => y.TelStatus == ServiceStatus.在用 || y.LanStatus == ServiceStatus.在用 || y.MobileStatus == ServiceStatus.在用)
                         .Count(),
                 TotalNonCTUsers = allhouse - customers,
-                Penetrance = customers *1d / allhouse,
+                Penetrance = allhouse == 0 ? 0 : customers *1d / allhouse,
                 Port = x.Port,
                 PortRate = x.Port == 0 ? 1 : customers * 1d / x.Port,
                 AddedUsers = DB.Houses
@@ -199,14 +199,26 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 {
                     Id = x.Key,
                     Count = x.Count(),
-                    CTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信).Count())),
+                    CTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.LanStatus != ServiceStatus.欠费拆机 && a.LanStatus != ServiceStatus.用户拆机 && a.TelStatus != ServiceStatus.欠费拆机 && a.TelStatus != ServiceStatus.用户拆机 && a.MobileStatus != ServiceStatus.欠费拆机 && a.MobileStatus != ServiceStatus.用户拆机).Count())),
                     CTInUsingUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && (a.LanStatus == Models.ServiceStatus.在用 || a.TelStatus == ServiceStatus.在用 || a.MobileStatus == Models.ServiceStatus.在用)).Count())),
-                    NonCTUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus != HouseStatus.中国电信 && a.HouseStatus != HouseStatus.未装机).Count())),
                     AddedUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && (a.LanStatus == Models.ServiceStatus.在用 || a.TelStatus == ServiceStatus.在用 || a.MobileStatus == Models.ServiceStatus.在用)).Count())),
-                    LeftUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && (a.LanStatus != Models.ServiceStatus.在用 || a.TelStatus != ServiceStatus.在用 || a.MobileStatus != Models.ServiceStatus.在用)).Count())),
+                    LeftUsers = x.Sum(y => y.Buildings.Sum(z => z.Houses.Where(a => a.HouseStatus == HouseStatus.中国电信 && a.IsStatusChanged && (a.LanStatus != Models.ServiceStatus.在用 && a.LanStatus != ServiceStatus.未知 || a.TelStatus != ServiceStatus.在用 && a.TelStatus != ServiceStatus.未知 || a.MobileStatus != Models.ServiceStatus.在用 && a.MobileStatus != ServiceStatus.未知)).Count())),
                     Lon = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lon,
-                    Lat = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lat
-                });
+                    Lat = x.FirstOrDefault() == null ? null : (double?)x.FirstOrDefault().Lat,
+                    Port = x.Sum(a => a.Port)
+                })
+                .ToList();
+            foreach (var x in ret)
+            {
+                var houses = DB.Buildings
+                    .AsNoTracking()
+                    .Where(a => a.Estate.Area == x.Id)
+                    .ToList()
+                    .Sum(a => Lib.HouseCounter.Caculate(a.DoorCount, a.TopLayers, a.BottomLayers));
+                GC.Collect();
+                x.NonCTUsers = houses - x.CTUsers;
+                x.Penetrance = houses == 0 ? 0 : x.CTUsers *1d / houses;
+            }
             ViewBag.AreaCount = ret.Count();
             if (xls.HasValue && xls.Value)
                 return XlsView(ret.ToList(), "Area.xls", "ExportArea");

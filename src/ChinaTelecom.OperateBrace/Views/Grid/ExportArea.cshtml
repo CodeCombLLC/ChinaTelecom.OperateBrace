@@ -7,9 +7,13 @@
     <tr>
         <td>片区编号</td>
         <td>小区数</td>
-        <td>电信总用户数</td>
-        <td>电信在网用户数</td>
-        <td>非电信用户数</td>
+        <td>渗透率</td>
+        <td>电信总用户</td>
+        <td>非电信用户</td>
+        <td>电信在网用户</td>
+        <td>在用率</td>
+        <td>端口</td>
+        <td>端口占用率</td>
         <td>新增</td>
         <td>离网</td>
     </tr>
@@ -18,9 +22,29 @@
         <tr>
             <td>@x.Id</td>
             <td>@x.Count</td>
+            <td>
+            @{
+                var ratio = x.Penetrance;
+                @if (ratio >= Convert.ToDouble(Config["Settings:Threshold:Penetrance:Green"]))
+                {
+                    <span style="color:green">@((ratio * 100d).ToString("0.00"))%</span>
+                }
+                else if (ratio >= Convert.ToDouble(Config["Settings:Threshold:Penetrance:Red"]))
+                {
+                    <span style="color:orange">@((ratio * 100d).ToString("0.00"))%</span>
+                }
+                else
+                {
+                    <span style="color:red">@((ratio * 100d).ToString("0.00"))%</span>
+                }
+            }
+            </td>
             <td>@x.CTUsers</td>
-            <td>@x.CTInUsingUsers</td>
             <td>@x.NonCTUsers</td>
+            <td>@x.CTInUsingUsers</td>
+            <td>@(x.CTUsers == 0 ? "0" : (x.CTInUsingUsers * 100.0 / x.CTUsers).ToString("0.00"))%</td>
+            <td>@x.Port</td>
+            <td>@((x.PortRate * 100.0).ToString("0.00"))%</td>
             <td>@x.AddedUsers</td>
             <td>@x.LeftUsers</td>
         </tr>
