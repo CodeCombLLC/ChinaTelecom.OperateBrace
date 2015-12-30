@@ -1358,7 +1358,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 .Select(x => new
                 {
                     Key = x.Key,
-                    LeftCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && (y.LanStatus != Models.ServiceStatus.在用 || y.TelStatus != Models.ServiceStatus.在用 || y.MobileStatus != Models.ServiceStatus.在用)).Count(),
+                    LeftCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && (y.LanStatus != Models.ServiceStatus.在用 && y.LanStatus != ServiceStatus.未知 || y.TelStatus != Models.ServiceStatus.在用 && y.TelStatus != ServiceStatus.未知 || y.MobileStatus != Models.ServiceStatus.在用 && y.MobileStatus != ServiceStatus.未知)).Count(),
                     AddedCount = x.Where(y => y.HouseStatus == HouseStatus.中国电信 && y.IsStatusChanged && (y.LanStatus == Models.ServiceStatus.在用 || y.TelStatus == Models.ServiceStatus.在用 || y.MobileStatus == Models.ServiceStatus.在用)).Count()
                 })
                 .ToList();
@@ -1517,6 +1517,55 @@ namespace ChinaTelecom.OperateBrace.Controllers
             }
             DB.SaveChanges();
             return Redirect(Referer);
+        }
+
+        [HttpGet]
+        public IActionResult BusinessHallJson(string id)
+        {
+            var bh = DB.BusinessHalls
+                .Single(x => x.Id == id);
+            long added, left;
+            var series = DB.Serieses.Last();
+            var tmp = DB.Records
+                .Where(x => x.BusinessHallId == id && x.Type == RecordType.移动 && x.SeriesId == series.Id)
+                .OrderByDescending(x => x.ImportedTime)
+                .DistinctBy(x => x.Account)
+                .Where(x => DB.Records.Where(y => y.Account == x.Account && x.Status != y.Status).Count() > 0 || DB.Records.Where(y => y.Account == x.Account).Count() == 0);
+            added = tmp.Where(x => x.Status == ServiceStatus.在用).Count();
+            left = tmp.Where(x => x.Status != ServiceStatus.在用).Count();
+            var ret = new
+            {
+                LanTotal = DB.Records
+                    .Where(x => x.Status != ServiceStatus.欠费拆机 && x.Status != ServiceStatus.用户拆机 && x.Type == RecordType.宽带 && x.BusinessHallId == id)
+                    .OrderByDescending(x => x.ImportedTime)
+                    .DistinctBy(x => x.Account)
+                    .Count(),
+                LanAdded = DB.Houses
+                    .Where(x => x.BusinessHallId == id && x.LanStatus == ServiceStatus.在用 && x.IsStatusChanged)
+                    .Count(),
+                LanLeft = DB.Houses
+                    .Where(x => x.BusinessHallId == id && x.LanStatus != ServiceStatus.在用 && x.LanStatus != ServiceStatus.未知 && x.IsStatusChanged)
+                    .Count(),
+                TelTotal = DB.Records
+                    .Where(x => x.Status != ServiceStatus.欠费拆机 && x.Status != ServiceStatus.用户拆机 && x.Type == RecordType.固话 && x.BusinessHallId == id)
+                    .OrderByDescending(x => x.ImportedTime)
+                    .DistinctBy(x => x.Account)
+                    .Count(),
+                TelAdded = DB.Houses
+                    .Where(x => x.BusinessHallId == id && x.TelStatus == ServiceStatus.在用 && x.IsStatusChanged)
+                    .Count(),
+                TelLeft = DB.Houses
+                    .Where(x => x.BusinessHallId == id && x.TelStatus != ServiceStatus.在用 && x.TelStatus != ServiceStatus.未知 && x.IsStatusChanged)
+                    .Count(),
+                MobileTotal = DB.Records
+                    .Where(x => x.Status != ServiceStatus.欠费拆机 && x.Status != ServiceStatus.用户拆机 && x.Type == RecordType.移动 && x.BusinessHallId == id)
+                    .OrderByDescending(x => x.ImportedTime)
+                    .DistinctBy(x => x.Account)
+                    .Count(),
+                MobileAdded = added,
+                MobileLeft = left,
+            };
+            return Json(ret);
         }
     }
 }
