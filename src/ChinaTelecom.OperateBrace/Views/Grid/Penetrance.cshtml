@@ -123,73 +123,49 @@
                     <h4 class="modal-title" id="myModalLabel">创建小区</h4>
                 </div>
                 <div class="modal-body">
-                    <table class="table">
-                        <tr>
-                            <td>小区名称</td>
-                            <td><input type="text" class="form-control" name="title" /></td>
-                        </tr>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="title" placeholder="小区名称" />
+                    </div>
+                    <div class="form-group">
                         @if (User.IsInRole("系统管理员"))
                         {
-                            <tr>
-                                <td>片区编码</td>
-                                <td><input type="text" class="form-control" name="area" /></td>
-                            </tr>
+                            <input type="text" class="form-control" name="area" placeholder="所属片区编号" />
                         }
                         else
                         {
-                            <tr>
-                                <td>所属片区编号</td>
-                                <td>
-                                    <select name="area" class="form-control">
-                                        @foreach(string x in ViewBag.Areas)
-                                        {
-                                            <option>@x</option>
-                                        }
-                                    </select>
-                                </td>
-                            </tr>
+                            <select name="area" class="form-control">
+                                @foreach (string x in ViewBag.Areas)
+                                {
+                                    <option value="">所属片区编号</option>
+                                    <option>@x</option>
+                                }
+                            </select>
                         }
-                        <tr>
-                            <td>无电信工程</td>
-                            <td>
-                                <input type="checkbox" value="true" name="NeedImplement" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>放号日期</td>
-                            <td>
-                                <input type="text" value="" id="txtOpenTime" class="form-control" name="opentime" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>端口数</td>
-                            <td>
-                                <input type="text" value="0" class="form-control" name="port" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>备注</td>
-                            <td>
-                                <textarea style="height:60px!important" class="form-control" name="hint"></textarea>
-                            </td>
-                        </tr>
-                        <tr style="display: None;">
-                            <td>经度</td>
-                            <td><input type="text" class="form-control" name="lon" id="txtLon" /></td>
-                        </tr>
-                        <tr style="display: None;">
-                            <td>纬度</td>
-                            <td><input type="text" class="form-control" name="lat" id="txtLat" /></td>
-                        </tr>
-                        <tr>
-                            <td>匹配规则</td>
-                            <td>
-                                <input type="text" class="form-control" id="tagsRule" />
-                                <span>填写匹配规则，与明细中的地址对应，应为"XXX小区"、"XXX街XXX号"</span>
-                                <input type="hidden" id="hidRules" name="rules" />
-                            </td>
-                        </tr>
-                    </table>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" value="true" name="NeedImplement" />无电信工程
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" value="" id="txtOpenTime" class="form-control" name="opentime" placeholder="放号日期" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" value="0" class="form-control" name="port" placeholder="端口数" />
+                    </div>
+                    <div class="form-group">
+                        <textarea style="height:60px!important" class="form-control" name="hint" placeholder="备注"></textarea>
+                    </div>
+                    <div class="form-group" style="display:none">
+                        <input type="text" class="form-control" name="lon" id="txtLon" />
+                        <input type="text" class="form-control" name="lat" id="txtLat" />
+                    </div>
+                    <div class="form-group">
+                        <label>匹配规则</label>
+                        <input type="text" class="form-control" id="tagsRule" />
+                        <span>填写匹配规则，与明细中的地址对应，应为"XXX小区"、"XXX街XXX号"</span>
+                        <input type="hidden" id="hidRules" name="rules" />
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
