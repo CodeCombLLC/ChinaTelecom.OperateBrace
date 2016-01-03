@@ -20,14 +20,18 @@ namespace ChinaTelecom.OperateBrace.Controllers
             {
                 ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).
                     Where(x => x.Type == "管辖片区")
-                    .Select(x => x.Value).ToList();
+                    .OrderBy(x => x.Value)
+                    .Select(x => x.Value)
+                    .ToList();
             }
             else
             {
                 ViewBag.Areas = DB.Estates
                     .Select(x => x.Area)
                     .Distinct()
-                    .ToList();
+                    .ToList()
+                    .OrderBy(x => x)
+                    .ToList(); 
             }
             return View();
         }
@@ -36,16 +40,20 @@ namespace ChinaTelecom.OperateBrace.Controllers
         {
             if (!User.IsInRole("系统管理员"))
             {
-                ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).
-                    Where(x => x.Type == "管辖片区")
-                    .Select(x => x.Value).ToList();
+                ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current))
+                    .Where(x => x.Type == "管辖片区")
+                    .OrderBy(x => x.Value)
+                    .Select(x => x.Value)
+                    .ToList();
             }
             else
             {
                 ViewBag.Areas = DB.Estates
                     .Select(x => x.Area)
                     .Distinct()
-                    .ToList();
+                    .ToList()
+                    .OrderBy(x => x)
+                    .ToList(); 
             }
             return View();
         }
@@ -54,15 +62,19 @@ namespace ChinaTelecom.OperateBrace.Controllers
         {
             if (!User.IsInRole("系统管理员"))
             {
-                ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).
-                    Where(x => x.Type == "管辖片区")
-                    .Select(x => x.Value).ToList();
+                ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current))
+                    .Where(x => x.Type == "管辖片区")
+                    .OrderBy(x => x.Value)
+                    .Select(x => x.Value)
+                    .ToList();
             }
             else
             {
                 ViewBag.Areas = DB.Estates
                     .Select(x => x.Area)
                     .Distinct()
+                    .ToList()
+                    .OrderBy(x => x)
                     .ToList();
             }
             return View();

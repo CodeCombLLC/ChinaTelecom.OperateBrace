@@ -215,9 +215,9 @@
                 <h4 class="modal-title" id="myModalLabel">片区过滤器</h4>
             </div>
             <div class="modal-body">
+                <a href="javascript:;" class="filter-area filter-checked" id="btnAllArea">全部片区</a>
                 @foreach (string x in ViewBag.Areas)
                 {
-                    <a href="javascript:;" class="filter-area filter-checked" id="btnAllArea">全部片区</a>
                         @if (string.IsNullOrEmpty(x))
                         {
                             <a href="javascript:;" class="filter-area filter-checked" data-area="">未分配</a>
