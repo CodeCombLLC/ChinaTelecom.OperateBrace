@@ -16,25 +16,55 @@ namespace ChinaTelecom.OperateBrace.Controllers
     {
         public async Task<IActionResult> Index()
         {
-            ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).
-                Where(x => x.Type == "管辖片区")
-                .Select(x => x.Value).ToList();
+            if (!User.IsInRole("系统管理员"))
+            {
+                ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).
+                    Where(x => x.Type == "管辖片区")
+                    .Select(x => x.Value).ToList();
+            }
+            else
+            {
+                ViewBag.Areas = DB.Estates
+                    .Select(x => x.Area)
+                    .Distinct()
+                    .ToList();
+            }
             return View();
         }
 
         public async Task<IActionResult> Penetrance()
         {
-            ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).
-                Where(x => x.Type == "管辖片区")
-                .Select(x => x.Value).ToList();
+            if (!User.IsInRole("系统管理员"))
+            {
+                ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).
+                    Where(x => x.Type == "管辖片区")
+                    .Select(x => x.Value).ToList();
+            }
+            else
+            {
+                ViewBag.Areas = DB.Estates
+                    .Select(x => x.Area)
+                    .Distinct()
+                    .ToList();
+            }
             return View();
         }
 
         public async Task<IActionResult> Port()
         {
-            ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).
-                Where(x => x.Type == "管辖片区")
-                .Select(x => x.Value).ToList();
+            if (!User.IsInRole("系统管理员"))
+            {
+                ViewBag.Areas = (await UserManager.GetClaimsAsync(User.Current)).
+                    Where(x => x.Type == "管辖片区")
+                    .Select(x => x.Value).ToList();
+            }
+            else
+            {
+                ViewBag.Areas = DB.Estates
+                    .Select(x => x.Area)
+                    .Distinct()
+                    .ToList();
+            }
             return View();
         }
 
