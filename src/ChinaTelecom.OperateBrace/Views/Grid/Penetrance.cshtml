@@ -64,6 +64,10 @@
     .menu-item:hover {
         background: rgb(255,248,223);
     }
+
+    #options .btn {
+        width: 100%;
+    }
 </style>
 <div id="options">
     <div id="choice">
@@ -87,6 +91,7 @@
             <input type="checkbox" id="chkPendingEstate" checked/>
             显示待施工工程小区
         </label>
+        <input type="button" value="片区过滤器" class="btn btn-success" id="btnAreaFilter" />
         <input type="button" value="圈定范围" class="btn btn-warning" id="btnCircle"/>
         <input type="button" value="取消圈定范围" class="btn" style="display: none" id="btnCancelCircle"/>
     </div>
@@ -202,7 +207,33 @@
         </div>
     </div>
 </div>
-
+<div class="modal fade" id="modalArea" tabindex="-1" role="dialog" aria-labelledby="modalArea">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">片区过滤器</h4>
+            </div>
+            <div class="modal-body">
+                @foreach (string x in ViewBag.Areas)
+                {
+                    <a href="javascript:;" class="filter-area filter-checked" id="btnAllArea">全部片区</a>
+                        @if (string.IsNullOrEmpty(x))
+                        {
+                            <a href="javascript:;" class="filter-area filter-checked" data-area="">未分配</a>
+                        }
+                        else
+                        {
+                            <a href="javascript:;" class="filter-area filter-checked" data-area="@x">@x</a>
+                        }
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="btnCancelCircle" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div id="estate">
     <span id="infoEstate">加载中，请稍候...</span>
     <table id="tableEstate">
@@ -315,6 +346,8 @@
                 if (!$('#chkBadEstate').is(':checked') && data[i].Level == 3)
                     continue;
                 if (!$('#chkPendingEstate').is(':checked') && data[i].Level == 6)
+                    continue;
+                if (!$('.filter-area[data-area="' + data[i].Area + '"]').hasClass('filter-checked'))
                     continue;
                 var marker = new BMap.Marker(pt, { icon: ico });
                 marker.Id = data[i].Id;
@@ -505,5 +538,27 @@
 
     $('#btnClose').click(function () {
         $("#management").hide();
+    });
+
+    $('.filter-area').click(function () {
+        if ($(this).hasClass('filter-checked')) {
+            $(this).removeClass('filter-checked');
+        } else {
+            $(this).addClass('filter-checked');
+        }
+        BuildOverlays();
+    });
+
+    $('#btnAllArea').click(function () {
+        if ($(this).hasClass('filter-checked')) {
+            $('.filter-area').addClass('filter-checked');
+        } else {
+            $('.filter-area').removeClass('filter-checked');
+        }
+        BuildOverlays();
+    });
+
+    $('#btnAreaFilter').click(function () {
+        $('#modalArea').modal('show');
     });
 </script>
