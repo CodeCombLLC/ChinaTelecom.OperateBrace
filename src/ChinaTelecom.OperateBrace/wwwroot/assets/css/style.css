@@ -3266,8 +3266,8 @@ div.valueLabel {
 
 .filter-area {
     display: inline-block;
-    margin: 0 5px;
-    padding: 5px;
+    margin: 3px 3px;
+    padding: 4px;
     border-radius: 5px;
     background-color: #db3c3c;
     color: #fff!important;
