@@ -36,6 +36,11 @@ namespace ChinaTelecom.OperateBrace
                 services.AddEntityFrameworkNpgsql()
                     .AddDbContext<GridContext>(x => x.UseNpgsql(Config["Data:DefaultConnection:ConnectionString"]));
             }
+            else if (Config["Data:DefaultConnection:Mode"] == "MySQL")
+            {
+                services.AddEntityFrameworkMySql()
+                    .AddDbContext<GridContext>(x => x.UseMySql(Config["Data:DefaultConnection:ConnectionString"]));
+            }
             else
             {
                 services.AddEntityFrameworkInMemoryDatabase()

@@ -5,6 +5,9 @@ namespace ChinaTelecom.OperateBrace.Models
 {
     public class GridContext : IdentityDbContext<User>
     {
+        public GridContext(DbContextOptions opt) : base(opt)
+        { }
+
         public DbSet<Estate> Estates { get; set; }
 
         public DbSet<EstateRule> EstateRules { get; set; }

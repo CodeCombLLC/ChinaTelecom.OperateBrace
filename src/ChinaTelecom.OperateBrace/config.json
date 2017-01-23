@@ -1,44 +1,48 @@
 ﻿{
-  "Settings": {
-    "DefaultLon": 126.617628,
-    "DefaultLat": 45.77498,
-    "DefaultZoom": 15,
-    "Authorization": "演示",
-    "Threshold": {
-      "Customer": {
-        "Yellow": 10,
-        "Cyan": 30
-      },
-      "BusinessHall": {
-        "Yellow": 10,
-        "Cyan": 30
-      },
-      "Penetrance": {
-        "Green": 0.7,
-        "Red": 0.3
-      },
-      "Port": {
-        "Green": 0.3,
-        "Red": 0.7
-      }
-    }
-  },
-  "BMap": {
-    "ApplicationKey": "NXEnERYLgAVs3WYl3jd0NCKR",
-    "City": "哈尔滨市"
-  },
-  "Data": {
-    "DefaultConnection": {
-      "Mode": "PostgreSQL",
-      "ConnectionString": "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=chinatelecom;"
+    "Settings": {
+        "DefaultLon": 126.617628,
+        "DefaultLat": 45.77498,
+        "DefaultZoom": 15,
+        "Authorization": "演示",
+        "Threshold": {
+            "Customer": {
+                "Yellow": 10,
+                "Cyan": 30
+            },
+            "BusinessHall": {
+                "Yellow": 10,
+                "Cyan": 30
+            },
+            "Penetrance": {
+                "Green": 0.7,
+                "Red": 0.3
+            },
+            "Port": {
+                "Green": 0.3,
+                "Red": 0.7
+            }
+        }
     },
-    "SQLiteConnection": {
-      "Mode": "SQLite",
-      "ConnectionString": "Data source={appRoot}/chinatelecom.db"
+    "BMap": {
+        "ApplicationKey": "NXEnERYLgAVs3WYl3jd0NCKR",
+        "City": "哈尔滨市"
     },
-    "PostgreSQLConnection": {
-      "Mode": "PostgreSQL",
-      "ConnectionString": "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=chinatelecom;"
+    "Data": {
+        "DefaultConnection": {
+            "Mode": "MySQL",
+            "ConnectionString": "server=localhost;uid=root;pwd=123456;database=chinatelecom"
+        },
+        "SQLiteConnection": {
+            "Mode": "SQLite",
+            "ConnectionString": "Data source={appRoot}/chinatelecom.db"
+        },
+        "PostgreSQLConnection": {
+            "Mode": "PostgreSQL",
+            "ConnectionString": "User ID=postgres;Password=123456;Host=localhost;Port=5432;Database=chinatelecom;"
+        },
+        "MySQLConnection": {
+            "Mode": "MySQL",
+            "ConnectionString": "server=localhost;uid=root;pwd=123456;database=chinatelecom"
+        }
     }
-  }
 }

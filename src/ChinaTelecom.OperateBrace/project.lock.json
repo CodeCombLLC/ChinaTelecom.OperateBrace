@@ -1219,6 +1219,20 @@
           "lib/netstandard1.0/_._": {}
         }
       },
+      "MySqlConnector/0.11.2": {
+        "type": "package",
+        "dependencies": {
+          "System.Buffers": "4.0.0",
+          "System.Runtime.InteropServices.RuntimeInformation": "4.0.0",
+          "System.Threading.Tasks.Extensions": "4.0.0"
+        },
+        "compile": {
+          "lib/net451/MySqlConnector.dll": {}
+        },
+        "runtime": {
+          "lib/net451/MySqlConnector.dll": {}
+        }
+      },
       "NETStandard.Library/1.6.1": {
         "type": "package",
         "dependencies": {
@@ -1367,6 +1381,20 @@
           "lib/net451/Pomelo.AspNetCore.Localization.dll": {}
         }
       },
+      "Pomelo.EntityFrameworkCore.MySql/1.1.1-prerelease-10013": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore.Relational": "1.1.0",
+          "MySqlConnector": "0.11.2",
+          "Pomelo.JsonObject": "1.1.0"
+        },
+        "compile": {
+          "lib/net451/Pomelo.EntityFrameworkCore.MySql.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Pomelo.EntityFrameworkCore.MySql.dll": {}
+        }
+      },
       "Pomelo.Extensions.Common/1.1.0-rtm-10031": {
         "type": "package",
         "frameworkAssemblies": [
@@ -1394,6 +1422,18 @@
         },
         "runtime": {
           "lib/net451/Pomelo.HtmlAgilityPack.dll": {}
+        }
+      },
+      "Pomelo.JsonObject/1.1.0": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "9.0.1"
+        },
+        "compile": {
+          "lib/net451/Pomelo.JsonObject.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Pomelo.JsonObject.dll": {}
         }
       },
       "Pomelo.Marked/1.1.0-rtm-10031": {
@@ -3019,6 +3059,17 @@
         "runtime.json"
       ]
     },
+    "MySqlConnector/0.11.2": {
+      "sha512": "OBFxBTRvSd4cfdgTOBk0kFNOtVMWRghfHl7jOT7G5Vm8tUt829ow3Ptk93ZQJvuzuvYw8ZLs16jMJ4k0zhzt9A==",
+      "type": "package",
+      "path": "MySqlConnector/0.11.2",
+      "files": [
+        "MySqlConnector.0.11.2.nupkg.sha512",
+        "MySqlConnector.nuspec",
+        "lib/net451/MySqlConnector.dll",
+        "lib/netstandard1.3/MySqlConnector.dll"
+      ]
+    },
     "NETStandard.Library/1.6.1": {
       "sha512": "WcSp3+vP+yHNgS8EV5J7pZ9IRpeDuARBPN28by8zqff1wJQXm26PVU8L3/fYLBJVU7BtDyqNVWq2KlCVvSSR4A==",
       "type": "package",
@@ -3135,6 +3186,17 @@
         "lib/netstandard1.6/Pomelo.AspNetCore.Localization.dll"
       ]
     },
+    "Pomelo.EntityFrameworkCore.MySql/1.1.1-prerelease-10013": {
+      "sha512": "b4hVyt1ubix0fL6EQifG7pcIX8W87XArCxzCUATfOjQ7+4YtZSoIXalAJJqnK52dSgT+p+3MTzz4+3bORPoRDQ==",
+      "type": "package",
+      "path": "Pomelo.EntityFrameworkCore.MySql/1.1.1-prerelease-10013",
+      "files": [
+        "Pomelo.EntityFrameworkCore.MySql.1.1.1-prerelease-10013.nupkg.sha512",
+        "Pomelo.EntityFrameworkCore.MySql.nuspec",
+        "lib/net451/Pomelo.EntityFrameworkCore.MySql.dll",
+        "lib/netstandard1.3/Pomelo.EntityFrameworkCore.MySql.dll"
+      ]
+    },
     "Pomelo.Extensions.Common/1.1.0-rtm-10031": {
       "sha512": "Cl22EHu49hFxKfW3yEMaMngVRGbdLGfp0+FpMS+yZcpWolytIheSulTKaJGwjteeqtjJWmLcmop4XmGWFVspRg==",
       "type": "package",
@@ -3156,6 +3218,22 @@
         "lib/net40/Pomelo.HtmlAgilityPack.dll",
         "lib/net451/Pomelo.HtmlAgilityPack.dll",
         "lib/netstandard1.6/Pomelo.HtmlAgilityPack.dll"
+      ]
+    },
+    "Pomelo.JsonObject/1.1.0": {
+      "sha512": "RoVZSaGOiJ4FcCVM+oc5bYsL6dpXwMXk9LsfDFVgxy1BW5h+CGcaJTxEoOgGetSmcPqBP1mGyRYBv19cc8MOSw==",
+      "type": "package",
+      "path": "Pomelo.JsonObject/1.1.0",
+      "files": [
+        "Pomelo.JsonObject.1.1.0.nupkg.sha512",
+        "Pomelo.JsonObject.nuspec",
+        "lib/net451/Pomelo.JsonObject.dll",
+        "lib/net451/Pomelo.JsonObject.pdb",
+        "lib/netstandard1.3/Pomelo.JsonObject.dll",
+        "lib/netstandard1.3/Pomelo.JsonObject.pdb",
+        "src/Pomelo.JsonObject/Properties/AssemblyInfo.cs",
+        "src/Pomelo.JsonObject/System/JsonObject.cs",
+        "src/Pomelo.JsonObject/System/JsonObject`1.cs"
       ]
     },
     "Pomelo.Marked/1.1.0-rtm-10031": {
@@ -5615,11 +5693,14 @@
       "Microsoft.EntityFrameworkCore.SqlServer >= 1.1.0",
       "Microsoft.EntityFrameworkCore.Sqlite >= 1.1.0",
       "Microsoft.Extensions.Logging.Console >= 1.1.0",
+      "Newtonsoft.Json >= 9.0.1",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 1.1.0",
-      "Pomelo.AspNetCore.Extensions >= 1.1.0-*"
+      "Pomelo.AspNetCore.Extensions >= 1.1.0-*",
+      "Pomelo.EntityFrameworkCore.MySql >= 1.1.1-prerelease-10013"
     ],
     ".NETFramework,Version=v4.5.1": [
-      "System.Net.Http.WebRequest >= 4.0.0"
+      "System.Net.Http.WebRequest >= 4.0.0",
+      "System.Runtime >= 4.0.10"
     ]
   },
   "tools": {},

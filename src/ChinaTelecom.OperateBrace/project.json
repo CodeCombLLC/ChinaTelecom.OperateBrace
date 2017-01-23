@@ -1,7 +1,13 @@
 {
     "version": "1.0.0-*",
+
     "buildOptions": {
-        "emitEntryPoint": true
+        "emitEntryPoint": true,
+        "preserveCompilationContext": true
+    },
+
+    "runtimeOptions": {
+        "gcServer": true
     },
 
     "dependencies": {
@@ -15,12 +21,15 @@
         "Microsoft.EntityFrameworkCore.InMemory": "1.1.0",
         "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
         "Npgsql.EntityFrameworkCore.PostgreSQL": "1.1.0",
-        "Pomelo.AspNetCore.Extensions": "1.1.0-*"
+        "Pomelo.AspNetCore.Extensions": "1.1.0-*",
+        "Pomelo.EntityFrameworkCore.MySql": "1.1.1-prerelease-10013",
+        "Newtonsoft.Json": "9.0.1"
     },
 
     "frameworks": {
         "net451": {
             "frameworkAssemblies": {
+                "System.Runtime": "4.0.10.0",
                 "System.Net.Http.WebRequest": "4.0.0.0"
             }
         }

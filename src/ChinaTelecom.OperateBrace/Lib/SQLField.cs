@@ -15,6 +15,8 @@
                 return $@"""{field}""";
             else if (Config["Data:DefaultConnection:Mode"] == "PostgreSQL")
                 return $@"""{field}""";
+            else if (Config["Data:DefaultConnection:Mode"] == "MySql")
+                return $@"`{field}`";
             else
                 return $"[{field}]";
         }
