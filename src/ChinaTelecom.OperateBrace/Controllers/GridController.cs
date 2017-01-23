@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Data.Entity;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using ChinaTelecom.OperateBrace.Models;
 using ChinaTelecom.OperateBrace.ViewModels;
@@ -327,7 +327,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
             }
             ViewBag.AreaCount = ret.Count();
             if (xls.HasValue && xls.Value)
-                return XlsView(ret.ToList(), "Area.xls", "ExportArea");
+                return RenderXls(ret.ToList(), "Area.xls", "ExportArea");
             else
                 return PagedView(ret);
         }
@@ -382,7 +382,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
             ret = ret.OrderBy(x => x.Area);
             ViewBag.EstateCount = ret.Count();
             if (raw.HasValue && raw.Value)
-                return XlsView(ret.ToList(), "Estate.xls", "ExportEstate");
+                return RenderXls(ret.ToList(), "Estate.xls", "ExportEstate");
             else
                 return PagedView(ret);
         }
@@ -1146,7 +1146,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 .Include(x => x.Building)
                 .ThenInclude(x => x.Estate);
             if (Config["Data:DefaultConnection:Mode"] != "SQLite")
-                ret = (ret as Microsoft.Data.Entity.Query.IIncludableQueryable<House, Estate>).AsNoTracking();
+                ret = (ret as Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<House, Estate>).AsNoTracking();
             if (!User.IsInRole("系统管理员"))
             {
                 var areas = (await UserManager.GetClaimsAsync(User.Current)).Where(x => x.Type == "管辖片区").Select(x => x.Value).ToList();
@@ -1221,7 +1221,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
             }
             ViewBag.TotalCustomerCount = ret.Count();
             if (raw.HasValue && raw.Value)
-                return XlsView(ret, "customers.xls", "ExportCustomer");
+                return RenderXls(ret, "customers.xls", "ExportCustomer");
             else
                 return PagedView(ret);
         }
@@ -1285,7 +1285,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
             ret = ret.OrderByDescending(x => x.Account)
                 .DistinctBy(x => x.Account);
             if (raw.HasValue && raw.Value)
-                return XlsView(ret, "non-relation-customers.xls", "ExportRelation");
+                return RenderXls(ret, "non-relation-customers.xls", "ExportRelation");
             else
                 return PagedView(ret);
         }
@@ -1619,7 +1619,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
                 .ThenBy(x => x.TotalLeft)
                 .ToList();
             if (xls.HasValue && xls.Value)
-                return XlsView(bhs, "businesshall.xls", "ExportBusinessHall");
+                return RenderXls(bhs, "businesshall.xls", "ExportBusinessHall");
             else
                 return View(bhs);
         }

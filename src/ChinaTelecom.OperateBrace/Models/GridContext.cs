@@ -1,5 +1,5 @@
-﻿using Microsoft.Data.Entity;
-using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace ChinaTelecom.OperateBrace.Models
 {

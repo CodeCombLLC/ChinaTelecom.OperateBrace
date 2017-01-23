@@ -1,43 +1,37 @@
 {
-  "version": "1.0.0-*",
-  "compilationOptions": {
-    "emitEntryPoint": true
-  },
+    "version": "1.0.0-*",
+    "buildOptions": {
+        "emitEntryPoint": true
+    },
 
-  "dependencies": {
-    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-rc1-final",
-    "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
-    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
-    "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
-    "EntityFramework.Sqlite": "7.0.0-rc1-final",
-    "EntityFramework.InMemory": "7.0.0-rc1-final",
-    "EntityFramework.MicrosoftSqlServer": "7.0.0-rc1-final",
-    "EntityFramework7.Npgsql": "3.1.0-rc1-3",
-    "Npgsql": "3.1.0-alpha6",
-    "CodeComb.AspNet.Extensions": "2.0.0-rc1-final-2"
-  },
+    "dependencies": {
+        "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
+        "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.1.0",
+        "Microsoft.AspNetCore.StaticFiles": "1.1.0",
+        "Microsoft.AspNetCore.Mvc": "1.1.0",
+        "Microsoft.AspNetCore.Mvc.TagHelpers": "1.1.0",
+        "Microsoft.Extensions.Logging.Console": "1.1.0",
+        "Microsoft.EntityFrameworkCore.Sqlite": "1.1.0",
+        "Microsoft.EntityFrameworkCore.InMemory": "1.1.0",
+        "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
+        "Npgsql.EntityFrameworkCore.PostgreSQL": "1.1.0",
+        "Pomelo.AspNetCore.Extensions": "1.1.0-*"
+    },
 
-  "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel --server.urls http://*:9000"
-  },
+    "frameworks": {
+        "net451": {
+            "frameworkAssemblies": {
+                "System.Net.Http.WebRequest": "4.0.0.0"
+            }
+        }
+    },
 
-  "frameworks": {
-    "dnx451": {
-      "frameworkAssemblies": {
-        "System.Net.Http.WebRequest": "4.0.0.0"
-      }
+    "publishOptions": {
+        "include": [
+            "wwwroot",
+            "web.config",
+            "Views",
+            "config.json"
+        ]
     }
-  },
-
-  "exclude": [
-    "wwwroot",
-    "node_modules"
-  ],
-  "publishExclude": [
-    "**.user",
-    "**.vspscc"
-  ]
 }

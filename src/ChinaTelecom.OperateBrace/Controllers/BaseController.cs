@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using Microsoft.AspNet.Mvc;
-using Microsoft.Data.Entity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ChinaTelecom.OperateBrace.Models;
 
 namespace ChinaTelecom.OperateBrace.Controllers

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.OleDb;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using ChinaTelecom.OperateBrace.Models;
 using ChinaTelecom.OperateBrace.Lib;
@@ -19,7 +19,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
     [Authorize]
     public class RecordController : BaseController
     {
-        [FromServices]
+        [Inject]
         public IServiceProvider services { get; set; }
 
         public IActionResult Index(string ContractorName, string StaffName, ServiceStatus? Status, string Name, string Address, string Account, string Set, string Phone, string xls, Guid? SeriesId, DateTime? BeginTime, DateTime? EndTime)
@@ -89,7 +89,7 @@ namespace ChinaTelecom.OperateBrace.Controllers
             }
             else
             {
-                return XlsView(ret.ToList(), "chinatelecom.xls", "Xls");
+                return RenderXls(ret.ToList(), "chinatelecom.xls", "Xls");
             }
         }
 
@@ -108,7 +108,8 @@ namespace ChinaTelecom.OperateBrace.Controllers
 
             var fname = Guid.NewGuid().ToString().Replace("-", "") + System.IO.Path.GetExtension(file.GetFileName());
             var path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), fname);
-            file.SaveAs(path);
+            var bytes = file.ReadAllBytes();
+            System.IO.File.WriteAllBytes(path, bytes);
             string connStr;
             if (System.IO.Path.GetExtension(path) == ".xls")
                 connStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + path + ";Extended Properties=\"Excel 8.0;HDR=YES;IMEX=1\"";
