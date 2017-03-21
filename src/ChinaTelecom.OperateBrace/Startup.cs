@@ -63,7 +63,7 @@ namespace ChinaTelecom.OperateBrace
         public async void Configure(IApplicationBuilder app, ILoggerFactory logger)
         {
             logger.AddConsole(LogLevel.Warning);
-            
+            app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
             app.UseIdentity();
             app.UseAutoAjax();

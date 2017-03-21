@@ -156,24 +156,24 @@ namespace ChinaTelecom.OperateBrace.Controllers
                                         {
                                             var record = new Record
                                             {
-                                                Account = reader["接入号"].ToString(),
-                                                CustomerName = reader["用户姓名"].ToString(),
-                                                ContractorName = reader["四级承包人名称"].ToString(),
-                                                ContractorStruct = reader["四级承包体名称"].ToString(),
-                                                ServiceStaff = reader["包服人"].ToString(),
-                                                MDS = reader["中投"].ToString(),
-                                                ImplementAddress = reader["装机地址"].ToString(),
-                                                StandardAddress = reader["标准地址"].ToString(),
-                                                Set = reader["套餐"].ToString(),
-                                                SalesProduction = reader["融合促销包"].ToString(),
-                                                Phone = reader["联系电话"].ToString(),
                                                 ImportedTime = series.Time,
-                                                SeriesId = series.Id,
-                                                BusinessHallId = reader["营业厅编号"].ToString(),
-                                                BusinessHallName = reader["营业厅名称"].ToString(),
-                                                FuseIdentifier = reader["用户标识"].ToString()
+                                                SeriesId = series.Id
                                             };
                                             #region Try parse
+                                            try { record.Account = reader["接入号"].ToString(); } catch { }
+                                            try { record.CustomerName = reader["用户姓名"].ToString(); } catch { }
+                                            try { record.ContractorName = reader["四级承包人名称"].ToString(); } catch { }
+                                            try { record.ContractorStruct = reader["四级承包体名称"].ToString(); } catch { }
+                                            try { record.ServiceStaff = reader["包服人"].ToString(); } catch { }
+                                            try { record.MDS = reader["中投"].ToString(); } catch { }
+                                            try { record.ImplementAddress = reader["装机地址"].ToString(); } catch { }
+                                            try { record.StandardAddress = reader["标准地址"].ToString(); } catch { }
+                                            try { record.Set = reader["套餐"].ToString(); } catch { }
+                                            try { record.SalesProduction = reader["融合促销包"].ToString(); } catch { }
+                                            try { record.Phone = reader["联系电话"].ToString(); } catch { }
+                                            try { record.BusinessHallId = reader["营业厅编号"].ToString(); } catch { }
+                                            try { record.BusinessHallName = reader["营业厅名称"].ToString(); } catch { }
+                                            try { record.FuseIdentifier = reader["用户标识"].ToString(); } catch { }
                                             try
                                             {
                                                 if (reader["用户类型"].ToString() == "CDMA")

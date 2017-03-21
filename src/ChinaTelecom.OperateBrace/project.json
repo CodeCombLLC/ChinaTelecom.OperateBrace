@@ -10,21 +10,22 @@
         "gcServer": true
     },
 
-    "dependencies": {
-        "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
-        "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.1.0",
-        "Microsoft.AspNetCore.StaticFiles": "1.1.0",
-        "Microsoft.AspNetCore.Mvc": "1.1.0",
-        "Microsoft.AspNetCore.Mvc.TagHelpers": "1.1.0",
-        "Microsoft.Extensions.Logging.Console": "1.1.0",
-        "Microsoft.EntityFrameworkCore.Sqlite": "1.1.0",
-        "Microsoft.EntityFrameworkCore.InMemory": "1.1.0",
-        "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
-        "Npgsql.EntityFrameworkCore.PostgreSQL": "1.1.0",
-        "Pomelo.AspNetCore.Extensions": "1.1.0-*",
-        "Pomelo.EntityFrameworkCore.MySql": "1.1.1-prerelease-10013",
-        "Newtonsoft.Json": "9.0.1"
-    },
+  "dependencies": {
+    "Microsoft.AspNetCore.Diagnostics": "1.1.0",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
+    "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.1.0",
+    "Microsoft.AspNetCore.StaticFiles": "1.1.0",
+    "Microsoft.AspNetCore.Mvc": "1.1.0",
+    "Microsoft.AspNetCore.Mvc.TagHelpers": "1.1.0",
+    "Microsoft.Extensions.Logging.Console": "1.1.0",
+    "Microsoft.EntityFrameworkCore.Sqlite": "1.1.0",
+    "Microsoft.EntityFrameworkCore.InMemory": "1.1.0",
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.1.0",
+    "Npgsql.EntityFrameworkCore.PostgreSQL": "1.1.0",
+    "Pomelo.AspNetCore.Extensions": "1.1.0-*",
+    "Pomelo.EntityFrameworkCore.MySql": "1.1.1-prerelease-10021",
+    "Newtonsoft.Json": "9.0.1"
+  },
 
     "frameworks": {
         "net451": {

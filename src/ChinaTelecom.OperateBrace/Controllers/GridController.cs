@@ -490,16 +490,22 @@ namespace ChinaTelecom.OperateBrace.Controllers
 
             // 查找没有对应至楼宇中的地址信息
             var pendingAddress = new List<Record>();
-            foreach (var x in rules)
+            try
             {
-                pendingAddress.AddRange(DB.Records
-                    .Where(a => a.Type != RecordType.移动)
-                    .Where(a => !DB.Houses
-                    .Select(b => b.Account)
-                    .Contains(a.Account))
-                    .Where(a => a.ImplementAddress.Contains(x) || a.StandardAddress.Contains(x)));
+                foreach (var x in rules)
+                {
+                    pendingAddress.AddRange(DB.Records
+                        .Where(a => a.Type != RecordType.移动)
+                        .Where(a => !DB.Houses
+                        .Select(b => b.Account)
+                        .Contains(a.Account))
+                        .Where(a => a.ImplementAddress.Contains(x) || a.StandardAddress.Contains(x)));
+                }
+                pendingAddress = pendingAddress.OrderByDescending(x => x.ImportedTime).DistinctBy(x => x.Account).ToList();
             }
-            pendingAddress = pendingAddress.OrderByDescending(x => x.ImportedTime).DistinctBy(x => x.Account).ToList();
+            catch
+            {
+            }
 
             // 尝试根据规则进行对应
             for (var i = 0; i < pendingAddress.Count; i++)
